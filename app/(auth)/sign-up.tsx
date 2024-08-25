@@ -6,37 +6,77 @@ import {
   TextInput,
   KeyboardAvoidingView,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const SignUp = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
   return (
     <ScrollView className="flex-1 bg-white">
-      <View className="flex-1 bg-white">
-        <View className="bg-gray-50 ">
+      <KeyboardAvoidingView behavior="padding" className="flex-1 p-6">
+        <View className="flex items-center mb-12">
           <Image
             source={require("../../assets/r-logo.png")}
-            className="w-28 h-28 mx-auto"
+            className="w-24 h-24 mb-4"
           />
-          <Text className="text-center text-2xl font-thin text-gray-800">
+          <Text className="text-3xl font-light text-gray-900">
             Create an account
           </Text>
         </View>
-        <View className="p-5">
-          <KeyboardAvoidingView>
-            <Text className="text-gray-500 text-sm">Name</Text>
+
+        <View className="space-y-6">
+          {/* Name Input */}
+          <View className="flex-row items-center border border-gray-300 rounded-full px-4 py-2 bg-gray-100">
+            <View className="mr-2">
+              <Icon name="user" size={20} color="gray" />
+            </View>
             <TextInput
               placeholder="Name"
-              className="border-b-2 border-gray-200"
+              placeholderTextColor="gray"
+              value={formData.name}
+              onChangeText={(text) => setFormData({ ...formData, name: text })}
+              className="flex-1 text-start text-gray-800"
             />
+          </View>
 
-            <Text className="text-gray-500 text-sm">Email</Text>
+          {/* Email Input */}
+          <View className="flex-row items-center border border-gray-300 rounded-full px-4 py-2 bg-gray-100">
+            <View className="mr-2">
+              <Icon name="envelope" size={20} color="gray" />
+            </View>
             <TextInput
               placeholder="Email"
-              className="border-b-2 border-gray-200"
+              placeholderTextColor="gray"
+              value={formData.email}
+              onChangeText={(text) => setFormData({ ...formData, email: text })}
+              className="flex-1 text-start text-gray-800"
+              keyboardType="email-address"
             />
-          </KeyboardAvoidingView>
+          </View>
+
+          {/* Password Input */}
+          <View className="flex-row items-center border border-gray-300 rounded-full px-4 py-2 bg-gray-100">
+            <View className="mr-2">
+              <Icon name="lock" size={20} color="gray" />
+            </View>
+            <TextInput
+              placeholder="Password"
+              placeholderTextColor="gray"
+              value={formData.password}
+              onChangeText={(text) =>
+                setFormData({ ...formData, password: text })
+              }
+              secureTextEntry
+              className="flex-1 text-start text-gray-800"
+            />
+          </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </ScrollView>
   );
 };
