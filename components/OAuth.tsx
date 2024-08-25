@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, Image } from "react-native";
 import React from "react";
 
 const OAuth = () => {
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     console.log("Google Sign In");
   };
 
