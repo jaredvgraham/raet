@@ -10,20 +10,43 @@ import {
   Keyboard,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { router } from "expo-router";
+import { router, useRouter } from "expo-router";
 import OAuth from "@/components/OAuth";
+import { useSignIn } from "@clerk/clerk-expo";
 
 const SignIn = () => {
+  const { signIn, isLoaded, setActive } = useSignIn();
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  const onSignIn = () => {
-    console.log(formData);
-  };
+  const onSignIn = useCallback(async () => {
+    if (!isLoaded) {
+      return;
+    }
+
+    try {
+      const signInAttempt = await signIn.create({
+        identifier: formData.email,
+        password: formData.password,
+      });
+
+      if (signInAttempt.status === "complete") {
+        await setActive({ session: signInAttempt.createdSessionId });
+        router.replace("/(root)/(tabs)/home");
+      } else {
+        // See https://clerk.com/docs/custom-flows/error-handling
+        // for more info on error handling
+        console.error(JSON.stringify(signInAttempt, null, 2));
+      }
+    } catch (err: any) {
+      console.error(JSON.stringify(err, null, 2));
+    }
+  }, [isLoaded, formData.email, formData.password]);
 
   return (
     <ScrollView className="flex-1 bg-white">

@@ -38,7 +38,10 @@ const Welcome = () => {
         onIndexChanged={(index) => setActiveIndex(index)}
       >
         {data.map((item, index) => (
-          <View className="flex flex-col items-center justify-center">
+          <View
+            key={index}
+            className="flex flex-col items-center justify-center"
+          >
             <Text className="text-2xl font-bold">{item.title}</Text>
             <Text className="text-md text-gray-500">{item.description}</Text>
           </View>
