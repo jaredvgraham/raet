@@ -21,6 +21,7 @@ import axios from "axios";
 
 const SignUp = () => {
   const { signUp, isLoaded, setActive } = useSignUp();
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -92,7 +93,10 @@ const SignUp = () => {
             ...pendingVerification,
             state: "success",
           });
-        } catch (error) {
+        } catch (error: any) {
+          if (error.errors[0].code === "session_exists") {
+            setError("User already exists");
+          }
           console.log(error);
         }
       } else {
@@ -187,6 +191,10 @@ const SignUp = () => {
               <Text className="text-white text-lg font-semibold">Sign Up</Text>
             </View>
           </TouchableOpacity>
+
+          {error && (
+            <Text className="text-red-500 text-sm text-center">{error}</Text>
+          )}
 
           {/* OAuth*/}
           <OAuth />
