@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -64,8 +64,11 @@ export const users = [
 ];
 
 export default function SwipeableCardDeck() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [profiles, setProfiles] = useState(users);
+  const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const rateRef = useRef<number | null>(null);
+
   const position = useRef(new Animated.ValueXY()).current;
   const nextCardOpacity = useRef(new Animated.Value(0)).current;
   const nextCardScale = useRef(new Animated.Value(0.9)).current;
@@ -73,6 +76,77 @@ export default function SwipeableCardDeck() {
   const swipeDetected = useRef(false);
   const gestureStartX = useRef(0);
   const gestureStartY = useRef(0);
+
+  const currentProfileRef = useRef(profiles[currentProfileIndex]);
+
+  useEffect(() => {
+    currentProfileRef.current = profiles[currentProfileIndex];
+  }, [profiles, currentProfileIndex]);
+
+  const handleSwipeAction = async (direction) => {
+    const currentProfile = currentProfileRef.current;
+
+    if (!currentProfile) {
+      return; // Exit early if no current profile
+    }
+
+    if (direction === "right") {
+      console.log("Swiped right on: ", currentProfile.name);
+      // Send 'like' action to backend
+      await sendSwipeToBackend(currentProfile.id, "right");
+    } else if (direction === "left") {
+      console.log("Swiped left on: ", currentProfile.name);
+      // Send 'dislike' action to backend
+      await sendSwipeToBackend(currentProfile.id, "left");
+    }
+
+    if (rateRef.current !== null) {
+      console.log(`Rated ${currentProfile.name} with: ${rateRef.current}`);
+      // Handle the rating logic here
+
+      rateRef.current = null; // Reset the ref after using it
+    }
+
+    // Now update the profile state
+    setProfiles((prevProfiles) => {
+      const nextProfiles = prevProfiles.filter(
+        (profile) => profile.id !== currentProfile.id
+      );
+
+      if (nextProfiles.length === 0) {
+        console.log("No more profiles to display");
+        return [];
+      }
+
+      setCurrentProfileIndex(0); // Reset to the first profile in the new list
+      setCurrentImageIndex(0);
+      return nextProfiles;
+    });
+
+    // Reset animation values for the next card
+    position.setValue({ x: 0, y: 0 });
+    nextCardOpacity.setValue(0);
+    nextCardScale.setValue(0.9);
+  };
+
+  const sendSwipeToBackend = async (userId, direction) => {
+    // Replace this with the actual API call
+    console.log(`Sending ${direction} swipe for user ${userId} to backend...`);
+    // Simulate a network request with a timeout
+  };
+
+  const handleRateChange = (number: number) => {
+    rateRef.current = number;
+    console.log("Rate set via ref:", rateRef.current); // For debugging
+  };
+
+  const handleImageTap = () => {
+    setCurrentImageIndex((prevIndex) => {
+      const user = profiles[currentProfileIndex];
+      const nextIndex = prevIndex + 1;
+      return nextIndex < user.images.length ? nextIndex : 0;
+    });
+  };
 
   const panResponder = useRef(
     PanResponder.create({
@@ -83,7 +157,6 @@ export default function SwipeableCardDeck() {
         gestureStartY.current = gestureState.y0;
         swipeDetected.current = false;
 
-        // position.setOffset({ x: position.x._value, y: position.y._value });
         position.setValue({ x: 0, y: 0 });
       },
       onPanResponderMove: (_, gestureState) => {
@@ -113,19 +186,9 @@ export default function SwipeableCardDeck() {
 
         if (swipeDetected.current) {
           if (gestureState.dx > 120) {
-            Animated.spring(position, {
-              toValue: { x: SCREEN_WIDTH + 100, y: gestureState.dy },
-              useNativeDriver: false,
-            }).start(() => {
-              moveToNextCard();
-            });
+            handleSwipeAction("right");
           } else if (gestureState.dx < -120) {
-            Animated.spring(position, {
-              toValue: { x: -SCREEN_WIDTH - 100, y: gestureState.dy },
-              useNativeDriver: false,
-            }).start(() => {
-              moveToNextCard();
-            });
+            handleSwipeAction("left");
           } else {
             Animated.spring(position, {
               toValue: { x: 0, y: 0 },
@@ -153,52 +216,33 @@ export default function SwipeableCardDeck() {
     })
   ).current;
 
-  const moveToNextCard = () => {
-    setCurrentImageIndex(0);
-    // Animated.timing(nextCardOpacity, {
-    //   toValue: 0,
-    //   duration: 0,
-    //   useNativeDriver: true,
-    // }).start();
-
-    // Animated.timing(nextCardScale, {
-    //   toValue: 0.9,
-    //   duration: 0,
-    //   useNativeDriver: true,
-    // }).start();
-
-    position.setValue({ x: 0, y: 0 });
-
-    setCurrentIndex((prevIndex) => prevIndex + 1);
-  };
-
-  const handleImageTap = () => {
-    setCurrentImageIndex((prevIndex) => {
-      const user = users[currentIndex];
-      const nextIndex = prevIndex + 1;
-      return nextIndex < user.images.length ? nextIndex : 0;
-    });
-  };
+  if (profiles.length === 0) {
+    return (
+      <SafeAreaView className="flex-1 bg-gray-100 justify-center items-center">
+        <Text>No more users to show.</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100 justify-center items-center">
       <View
         className="relative justify-center items-center"
         style={{
-          width: SCREEN_WIDTH - 40,
+          width: SCREEN_WIDTH,
           height: SCREEN_WIDTH * 1.2,
           marginVertical: SCREEN_HEIGHT / 2 - (SCREEN_WIDTH * 1.2) / 2, // Center the container vertically
         }}
       >
         {
-          users
+          profiles
             .map((user, index) => {
-              if (index < currentIndex) {
+              if (index < currentProfileIndex) {
                 return null; // Don't render cards that have been swiped away
               }
 
-              const isCurrentCard = index === currentIndex;
-              const isNextCard = index === currentIndex + 1;
+              const isCurrentCard = index === currentProfileIndex;
+              const isNextCard = index === currentProfileIndex + 1;
 
               return (
                 <Animated.View
@@ -262,6 +306,7 @@ export default function SwipeableCardDeck() {
                       <TouchableOpacity
                         className="bg-white p-2 min-w-[30px] rounded-lg "
                         key={index}
+                        onPress={() => handleRateChange(number)}
                       >
                         <Text className="text-center text-gray-800">
                           {number}
