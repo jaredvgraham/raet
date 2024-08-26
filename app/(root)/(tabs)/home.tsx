@@ -7,6 +7,7 @@ import {
   Animated,
   PanResponder,
   Dimensions,
+  ImageBackground,
 } from "react-native";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -216,22 +217,32 @@ export default function SwipeableCardDeck() {
                   ]}
                   className="bg-white rounded-xl shadow-lg"
                 >
-                  <Image
+                  <ImageBackground
                     source={user.images[currentImageIndex].imgUrl}
-                    className="w-full h-3/4 rounded-t-xl"
-                  />
-
-                  <View className="p-5">
-                    <Text className="text-2xl font-bold">
-                      {user.name}, {user.age}
-                    </Text>
-                    <Text className="text-lg text-gray-700">
-                      {user.location}
-                    </Text>
-                    <Text className="text-base text-gray-600 mt-2">
-                      {user.bio}
-                    </Text>
-                  </View>
+                    className="w-full h-full"
+                    style={{
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    <View
+                      className="p-2 text-center "
+                      style={{
+                        backgroundColor: "rgba(0,0,0,0.3)",
+                        borderBottomLeftRadius: 20,
+                        borderBottomRightRadius: 20,
+                      }}
+                    >
+                      <Text className="text-2xl font-bold text-white text-center">
+                        {user.name}, {user.age}
+                      </Text>
+                      <Text className="text-lg text-gray-300 text-center">
+                        {user.location}
+                      </Text>
+                      <Text className="text-base text-gray-200 mt-2 text-center">
+                        {user.bio}
+                      </Text>
+                    </View>
+                  </ImageBackground>
                 </Animated.View>
               );
             })
