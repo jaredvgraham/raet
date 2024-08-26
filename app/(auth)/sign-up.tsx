@@ -17,6 +17,7 @@ import { router } from "expo-router";
 import OAuth from "@/components/OAuth";
 import { useSignUp } from "@clerk/clerk-expo";
 import ReactNativeModal from "react-native-modal";
+import axios from "axios";
 
 const SignUp = () => {
   const { signUp, isLoaded, setActive } = useSignUp();
@@ -71,11 +72,29 @@ const SignUp = () => {
 
       if (completeSignUp.status === "complete") {
         // TODO handle add user to database
-        await setActive({ session: completeSignUp.createdSessionId });
-        setPendingVerification({
-          ...pendingVerification,
-          state: "success",
-        });
+
+        try {
+          const res = await fetch("/(api)/user", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: formData.name,
+              email: formData.email,
+              clerkId: completeSignUp.createdUserId,
+            }),
+          });
+          console.log(res);
+
+          await setActive({ session: completeSignUp.createdSessionId });
+          setPendingVerification({
+            ...pendingVerification,
+            state: "success",
+          });
+        } catch (error) {
+          console.log(error);
+        }
       } else {
         setPendingVerification({
           ...pendingVerification,
@@ -89,7 +108,7 @@ const SignUp = () => {
       setPendingVerification({
         ...pendingVerification,
         state: "faild",
-        error: err.console.errors[0].longMessage,
+        error: err.errors[0].longMessage,
       });
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
