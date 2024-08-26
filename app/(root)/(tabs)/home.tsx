@@ -8,7 +8,9 @@ import {
   PanResponder,
   Dimensions,
   ImageBackground,
+  TouchableOpacity,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -18,7 +20,7 @@ export const users = [
     id: 1,
     name: "Emily Johnson",
     age: 28,
-    location: "New York, NY",
+    location: "5",
     bio: "Love exploring the city, trying new restaurants, and reading mystery novels.",
     images: [
       {
@@ -33,7 +35,7 @@ export const users = [
     id: 2,
     name: "Sophia Martinez",
     age: 26,
-    location: "Los Angeles, CA",
+    location: "10",
     bio: "Actress by day, fitness enthusiast by night. Let's go on an adventure!",
     images: [
       {
@@ -48,7 +50,7 @@ export const users = [
     id: 3,
     name: "Olivia Brown",
     age: 30,
-    location: "Chicago, IL",
+    location: "4",
     bio: "Tech geek and coffee lover. Always up for a good conversation.",
     images: [
       {
@@ -81,7 +83,7 @@ export default function SwipeableCardDeck() {
         gestureStartY.current = gestureState.y0;
         swipeDetected.current = false;
 
-        position.setOffset({ x: position.x._value, y: position.y._value });
+        // position.setOffset({ x: position.x._value, y: position.y._value });
         position.setValue({ x: 0, y: 0 });
       },
       onPanResponderMove: (_, gestureState) => {
@@ -224,25 +226,49 @@ export default function SwipeableCardDeck() {
                       justifyContent: "flex-end",
                     }}
                   >
-                    <View
-                      className="p-2 text-center "
+                    <LinearGradient
+                      colors={["rgba(0,0,0,0.01)", "rgba(0,0,0,0.8)"]}
                       style={{
-                        backgroundColor: "rgba(0,0,0,0.3)",
-                        borderBottomLeftRadius: 20,
-                        borderBottomRightRadius: 20,
+                        padding: 10,
                       }}
                     >
-                      <Text className="text-2xl font-bold text-white text-center">
-                        {user.name}, {user.age}
-                      </Text>
-                      <Text className="text-lg text-gray-300 text-center">
-                        {user.location}
-                      </Text>
-                      <Text className="text-base text-gray-200 mt-2 text-center">
-                        {user.bio}
-                      </Text>
-                    </View>
+                      <View className="text-center ">
+                        <Text className="text-2xl font-bold text-white text-center">
+                          {user.name}, {user.age}
+                        </Text>
+                        <Text className="text-lg text-gray-300 text-center">
+                          Distance: {user.location} Miles
+                        </Text>
+                      </View>
+                    </LinearGradient>
+                    <Image
+                      source={require("../../../assets/images/like.png")}
+                      className="w-10 h-10 absolute bottom-5 right-3"
+                    />
+                    <Image
+                      source={require("../../../assets/images/dislike.png")}
+                      className="w-10 h-10 absolute bottom-5 left-3"
+                    />
                   </ImageBackground>
+                  {/* Rating Buttons */}
+                  <View
+                    className="flex-row justify-between bg-black p-3 "
+                    style={{
+                      borderBottomLeftRadius: 20,
+                      borderBottomRightRadius: 20,
+                    }}
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number, index) => (
+                      <TouchableOpacity
+                        className="bg-white p-2 min-w-[30px] rounded-lg "
+                        key={index}
+                      >
+                        <Text className="text-center text-gray-800">
+                          {number}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
                 </Animated.View>
               );
             })
