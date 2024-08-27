@@ -67,16 +67,88 @@ export const users = [
       },
     ],
   },
+  {
+    id: 1,
+    name: "Emily Johnson",
+    age: 28,
+    location: "5",
+    bio: "Love exploring the city, trying new restaurants, and reading mystery novels.",
+    images: [
+      {
+        imgUrl: require("../../../assets/images/wom2.jpeg"),
+      },
+      {
+        imgUrl: require("../../../assets/images/man2.jpeg"),
+      },
+      {
+        imgUrl: require("../../../assets/images/wom5.jpeg"),
+      },
+      {
+        imgUrl: require("../../../assets/images/wom5alt.jpeg"),
+      },
+    ],
+  },
+];
+
+export const users2 = [
+  {
+    id: 4,
+    name: "Ava Wilson",
+    age: 25,
+    location: "3",
+    bio: "Traveling the world, one country at a time. Looking for a travel buddy!",
+    images: [
+      {
+        imgUrl: require("../../../assets/images/wom3alt.jpeg"),
+      },
+      {
+        imgUrl: require("../../../assets/images/man2.jpeg"),
+      },
+    ],
+  },
+  {
+    id: 5,
+    name: "Isabella Moore",
+    age: 27,
+    location: "7",
+    bio: "Dog lover, foodie, and fitness enthusiast. Let's go on a run!",
+    images: [
+      {
+        imgUrl: require("../../../assets/images/man2.jpeg"),
+      },
+      {
+        imgUrl: require("../../../assets/images/wom5alt.jpeg"),
+      },
+    ],
+  },
+  {
+    id: 6,
+    name: "Mia Taylor",
+    age: 29,
+    location: "2",
+    bio: "Yoga instructor and nature lover. Let's go on a hike!",
+    images: [
+      {
+        imgUrl: require("../../../assets/images/wom2.jpeg"),
+      },
+      {
+        imgUrl: require("../../../assets/images/man2.jpeg"),
+      },
+    ],
+  },
 ];
 
 export default function SwipeableCardDeck() {
   const [profiles, setProfiles] = useState(users);
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const rateRef = useRef<number | null>(null);
+  const [isReady, setIsReady] = useState(false);
 
   const position = useRef(new Animated.ValueXY()).current;
   const nextCardOpacity = useRef(new Animated.Value(0)).current;
+
   const nextCardScale = useRef(new Animated.Value(0.9)).current;
   const touchStartTime = useRef(0);
   const swipeDetected = useRef(false);
@@ -84,9 +156,24 @@ export default function SwipeableCardDeck() {
   const gestureStartY = useRef(0);
 
   const currentProfileRef = useRef(profiles[currentProfileIndex]);
+  const nextProfileRef = useRef(profiles[currentProfileIndex + 1]);
 
   useEffect(() => {
     currentProfileRef.current = profiles[currentProfileIndex];
+    nextProfileRef.current = profiles[currentProfileIndex + 1];
+    console.log(
+      "profiles",
+      profiles.map((profile) => profile.name)
+    );
+
+    setIsReady(false); // Reset readiness state
+    setCurrentImageIndex(0); // Reset image index when profile changes
+
+    setTimeout(() => {
+      setIsReady(true); // Ensure RenderImageIndicators uses the updated profile
+    }, 20);
+
+    console.log("Current profile updated:", currentProfileRef.current);
   }, [profiles, currentProfileIndex]);
 
   const handleSwipeAction = async (direction) => {
@@ -134,7 +221,7 @@ export default function SwipeableCardDeck() {
     // Reset animation values for the next card
     position.setValue({ x: 0, y: 0 });
     nextCardOpacity.setValue(0);
-    nextCardScale.setValue(0.9);
+    nextCardScale.setValue(1);
   };
 
   const sendSwipeToBackend = async (userId, direction) => {
@@ -169,6 +256,22 @@ export default function SwipeableCardDeck() {
         prevIndex === 0 ? prevIndex : prevIndex - 1
       );
     }
+  };
+
+  const triggerSwipe = (direction) => {
+    console.log("Triggering swipe:", direction);
+
+    const finalX =
+      direction === "right" ? SCREEN_WIDTH + 100 : -SCREEN_WIDTH - 100;
+
+    Animated.spring(position, {
+      speed: 5,
+      bounciness: 10,
+      toValue: { x: finalX, y: 0 },
+      useNativeDriver: false,
+    }).start(() => {
+      handleSwipeAction(direction);
+    });
   };
 
   const panResponder = useRef(
@@ -235,18 +338,6 @@ export default function SwipeableCardDeck() {
               toValue: { x: 0, y: 0 },
               useNativeDriver: false,
             }).start();
-
-            Animated.spring(nextCardOpacity, {
-              toValue: 0,
-              friction: 4,
-              useNativeDriver: true,
-            }).start();
-
-            Animated.spring(nextCardScale, {
-              toValue: 0.9,
-              friction: 4,
-              useNativeDriver: true,
-            }).start();
           }
         } else if (touchDuration < 200 && !swipeDetected.current) {
           handleImageTap(gestureState);
@@ -264,6 +355,40 @@ export default function SwipeableCardDeck() {
       </SafeAreaView>
     );
   }
+
+  const RenderImageIndicators = () => {
+    const user = currentProfileRef.current;
+    if (!user.images || !isReady) {
+      return null;
+    }
+    console.log("current user from render image indicator", user);
+
+    return (
+      <View
+        style={{
+          position: "absolute",
+          top: 10,
+          left: 0,
+          right: 0,
+          flexDirection: "row",
+          justifyContent: "center",
+        }}
+      >
+        {user.images.map((_, index) => (
+          <View
+            key={index}
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: index === currentImageIndex ? "white" : "gray",
+              marginHorizontal: 3,
+            }}
+          />
+        ))}
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100 justify-center items-center">
@@ -283,7 +408,6 @@ export default function SwipeableCardDeck() {
               }
 
               const isCurrentCard = index === currentProfileIndex;
-              const isNextCard = index === currentProfileIndex + 1;
 
               return (
                 <Animated.View
@@ -297,9 +421,6 @@ export default function SwipeableCardDeck() {
                       zIndex: -index,
                     },
                     isCurrentCard && position.getLayout(),
-                    isNextCard && {
-                      transform: [{ scale: nextCardScale }],
-                    },
                   ]}
                   className="bg-white rounded-xl shadow-lg"
                 >
@@ -315,6 +436,7 @@ export default function SwipeableCardDeck() {
                       justifyContent: "flex-end",
                     }}
                   >
+                    {isCurrentCard && <RenderImageIndicators />}
                     <LinearGradient
                       colors={["rgba(0,0,0,0.01)", "rgba(0,0,0,0.8)"]}
                       style={{
@@ -330,14 +452,19 @@ export default function SwipeableCardDeck() {
                         </Text>
                       </View>
                     </LinearGradient>
-                    <Image
-                      source={require("../../../assets/images/like.png")}
-                      className="w-10 h-10 absolute bottom-5 right-3"
-                    />
-                    <Image
-                      source={require("../../../assets/images/dislike.png")}
-                      className="w-10 h-10 absolute bottom-5 left-3"
-                    />
+                    <TouchableOpacity onPress={() => triggerSwipe("right")}>
+                      <Image
+                        source={require("../../../assets/images/like.png")}
+                        className="w-10 h-10 absolute bottom-5 right-3"
+                      />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => triggerSwipe("left")}>
+                      <Image
+                        source={require("../../../assets/images/dislike.png")}
+                        className="w-10 h-10 absolute bottom-5 left-3"
+                      />
+                    </TouchableOpacity>
                   </ImageBackground>
                   {/* Rating Buttons */}
                   <View
