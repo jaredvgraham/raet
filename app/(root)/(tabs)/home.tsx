@@ -29,6 +29,12 @@ export const users = [
       {
         imgUrl: require("../../../assets/images/man2.jpeg"),
       },
+      {
+        imgUrl: require("../../../assets/images/wom5.jpeg"),
+      },
+      {
+        imgUrl: require("../../../assets/images/wom5alt.jpeg"),
+      },
     ],
   },
   {
@@ -84,6 +90,8 @@ export default function SwipeableCardDeck() {
   }, [profiles, currentProfileIndex]);
 
   const handleSwipeAction = async (direction) => {
+    console.log("Handling swipe starting...");
+
     const currentProfile = currentProfileRef.current;
 
     if (!currentProfile) {
@@ -140,12 +148,27 @@ export default function SwipeableCardDeck() {
     console.log("Rate set via ref:", rateRef.current); // For debugging
   };
 
-  const handleImageTap = () => {
-    setCurrentImageIndex((prevIndex) => {
-      const user = profiles[currentProfileIndex];
-      const nextIndex = prevIndex + 1;
-      return nextIndex < user.images.length ? nextIndex : 0;
-    });
+  const handleImageTap = (gestureState) => {
+    const user = currentProfileRef.current;
+    const screenWidthHalf = SCREEN_WIDTH / 2;
+    console.log("getureState.x0", gestureState.x0);
+    console.log("Screen width half:", screenWidthHalf);
+    console.log(typeof gestureState.x0);
+    console.log(typeof screenWidthHalf);
+
+    console.log(gestureState.x0 > screenWidthHalf);
+
+    if (gestureState.x0 > screenWidthHalf) {
+      console.log(user.images.length, "is len");
+
+      setCurrentImageIndex((prevIndex) =>
+        prevIndex === user.images.length - 1 ? prevIndex : prevIndex + 1
+      );
+    } else {
+      setCurrentImageIndex((prevIndex) =>
+        prevIndex === 0 ? prevIndex : prevIndex - 1
+      );
+    }
   };
 
   const panResponder = useRef(
@@ -185,10 +208,28 @@ export default function SwipeableCardDeck() {
         const touchDuration = Date.now() - touchStartTime.current;
 
         if (swipeDetected.current) {
-          if (gestureState.dx > 120) {
-            handleSwipeAction("right");
-          } else if (gestureState.dx < -120) {
-            handleSwipeAction("left");
+          if (gestureState.dx > 60) {
+            Animated.spring(position, {
+              speed: 50,
+              bounciness: 10,
+
+              toValue: { x: SCREEN_WIDTH + 100, y: gestureState.dy },
+
+              useNativeDriver: false,
+            }).start(() => {
+              handleSwipeAction("right");
+            });
+          } else if (gestureState.dx < -60) {
+            Animated.spring(position, {
+              speed: 5,
+              bounciness: 10,
+
+              toValue: { x: -SCREEN_WIDTH - 100, y: gestureState.dy },
+
+              useNativeDriver: false,
+            }).start(() => {
+              handleSwipeAction("left");
+            });
           } else {
             Animated.spring(position, {
               toValue: { x: 0, y: 0 },
@@ -208,7 +249,7 @@ export default function SwipeableCardDeck() {
             }).start();
           }
         } else if (touchDuration < 200 && !swipeDetected.current) {
-          handleImageTap();
+          handleImageTap(gestureState);
         }
 
         position.flattenOffset();
