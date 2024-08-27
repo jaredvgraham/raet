@@ -1,5 +1,5 @@
 import { Stack, Tabs } from "expo-router";
-import { View } from "react-native";
+import { View, Image } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 type TabIconProps = {
@@ -11,6 +11,19 @@ const TabIcon = ({ focused, icon }: TabIconProps) => {
   return (
     <View>
       <Icon name={icon} size={30} color={focused ? "black" : "gray"} />
+    </View>
+  );
+};
+const CustomHeader = () => {
+  return (
+    <View
+      style={{ flexDirection: "row", alignItems: "center", paddingLeft: 20 }}
+    >
+      <Image
+        source={require("../../../assets/r-logo.png")} // Update this path to your logo
+        style={{ width: 40, height: 40 }}
+        resizeMode="contain"
+      />
     </View>
   );
 };
@@ -31,6 +44,7 @@ const Layout = () => {
           marginHorizontal: 20,
           marginBottom: 10,
           height: 68,
+
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",

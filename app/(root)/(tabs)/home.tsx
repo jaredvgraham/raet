@@ -399,13 +399,13 @@ export default function SwipeableCardDeck() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100 justify-center items-center">
+    <SafeAreaView className="flex-1   items-center ">
       <View
-        className="relative justify-center items-center"
+        className="relative justify-center   items-center"
         style={{
-          width: SCREEN_WIDTH,
-          height: SCREEN_WIDTH * 1.2,
-          marginVertical: SCREEN_HEIGHT / 2 - (SCREEN_WIDTH * 1.2) / 2, // Center the container vertically
+          width: SCREEN_WIDTH - 1,
+          height: SCREEN_HEIGHT * 0.65,
+          marginVertical: "auto", // Center the container vertically
         }}
       >
         {
@@ -430,7 +430,7 @@ export default function SwipeableCardDeck() {
                     },
                     isCurrentCard && position.getLayout(),
                   ]}
-                  className="bg-white rounded-xl shadow-lg"
+                  className=" rounded-2xl shadow-lg  "
                 >
                   <ImageBackground
                     source={
@@ -439,7 +439,7 @@ export default function SwipeableCardDeck() {
                             .imgUrl
                         : user.images[0].imgUrl
                     }
-                    className="w-full h-full"
+                    className="w-full h-full overflow-hidden rounded-t-2xl bg-black"
                     style={{
                       justifyContent: "flex-end",
                     }}
