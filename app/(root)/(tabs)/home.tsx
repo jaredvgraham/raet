@@ -257,14 +257,18 @@ export default function SwipeableCardDeck() {
                     },
                     isCurrentCard && position.getLayout(),
                     isNextCard && {
-                      opacity: nextCardOpacity,
                       transform: [{ scale: nextCardScale }],
                     },
                   ]}
                   className="bg-white rounded-xl shadow-lg"
                 >
                   <ImageBackground
-                    source={user.images[currentImageIndex].imgUrl}
+                    source={
+                      currentProfileRef.current.id === user.id
+                        ? currentProfileRef.current.images[currentImageIndex]
+                            .imgUrl
+                        : user.images[0].imgUrl
+                    }
                     className="w-full h-full"
                     style={{
                       justifyContent: "flex-end",
