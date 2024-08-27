@@ -165,6 +165,9 @@ export default function SwipeableCardDeck() {
       "profiles",
       profiles.map((profile) => profile.name)
     );
+    if (profiles.length === 1) {
+      fetchMoreProfiles();
+    }
 
     setIsReady(false); // Reset readiness state
     setCurrentImageIndex(0); // Reset image index when profile changes
@@ -172,9 +175,16 @@ export default function SwipeableCardDeck() {
     setTimeout(() => {
       setIsReady(true); // Ensure RenderImageIndicators uses the updated profile
     }, 20);
-
-    console.log("Current profile updated:", currentProfileRef.current);
   }, [profiles, currentProfileIndex]);
+
+  const fetchMoreProfiles = () => {
+    console.log("Fetching more profiles...");
+
+    // Simulate a network request with a timeout
+    setTimeout(() => {
+      setProfiles((prevProfiles) => [...prevProfiles, ...users2]);
+    }, 1000);
+  };
 
   const handleSwipeAction = async (direction) => {
     console.log("Handling swipe starting...");
@@ -186,14 +196,13 @@ export default function SwipeableCardDeck() {
     }
 
     if (direction === "right") {
-      console.log("Swiped right on: ", currentProfile.name);
       // Send 'like' action to backend
       await sendSwipeToBackend(currentProfile.id, "right");
     } else if (direction === "left") {
-      console.log("Swiped left on: ", currentProfile.name);
       // Send 'dislike' action to backend
       await sendSwipeToBackend(currentProfile.id, "left");
     }
+    console.log("profiles", profiles.length);
 
     if (rateRef.current !== null) {
       console.log(`Rated ${currentProfile.name} with: ${rateRef.current}`);
@@ -361,7 +370,6 @@ export default function SwipeableCardDeck() {
     if (!user.images || !isReady) {
       return null;
     }
-    console.log("current user from render image indicator", user);
 
     return (
       <View
