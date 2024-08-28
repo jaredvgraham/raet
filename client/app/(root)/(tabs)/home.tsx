@@ -397,6 +397,7 @@ export default function SwipeableCardDeck() {
       </View>
     );
   };
+  //
 
   return (
     <SafeAreaView className="flex-1   items-center ">
