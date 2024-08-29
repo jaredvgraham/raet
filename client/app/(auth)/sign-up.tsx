@@ -18,9 +18,11 @@ import OAuth from "@/components/OAuth";
 import { useSignUp } from "@clerk/clerk-expo";
 import ReactNativeModal from "react-native-modal";
 import axios from "axios";
+import { axiosPublic } from "@/lib/axios";
 
 const SignUp = () => {
   const { signUp, isLoaded, setActive } = useSignUp();
+
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     name: "",
@@ -75,17 +77,20 @@ const SignUp = () => {
         // TODO handle add user to database
 
         try {
-          const res = await fetch("/(api)/user", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: formData.name,
-              email: formData.email,
-              clerkId: completeSignUp.createdUserId,
-            }),
-          });
+          const res = await fetch(
+            `${process.env.EXPO_PUBLIC_API_URL}/api/user/sign-up`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name: formData.name,
+                email: formData.email,
+                clerkId: completeSignUp.createdUserId,
+              }),
+            }
+          );
           console.log(res);
 
           await setActive({ session: completeSignUp.createdSessionId });

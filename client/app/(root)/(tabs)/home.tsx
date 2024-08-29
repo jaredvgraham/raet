@@ -9,6 +9,7 @@ import {
   Dimensions,
   ImageBackground,
   TouchableOpacity,
+  PanResponderGestureState,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -186,7 +187,7 @@ export default function SwipeableCardDeck() {
     }, 1000);
   };
 
-  const handleSwipeAction = async (direction) => {
+  const handleSwipeAction = async (direction: string) => {
     console.log("Handling swipe starting...");
 
     const currentProfile = currentProfileRef.current;
@@ -233,7 +234,7 @@ export default function SwipeableCardDeck() {
     nextCardScale.setValue(1);
   };
 
-  const sendSwipeToBackend = async (userId, direction) => {
+  const sendSwipeToBackend = async (userId: string, direction: string) => {
     // Replace this with the actual API call
     console.log(`Sending ${direction} swipe for user ${userId} to backend...`);
     // Simulate a network request with a timeout
@@ -244,7 +245,7 @@ export default function SwipeableCardDeck() {
     console.log("Rate set via ref:", rateRef.current); // For debugging
   };
 
-  const handleImageTap = (gestureState) => {
+  const handleImageTap = (gestureState: PanResponderGestureState) => {
     const user = currentProfileRef.current;
     const screenWidthHalf = SCREEN_WIDTH / 2;
     console.log("getureState.x0", gestureState.x0);
@@ -267,7 +268,7 @@ export default function SwipeableCardDeck() {
     }
   };
 
-  const triggerSwipe = (direction) => {
+  const triggerSwipe = (direction: string) => {
     console.log("Triggering swipe:", direction);
 
     const finalX =
