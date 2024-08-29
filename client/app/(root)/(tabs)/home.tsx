@@ -13,9 +13,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Header from "@/components/header";
-
-const SCREEN_WIDTH = Dimensions.get("window").width;
-const SCREEN_HEIGHT = Dimensions.get("window").height;
+import { getUserLocation } from "@/utils/contants";
 
 export const users = [
   {
@@ -140,6 +138,9 @@ export const users2 = [
   },
 ];
 
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const SCREEN_HEIGHT = Dimensions.get("window").height;
+
 export default function SwipeableCardDeck() {
   const [profiles, setProfiles] = useState(users);
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
@@ -161,6 +162,11 @@ export default function SwipeableCardDeck() {
   const nextProfileRef = useRef(profiles[currentProfileIndex + 1]);
 
   useEffect(() => {
+    const location = getUserLocation();
+    console.log("location", location);
+  }, []);
+
+  useEffect(() => {
     currentProfileRef.current = profiles[currentProfileIndex];
     nextProfileRef.current = profiles[currentProfileIndex + 1];
     console.log(
@@ -176,7 +182,7 @@ export default function SwipeableCardDeck() {
 
     setTimeout(() => {
       setIsReady(true); // Ensure RenderImageIndicators uses the updated profile
-    }, 20);
+    }, 10);
   }, [profiles, currentProfileIndex]);
 
   const fetchMoreProfiles = () => {
@@ -407,102 +413,95 @@ export default function SwipeableCardDeck() {
       <View
         className="relative    items-center"
         style={{
-          width: SCREEN_WIDTH - 1,
+          width: SCREEN_WIDTH - 0.4,
           height: SCREEN_HEIGHT * 0.7,
           // Center the container vertically
         }}
       >
-        {
-          profiles
-            .map((user, index) => {
-              if (index < currentProfileIndex) {
-                return null; // Don't render cards that have been swiped away
-              }
+        {profiles.map((user, index) => {
+          if (index < currentProfileIndex) {
+            return null; // Don't render cards that have been swiped away
+          }
 
-              const isCurrentCard = index === currentProfileIndex;
+          const isCurrentCard = index === currentProfileIndex;
 
-              return (
-                <Animated.View
-                  key={user.id}
-                  {...(isCurrentCard ? panResponder.panHandlers : {})}
-                  style={[
-                    {
-                      position: "absolute",
-                      width: "100%",
-                      height: "100%",
-                      zIndex: -index,
-                    },
-                    isCurrentCard && position.getLayout(),
-                  ]}
-                  className=" rounded-2xl shadow-lg  "
+          return (
+            <Animated.View
+              key={user.id}
+              {...(isCurrentCard ? panResponder.panHandlers : {})}
+              style={[
+                {
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                  zIndex: -index,
+                },
+                isCurrentCard && position.getLayout(),
+              ]}
+              className=" rounded-2xl shadow-lg  "
+            >
+              <ImageBackground
+                source={
+                  currentProfileRef.current.id === user.id
+                    ? currentProfileRef.current.images[currentImageIndex].imgUrl
+                    : user.images[0].imgUrl
+                }
+                className="w-full h-full overflow-hidden rounded-t-2xl bg-black"
+                style={{
+                  justifyContent: "flex-end",
+                }}
+              >
+                {isCurrentCard && <RenderImageIndicators />}
+                <LinearGradient
+                  colors={["rgba(0,0,0,0.01)", "rgba(0,0,0,0.8)"]}
+                  style={{
+                    padding: 10,
+                  }}
                 >
-                  <ImageBackground
-                    source={
-                      currentProfileRef.current.id === user.id
-                        ? currentProfileRef.current.images[currentImageIndex]
-                            .imgUrl
-                        : user.images[0].imgUrl
-                    }
-                    className="w-full h-full overflow-hidden rounded-t-2xl bg-black"
-                    style={{
-                      justifyContent: "flex-end",
-                    }}
-                  >
-                    {isCurrentCard && <RenderImageIndicators />}
-                    <LinearGradient
-                      colors={["rgba(0,0,0,0.01)", "rgba(0,0,0,0.8)"]}
-                      style={{
-                        padding: 10,
-                      }}
-                    >
-                      <View className="text-center ">
-                        <Text className="text-2xl font-bold text-white text-center">
-                          {user.name}, {user.age}
-                        </Text>
-                        <Text className="text-lg text-gray-300 text-center">
-                          Distance: {user.location} Miles
-                        </Text>
-                      </View>
-                    </LinearGradient>
-                    <TouchableOpacity onPress={() => triggerSwipe("right")}>
-                      <Image
-                        source={require("../../../assets/images/like.png")}
-                        className="w-10 h-10 absolute bottom-5 right-3"
-                      />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => triggerSwipe("left")}>
-                      <Image
-                        source={require("../../../assets/images/dislike.png")}
-                        className="w-10 h-10 absolute bottom-5 left-3"
-                      />
-                    </TouchableOpacity>
-                  </ImageBackground>
-                  {/* Rating Buttons */}
-                  <View
-                    className="flex-row justify-between bg-black p-3 "
-                    style={{
-                      borderBottomLeftRadius: 20,
-                      borderBottomRightRadius: 20,
-                    }}
-                  >
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number, index) => (
-                      <TouchableOpacity
-                        className="bg-white p-2 min-w-[30px] rounded-lg "
-                        key={index}
-                        onPress={() => handleRateChange(number)}
-                      >
-                        <Text className="text-center text-gray-800">
-                          {number}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
+                  <View className="text-center ">
+                    <Text className="text-2xl font-bold text-white text-center">
+                      {user.name}, {user.age}
+                    </Text>
+                    <Text className="text-lg text-gray-300 text-center">
+                      Distance: {user.location} Miles
+                    </Text>
                   </View>
-                </Animated.View>
-              );
-            })
-            .reverse() /* Ensure the first card is rendered on top */
-        }
+                </LinearGradient>
+                <TouchableOpacity onPress={() => triggerSwipe("right")}>
+                  <Image
+                    source={require("../../../assets/images/like.png")}
+                    className="w-10 h-10 absolute bottom-5 right-3"
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => triggerSwipe("left")}>
+                  <Image
+                    source={require("../../../assets/images/dislike.png")}
+                    className="w-10 h-10 absolute bottom-5 left-3"
+                  />
+                </TouchableOpacity>
+              </ImageBackground>
+              {/* Rating Buttons */}
+              <View
+                className="flex-row justify-between bg-black p-3 "
+                style={{
+                  borderBottomLeftRadius: 20,
+                  borderBottomRightRadius: 20,
+                }}
+              >
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number, index) => (
+                  <TouchableOpacity
+                    className="bg-white p-2 min-w-[30px] rounded-lg "
+                    key={index}
+                    onPress={() => handleRateChange(number)}
+                  >
+                    <Text className="text-center text-gray-800">{number}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </Animated.View>
+          );
+        })}
       </View>
     </SafeAreaView>
   );
