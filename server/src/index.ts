@@ -29,9 +29,11 @@ app.use("/api/user", userRoutes);
 
 app.get(
   "/api/chat",
-  ClerkExpressRequireAuth(),
+  ClerkExpressRequireAuth,
   (req: RequireAuthProp<Request>, res: Response) => {
-    console.log("backend hit", req.headers.authorization);
+    console.log("backend hit", req.auth);
+    console.log("user id is", req.auth.userId);
+
     res.json(req.headers.authorization);
   }
 );

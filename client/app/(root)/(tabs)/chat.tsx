@@ -5,8 +5,13 @@ import { useAuthFetch } from "@/hooks/Privatefetch";
 
 const Chat = () => {
   const authFetch = useAuthFetch();
+  const { session } = useSession();
+  console.log("session", session?.user.externalId);
+
   useEffect(() => {
     const fetchData = async () => {
+      console.log("fetching data");
+
       const response = await authFetch("/api/chat", {
         method: "GET",
         headers: {

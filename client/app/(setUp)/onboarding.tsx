@@ -1,0 +1,188 @@
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+} from "react-native";
+import React, { useRef, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import Swiper from "react-native-swiper";
+import DateTimePicker from "@react-native-community/datetimepicker";
+
+const Onboarding = () => {
+  const swiperRef = useRef<Swiper>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // State for form fields
+  const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
+  const [gender, setGender] = useState<string>("");
+  const [interests, setInterests] = useState<string[]>([]);
+  const [customInterest, setCustomInterest] = useState<string>("");
+
+  // Predefined interests
+  const predefinedInterests = [
+    "Sports",
+    "Music",
+    "Movies",
+    "Travel",
+    "Books",
+    "Art",
+  ];
+
+  const handleAddInterest = (interest: string) => {
+    if (!interests.includes(interest)) {
+      setInterests([...interests, interest]);
+    }
+  };
+
+  const handleRemoveInterest = (interest: string) => {
+    setInterests(interests.filter((item) => item !== interest));
+  };
+
+  const handleCustomInterest = () => {
+    if (customInterest.trim()) {
+      handleAddInterest(customInterest.trim());
+      setCustomInterest("");
+    }
+  };
+
+  const handleSubmit = () => {
+    console.log("User Data Submitted:", { dateOfBirth, gender, interests });
+  };
+
+  const data = [
+    {
+      title: "What's your date of birth?",
+      component: (
+        <View className="w-full">
+          <Text className="mb-4 text-lg">Select your date of birth</Text>
+          <DateTimePicker
+            value={dateOfBirth || new Date()}
+            mode="date"
+            display="spinner"
+            onChange={(event, selectedDate) =>
+              setDateOfBirth(selectedDate || dateOfBirth)
+            }
+            style={{ width: "100%" }}
+          />
+        </View>
+      ),
+    },
+    {
+      title: "What's your gender?",
+      component: (
+        <View className="flex flex-row justify-around w-full">
+          <TouchableOpacity
+            className={`p-4 rounded-lg ${
+              gender === "Male" ? "bg-blue-500" : "bg-gray-300"
+            }`}
+            onPress={() => setGender("Male")}
+          >
+            <Text className="text-white">Male</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className={`p-4 rounded-lg ${
+              gender === "Female" ? "bg-pink-500" : "bg-gray-300"
+            }`}
+            onPress={() => setGender("Female")}
+          >
+            <Text className="text-white">Female</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className={`p-4 rounded-lg ${
+              gender === "Other" ? "bg-green-500" : "bg-gray-300"
+            }`}
+            onPress={() => setGender("Other")}
+          >
+            <Text className="text-white">Other</Text>
+          </TouchableOpacity>
+        </View>
+      ),
+    },
+    {
+      title: "What are your interests?",
+      component: (
+        <View className="w-full">
+          <ScrollView horizontal className="flex flex-row mb-4">
+            {predefinedInterests.map((interest) => (
+              <TouchableOpacity
+                key={interest}
+                className={`px-4 py-2 mr-2 rounded-full ${
+                  interests.includes(interest) ? "bg-green-500" : "bg-gray-300"
+                }`}
+                onPress={() => handleAddInterest(interest)}
+              >
+                <Text className="text-white">{interest}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          <View className="flex flex-row items-center">
+            <TextInput
+              value={customInterest}
+              onChangeText={setCustomInterest}
+              placeholder="Add your own..."
+              className="flex-1 p-4 text-lg border border-gray-300 rounded-lg bg-white mr-2"
+            />
+            <TouchableOpacity
+              className="p-4 bg-blue-500 rounded-lg"
+              onPress={handleCustomInterest}
+            >
+              <Text className="text-white">Add</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView className="mt-4">
+            {interests.map((interest) => (
+              <TouchableOpacity
+                key={interest}
+                className="px-4 py-2 mr-2 mb-2 rounded-full bg-blue-500"
+                onPress={() => handleRemoveInterest(interest)}
+              >
+                <Text className="text-white">{interest}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      ),
+    },
+  ];
+
+  return (
+    <SafeAreaView className="flex h-full items-center justify-between bg-white">
+      <Swiper
+        ref={swiperRef}
+        loop={false}
+        dot={<View className="w-4 h-4 bg-gray-300 rounded-full mx-1" />}
+        activeDot={<View className="w-4 h-4 bg-black rounded-full mx-1" />}
+        onIndexChanged={(index) => setActiveIndex(index)}
+      >
+        {data.map((item, index) => (
+          <View
+            key={index}
+            className="flex flex-col items-center justify-center h-3/4 px-6"
+          >
+            <Text className="text-3xl font-bold mb-6">{item.title}</Text>
+            {item.component}
+          </View>
+        ))}
+      </Swiper>
+      <TouchableOpacity
+        className="w-4/5 p-4 bg-green-500 rounded-lg justify-center items-center mb-6"
+        onPress={() => {
+          if (activeIndex === data.length - 1) {
+            handleSubmit();
+          } else {
+            swiperRef.current?.scrollBy(1);
+          }
+        }}
+      >
+        <Text className="text-white text-lg font-bold">
+          {activeIndex === data.length - 1 ? "Get Started" : "Next"}
+        </Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+};
+
+export default Onboarding;

@@ -23,3 +23,12 @@ export const createUser = async (
 
   return user;
 };
+
+export const getUserProfile = async (userId: string): Promise<IUser> => {
+  const user = await User.findOne({ clerkId: userId });
+
+  if (!user) {
+    throw new CustomError("User not found", 404); // 404 Not Found
+  }
+  return user;
+};

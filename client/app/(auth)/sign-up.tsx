@@ -102,7 +102,9 @@ const SignUp = () => {
           if (error.errors[0].code === "session_exists") {
             setError("User already exists");
           }
-          console.log(error);
+          if (error.errors[0].code === "form_code_incorrect") {
+            setError("Invalid code");
+          }
         }
       } else {
         setPendingVerification({
