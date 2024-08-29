@@ -22,6 +22,7 @@ const Onboarding = () => {
   // State for form fields
   const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
   const [gender, setGender] = useState<string>("");
+  const [preferredGender, setpreferredGender] = useState<string>("");
   const [interests, setInterests] = useState<string[]>([]);
   const [customInterest, setCustomInterest] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +55,12 @@ const Onboarding = () => {
   };
 
   const handleSubmit = async () => {
-    console.log("User Data Submitted:", { dateOfBirth, gender, interests });
+    console.log("User Data Submitted:", {
+      dateOfBirth,
+      gender,
+      interests,
+      preferredGender,
+    });
     try {
       const res = await authFetch("/api/user/profile", {
         method: "PATCH",
@@ -65,6 +71,7 @@ const Onboarding = () => {
           dateOfBirth,
           gender,
           interests,
+          preferredGender,
         }),
       });
       console.log(res);
@@ -110,6 +117,38 @@ const Onboarding = () => {
             onPress={() => setGender("Female")}
           >
             <Text className="text-white text-center">Female</Text>
+          </TouchableOpacity>
+        </View>
+      ),
+    },
+    {
+      title: "Who should we show you?",
+      component: (
+        <View className="flex flex-row justify-around w-full  ">
+          <TouchableOpacity
+            className={`p-4 rounded-lg w-4/12 m-2 ${
+              gender === "Male" ? "bg-blue-500" : "bg-gray-300"
+            }`}
+            onPress={() => setpreferredGender("Male")}
+          >
+            <Text className="text-white text-center">Male</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className={`p-4 rounded-lg w-4/12 m-2 text-center ${
+              gender === "Female" ? "bg-pink-500" : "bg-gray-300"
+            }`}
+            onPress={() => setpreferredGender("Female")}
+          >
+            <Text className="text-white text-center">Female</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className={`p-4 rounded-lg w-4/12 m-2 text-center ${
+              gender === "Both" ? "bg-indigo-300" : "bg-gray-300"
+            }`}
+            onPress={() => setpreferredGender("Female")}
+          >
+            <Text className="text-white text-center">Both</Text>
           </TouchableOpacity>
         </View>
       ),
