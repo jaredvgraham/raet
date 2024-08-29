@@ -29,10 +29,20 @@ export const useAuthFetch = () => {
         return null;
       }
 
-      // Return the response if not 401
+      if (!response.ok) {
+        const errorData = await response.json(); // Parse error response body
+        const error = new Error(errorData.message || "Something went wrong");
+        console.log("error", error);
+
+        (error as any).status = response.status;
+        throw error;
+      }
+
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error during protected fetch:", error);
+      console.log("error msg", error.message, "ENDDDDDD");
+
       throw error;
     }
   };

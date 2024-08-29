@@ -24,6 +24,27 @@ export const createUser = async (
   return user;
 };
 
+export const createUserProfile = async (
+  userId: string,
+  dateOfBirth: Date,
+  gender: string,
+  interests: string[]
+): Promise<IUser> => {
+  const user = await User.findOne({ clerkId: userId });
+
+  if (!user) {
+    throw new CustomError("User not found", 404);
+  }
+
+  user.dob = new Date(dateOfBirth);
+  user.gender = gender;
+  user.interests = interests;
+
+  await user.save();
+
+  return user;
+};
+
 export const getUserProfile = async (userId: string): Promise<IUser> => {
   const user = await User.findOne({ clerkId: userId });
 

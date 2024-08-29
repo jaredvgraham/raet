@@ -1,8 +1,13 @@
 // src/controllers/userController.ts
 import { Request, Response, NextFunction } from "express";
-import { createUser, getUserProfile } from "../services/userService";
+import {
+  createUser,
+  createUserProfile,
+  getUserProfile,
+} from "../services/userService";
 import clerkClient from "../config/clerk";
 import { RequireAuthProp } from "@clerk/clerk-sdk-node";
+import { calculateAge } from "../utils/calculateAge";
 
 export const registerUser = async (
   req: Request,
@@ -39,6 +44,42 @@ export const registerUser = async (
   }
 };
 
+export const createProfile = async (
+  req: RequireAuthProp<Request>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { userId } = req.auth;
+    const { dateOfBirth, gender, interests } = req.body;
+
+    console.log("req.body", req.body);
+
+    if (!dateOfBirth || !gender || !interests) {
+      return res.status(400).json({ message: "All fields are required" }); // 400 Bad Request
+    }
+
+    const age = calculateAge(dateOfBirth);
+
+    if (age < 18) {
+      return res.status(400).json({ message: "You must be 18 or older" }); // 400 Bad Request
+    }
+
+    const profile = await createUserProfile(
+      userId,
+      dateOfBirth,
+      gender,
+      interests
+    );
+    console.log("profile", profile);
+
+    res.status(201).json({ message: "Profile created successfully", profile });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
 export const getProfile = async (
   req: RequireAuthProp<Request>,
   res: Response,
@@ -49,7 +90,15 @@ export const getProfile = async (
     console.log("userId", userId);
     const profile = await getUserProfile(userId);
     const hasProfile = profile.gender ? true : false;
-    res.status(200).json({ profile, hasProfile });
+
+    const age = calculateAge(profile.dob);
+
+    const updatedProfile = {
+      ...profile.toJSON(),
+      age,
+    };
+
+    res.status(200).json({ updatedProfile, hasProfile });
   } catch (error) {
     next(error); // Pass any unexpected errors to the error handler
   }

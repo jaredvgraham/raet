@@ -14,21 +14,22 @@ const Home = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (isSignedIn) {
-        try {
-          const response = await authFetch("/api/user/profile", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-          const data = await response?.json();
-
-          setHasProfile(data?.hasProfile ?? false);
-        } catch (error) {
-          console.error("Error fetching profile:", error);
+      try {
+        const response = await authFetch("/api/user/profile", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response?.json();
+        if (data.hasProfile === true) {
+          setHasProfile(true);
+        } else {
           setHasProfile(false);
         }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        setHasProfile(false);
       }
     };
 

@@ -12,6 +12,7 @@ import {
   PanResponderGestureState,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import Header from "@/components/header";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -402,12 +403,13 @@ export default function SwipeableCardDeck() {
 
   return (
     <SafeAreaView className="flex-1   items-center ">
+      <Header />
       <View
-        className="relative justify-center   items-center"
+        className="relative    items-center"
         style={{
           width: SCREEN_WIDTH - 1,
-          height: SCREEN_HEIGHT * 0.65,
-          marginVertical: "auto", // Center the container vertically
+          height: SCREEN_HEIGHT * 0.7,
+          // Center the container vertically
         }}
       >
         {

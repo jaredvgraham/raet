@@ -10,8 +10,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import Swiper from "react-native-swiper";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useAuthFetch } from "@/hooks/Privatefetch";
+import { formatError } from "@/utils";
 
 const Onboarding = () => {
+  const authFetch = useAuthFetch();
+
   const swiperRef = useRef<Swiper>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -20,6 +24,7 @@ const Onboarding = () => {
   const [gender, setGender] = useState<string>("");
   const [interests, setInterests] = useState<string[]>([]);
   const [customInterest, setCustomInterest] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
 
   // Predefined interests
   const predefinedInterests = [
@@ -48,8 +53,24 @@ const Onboarding = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log("User Data Submitted:", { dateOfBirth, gender, interests });
+    try {
+      const res = await authFetch("/api/user/profile", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dateOfBirth,
+          gender,
+          interests,
+        }),
+      });
+      console.log(res);
+    } catch (error: any) {
+      setError(formatError(error));
+    }
   };
 
   const data = [
@@ -73,30 +94,22 @@ const Onboarding = () => {
     {
       title: "What's your gender?",
       component: (
-        <View className="flex flex-row justify-around w-full">
+        <View className="flex flex-row justify-around w-full  ">
           <TouchableOpacity
-            className={`p-4 rounded-lg ${
+            className={`p-4 rounded-lg w-4/12 m-2 ${
               gender === "Male" ? "bg-blue-500" : "bg-gray-300"
             }`}
             onPress={() => setGender("Male")}
           >
-            <Text className="text-white">Male</Text>
+            <Text className="text-white text-center">Male</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className={`p-4 rounded-lg ${
+            className={`p-4 rounded-lg w-4/12 m-2 text-center ${
               gender === "Female" ? "bg-pink-500" : "bg-gray-300"
             }`}
             onPress={() => setGender("Female")}
           >
-            <Text className="text-white">Female</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className={`p-4 rounded-lg ${
-              gender === "Other" ? "bg-green-500" : "bg-gray-300"
-            }`}
-            onPress={() => setGender("Other")}
-          >
-            <Text className="text-white">Other</Text>
+            <Text className="text-white text-center">Female</Text>
           </TouchableOpacity>
         </View>
       ),
@@ -142,6 +155,7 @@ const Onboarding = () => {
                 <Text className="text-white">{interest}</Text>
               </TouchableOpacity>
             ))}
+            {error && <Text className="text-red-500 text-sm">{error}</Text>}
           </ScrollView>
         </View>
       ),

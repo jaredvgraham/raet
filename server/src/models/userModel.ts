@@ -5,7 +5,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   clerkId: string;
-  age?: number;
+  dob: Date;
   gender?: string;
   location?: {
     type: string;
@@ -25,7 +25,7 @@ const userSchema = new Schema<IUser>({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   clerkId: { type: String, required: true, unique: true, index: true },
-  age: { type: Number, required: false },
+  dob: { type: Date, required: false },
   gender: { type: String, required: false },
   location: {
     type: { type: String, enum: ["Point"], required: false },
