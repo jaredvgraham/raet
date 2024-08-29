@@ -4,6 +4,7 @@ import {
   createProfile,
   getProfile,
   registerUser,
+  updateLocation,
 } from "../controllers/userController";
 import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 
@@ -14,5 +15,7 @@ router.post("/sign-up", registerUser);
 
 router.get("/profile", ClerkExpressRequireAuth(), getProfile);
 router.patch("/profile", ClerkExpressRequireAuth(), createProfile);
+
+router.patch("/location", ClerkExpressRequireAuth(), updateLocation);
 
 export default router;

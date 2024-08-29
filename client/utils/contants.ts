@@ -10,19 +10,27 @@ export async function getUserLocation() {
   let { status } = await Location.requestForegroundPermissionsAsync();
   if (status !== "granted") {
     console.log("Permission to access location was denied");
-    return;
+    return null;
   }
 
   let location = await Location.getCurrentPositionAsync({
     accuracy: Location.Accuracy.Highest,
   });
 
-  console.log(
-    "User's Location:",
-    location.coords.latitude,
-    location.coords.longitude
-  );
-  // Save the latitude and longitude to the user profile or use as needed
+  if (location) {
+    console.log(
+      "User's Location:",
+      location.coords.latitude,
+      location.coords.longitude
+    );
+
+    return {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
+  }
+
+  return null;
 }
 
 // Call this function where needed in your component

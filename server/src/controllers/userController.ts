@@ -4,10 +4,12 @@ import {
   createUser,
   createUserProfile,
   getUserProfile,
+  updateUserLocation,
 } from "../services/userService";
 import clerkClient from "../config/clerk";
 import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 import { calculateAge } from "../utils/calculateAge";
+import User from "../models/userModel";
 
 export const registerUser = async (
   req: Request,
@@ -40,7 +42,7 @@ export const registerUser = async (
 
     res.status(201).json({ message: "User created successfully", user });
   } catch (error) {
-    next(error); // Pass any unexpected errors to the error handler
+    next(error);
   }
 };
 
@@ -56,13 +58,13 @@ export const createProfile = async (
     console.log("req.body", req.body);
 
     if (!dateOfBirth || !gender || !interests) {
-      return res.status(400).json({ message: "All fields are required" }); // 400 Bad Request
+      return res.status(400).json({ message: "All fields are required" });
     }
 
     const age = calculateAge(dateOfBirth);
 
     if (age < 18) {
-      return res.status(400).json({ message: "You must be 18 or older" }); // 400 Bad Request
+      return res.status(400).json({ message: "You must be 18 or older" });
     }
 
     const profile = await createUserProfile(
@@ -101,5 +103,30 @@ export const getProfile = async (
     res.status(200).json({ updatedProfile, hasProfile });
   } catch (error) {
     next(error); // Pass any unexpected errors to the error handler
+  }
+};
+
+export const updateLocation = async (
+  req: RequireAuthProp<Request>,
+  res: Response,
+  next: NextFunction
+) => {
+  console.log("entered updateLocation");
+
+  try {
+    const { userId } = req.auth;
+    const { lon, lat } = req.body;
+
+    if (lon === undefined || lat === undefined) {
+      return res
+        .status(400)
+        .json({ message: "Longitude and latitude are required" });
+    }
+
+    await updateUserLocation(userId, lon, lat);
+
+    res.status(200).json({ message: "Location updated successfully" });
+  } catch (error) {
+    next(error);
   }
 };

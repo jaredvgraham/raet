@@ -53,3 +53,24 @@ export const getUserProfile = async (userId: string): Promise<IUser> => {
   }
   return user;
 };
+
+export const updateUserLocation = async (
+  userId: string,
+  lon: number,
+  lat: number
+) => {
+  const user = await User.findOne({ clerkId: userId });
+
+  if (!user) {
+    throw new CustomError("User not found", 404);
+  }
+
+  user.location = {
+    type: "Point",
+    coordinates: [lon, lat],
+  };
+
+  await user.save();
+
+  return user;
+};

@@ -11,6 +11,7 @@ export interface IUser extends Document {
     type: string;
     coordinates: [number, number];
   };
+  maxDistance?: number;
   interests?: string[];
   preferredAgeRange?: [number, number];
   preferredGender?: string;
@@ -31,6 +32,7 @@ const userSchema = new Schema<IUser>({
     type: { type: String, enum: ["Point"], required: false },
     coordinates: { type: [Number], required: false },
   },
+  maxDistance: { type: Number, required: false },
   interests: [{ type: String, required: false }],
   preferredAgeRange: { type: [Number], required: false },
   preferredGender: { type: String, required: false },

@@ -14,6 +14,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import Header from "@/components/header";
 import { getUserLocation } from "@/utils/contants";
+import { useAuthFetch } from "@/hooks/Privatefetch";
 
 export const users = [
   {
@@ -142,6 +143,7 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 export default function SwipeableCardDeck() {
+  const authFetch = useAuthFetch();
   const [profiles, setProfiles] = useState(users);
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
 
@@ -162,8 +164,33 @@ export default function SwipeableCardDeck() {
   const nextProfileRef = useRef(profiles[currentProfileIndex + 1]);
 
   useEffect(() => {
-    const location = getUserLocation();
     console.log("location", location);
+
+    const sendLocation = async () => {
+      const location = await getUserLocation();
+      if (!location) {
+        return;
+      }
+      const { latitude, longitude } = location;
+      console.log("location from effect", location);
+
+      try {
+        const res = await authFetch("/api/user/location", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            lat: latitude,
+            lon: longitude,
+          }),
+        });
+        console.log("location", res);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+    sendLocation();
   }, []);
 
   useEffect(() => {
