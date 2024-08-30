@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { IUser } from "../models/userModel";
 import { CustomError } from "../middlewares/customError";
 import User from "../models/userModel";
+import { createMatch } from "./matches";
 
 export const getUserFeed = async (userId: string): Promise<IUser[]> => {
   const user = await User.findOne({ clerkId: userId });
@@ -62,6 +63,35 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
       },
     },
   ]);
+  console.log("nearbyUsers", nearbyUsers);
 
   return nearbyUsers;
+};
+
+export const likeUser = async (userId: string, likedUserId: string) => {
+  const user = await User.findOne({ clerkId: userId });
+  const likedUser = await User.findOne({ clerkId: likedUserId });
+
+  if (!user || !likedUser) {
+    throw new CustomError("User not found", 404);
+  }
+
+  if (user.likedUsers && user.likedUsers.includes(likedUserId)) {
+    throw new CustomError("User already liked", 400);
+  }
+
+  user.likedUsers?.push(likedUserId);
+  await user.save();
+
+  if (likedUser.likedUsers && likedUser.likedUsers.includes(userId)) {
+    console.log("Match found!");
+    user.matchedUsers?.push(likedUserId);
+    likedUser.matchedUsers?.push(userId);
+    await user.save();
+    await likedUser.save();
+
+    await createMatch(user.clerkId, likedUser.clerkId);
+
+    return { message: `Match found for ${likedUser.name}` };
+  }
 };

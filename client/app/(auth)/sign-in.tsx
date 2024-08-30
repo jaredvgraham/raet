@@ -66,7 +66,7 @@ const SignIn = () => {
 
         <View className="space-y-6">
           {/* Email Input */}
-          <View className="flex-row items-center border border-gray-300 rounded-full px-4 py-2 bg-gray-100 focus:border-blue-300">
+          <View className="flex-row items-center border border-gray-300 rounded-full px-4  bg-gray-100 focus:border-blue-300">
             <View className="mr-2">
               <Icon name="envelope" size={20} color="gray" />
             </View>
@@ -75,13 +75,13 @@ const SignIn = () => {
               placeholderTextColor="gray"
               value={formData.email}
               onChangeText={(text) => setFormData({ ...formData, email: text })}
-              className="flex-1 text-start text-gray-800"
+              className="flex-1 text-start text-gray-800 py-2"
               keyboardType="email-address"
             />
           </View>
 
           {/* Password Input */}
-          <View className="flex-row items-center border border-gray-300 rounded-full px-4 py-2 bg-gray-100 focus:border-blue-300">
+          <View className="flex-row items-center border border-gray-300 rounded-full px-4  bg-gray-100 focus:border-blue-300">
             <View className="mr-2">
               <Icon name="lock" size={20} color="gray" />
             </View>
@@ -93,7 +93,7 @@ const SignIn = () => {
                 setFormData({ ...formData, password: text })
               }
               secureTextEntry
-              className="flex-1 text-start text-gray-800"
+              className="flex-1 text-start text-gray-800 py-2"
             />
           </View>
 

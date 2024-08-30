@@ -17,12 +17,12 @@ export interface IUser extends Document {
   interests?: string[];
   preferredAgeRange?: [number, number];
   preferredGender?: "Male" | "Female" | "Both";
-  likedUsers?: mongoose.Types.ObjectId[];
+  likedUsers?: string[];
   viewedUsers?: {
     userId: mongoose.Types.ObjectId;
     viewedAt: Date;
   }[];
-  matchedUsers?: mongoose.Types.ObjectId[];
+  matchedUsers?: string[];
 }
 
 const userSchema = new Schema<IUser>({
@@ -45,14 +45,14 @@ const userSchema = new Schema<IUser>({
     enum: ["Male", "Female", "Both"],
     required: false,
   },
-  likedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  likedUsers: [{ type: String, ref: "User" }],
   viewedUsers: [
     {
       userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
       viewedAt: { type: Date, default: Date.now },
     },
   ],
-  matchedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  matchedUsers: [{ type: String, ref: "User" }],
 });
 
 userSchema.index({ location: "2dsphere" });

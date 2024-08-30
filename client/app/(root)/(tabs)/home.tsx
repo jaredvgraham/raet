@@ -150,7 +150,14 @@ export default function SwipeableCardDeck() {
       }
       const { latitude, longitude } = newLocation;
       setLocation({ latitude, longitude });
-      console.log("location from effect", location);
+      console.log("location from effect", "lon", longitude, "lat", latitude);
+      console.log("location from effect", longitude, latitude);
+      console.log("location from effect", longitude, latitude);
+      console.log("location from effect", longitude, latitude);
+      console.log("location from effect", longitude, latitude);
+      console.log("location from effect", longitude, latitude);
+      console.log("location from effect", longitude, latitude);
+      console.log("location from effect", longitude, latitude);
 
       try {
         const res = await authFetch("/api/user/location", {
@@ -199,16 +206,33 @@ export default function SwipeableCardDeck() {
     }, 1);
   }, [profiles, currentProfileIndex]);
 
-  const fetchMoreProfiles = () => {
+  const fetchMoreProfiles = async () => {
     console.log("Fetching more profiles...");
     if (profiles.length > 3) return;
 
-    // Simulate a network request with a timeout
+    try {
+      const res = await authFetch("/api/feed", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    if (profiles) {
-      setProfiles((prevProfiles) => [...prevProfiles, ...users2]);
-    } else {
-      setProfiles(users);
+      const data = await res?.json();
+      console.log("data", data.feed);
+      if (data.feed.length === 0) {
+        setNoProfilesLeft(true);
+        return;
+      }
+
+      if (profiles) {
+        setProfiles((prevProfiles) => [...prevProfiles, ...data.feed]);
+      } else {
+        setProfiles(data.feed);
+      }
+    } catch (error) {
+      console.log("error fetching profiles", error);
+      setNoProfilesLeft(true);
     }
   };
 
@@ -246,11 +270,6 @@ export default function SwipeableCardDeck() {
       const nextProfiles = prevProfiles.filter(
         (profile) => profile._id !== currentProfile._id
       );
-
-      if (nextProfiles.length === 0) {
-        console.log("No more profiles to display");
-        return [];
-      }
 
       setCurrentProfileIndex(0); // Reset to the first profile in the new list
       setCurrentImageIndex(0);
@@ -412,6 +431,8 @@ export default function SwipeableCardDeck() {
     );
   }
 
+  return <Text>SwipeableCardDeck</Text>;
+
   const RenderImageIndicators = () => {
     if (!currentProfileRef.current) return null;
     const user = currentProfileRef.current;
@@ -522,7 +543,7 @@ export default function SwipeableCardDeck() {
                   >
                     <View className="text-center ">
                       <Text className="text-2xl font-bold text-white text-center">
-                        {user.name}, {user.age}
+                        {user.name}, {user.age - 1}
                       </Text>
                       <Text className="text-lg text-gray-300 text-center">
                         Distance: {user.distance} Miles

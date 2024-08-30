@@ -118,6 +118,8 @@ export const updateLocation = async (
   try {
     const { userId } = req.auth;
     const { lon, lat } = req.body;
+    console.log("lon", lon);
+    console.log("lat", lat);
 
     if (lon === undefined || lat === undefined) {
       return res
