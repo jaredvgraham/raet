@@ -3,6 +3,7 @@ import { IUser } from "../models/userModel";
 import { CustomError } from "../middlewares/customError";
 import User from "../models/userModel";
 import { createMatch } from "./matches";
+import Like from "../models/likeModel";
 
 export const getUserFeed = async (userId: string): Promise<IUser[]> => {
   const user = await User.findOne({ clerkId: userId });
@@ -22,6 +23,12 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
   const twoMonthsAgo = new Date();
   twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
 
+  // Calculate the current user's average rating
+  const userAverageRating =
+    user.ratings && user.ratings.length > 0
+      ? user.ratings.reduce((acc, curr) => acc + curr, 0) / user.ratings.length
+      : 0;
+
   const nearbyUsers = await User.aggregate([
     {
       $geoNear: {
@@ -37,8 +44,11 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
     {
       $addFields: {
         age: {
-          $subtract: [currentYear, { $year: "$dob" }],
+          $subtract: [currentYear - 1, { $year: "$dob" }],
         },
+        ratings: { $ifNull: ["$ratings", []] }, // If ratings are null, treat as an empty array
+        averageRating: { $avg: "$ratings" }, // Calculate the average rating for each user
+        ratingCount: { $size: { $ifNull: ["$ratings", []] } }, // Ensure $size operates on an array
       },
     },
     {
@@ -59,6 +69,17 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
           }, // Exclude users viewed in the last two months
           { gender: user.preferredGender }, // Match gender preference
           {
+            $or: [
+              { ratingCount: { $lt: 2 } }, // Include users with fewer than 2 ratings
+              {
+                averageRating: {
+                  $gte: userAverageRating - 1,
+                  $lte: userAverageRating + 1,
+                },
+              }, // Include users within the rating range
+            ],
+          },
+          {
             age: {
               $gte: user.preferredAgeRange?.[0] || 18,
               $lte: user.preferredAgeRange?.[1] || 100,
@@ -77,6 +98,7 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
         images: 1,
         clerkId: 1,
         distance: { $round: [{ $divide: ["$distance", 1609.34] }, 2] }, // Convert distance to miles and round to 2 decimal places
+        averageRating: 1, // Include the calculated average rating
       },
     },
   ]);
@@ -98,6 +120,13 @@ export const likeUser = async (userId: string, likedUserId: string) => {
 
   user.likedUsers?.push(likedUserId);
   await user.save();
+
+  const newLike = new Like({
+    userId,
+    likedUserId,
+  });
+
+  await newLike.save();
 
   if (likedUser.likedUsers && likedUser.likedUsers.includes(userId)) {
     console.log("Match found!");
@@ -139,4 +168,19 @@ export const viewUser = async (userId: string, viewedUserId: string) => {
   await user.save();
 
   return { message: "User viewed" };
+};
+
+export const rateUser = async (ratedUserId: string, newRating: number) => {
+  const ratedUser = await User.findOne({ clerkId: ratedUserId });
+
+  if (!ratedUser) {
+    throw new CustomError("User not found", 404);
+  }
+
+  ratedUser.ratings = ratedUser.ratings || [];
+
+  ratedUser.ratings.push(newRating);
+
+  await ratedUser.save();
+  console.log("User rated successfully"), ratedUser;
 };

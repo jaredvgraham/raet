@@ -263,10 +263,14 @@ export default function SwipeableCardDeck() {
 
     if (direction === "right") {
       // Send 'like' action to backend
-      await sendSwipeToBackend(currentProfile.clerkId, "right");
+      await sendSwipeToBackend(
+        currentProfile.clerkId,
+        "right",
+        rateRef.current
+      );
     } else if (direction === "left") {
       // Send 'dislike' action to backend
-      await sendSwipeToBackend(currentProfile.clerkId, "left");
+      await sendSwipeToBackend(currentProfile.clerkId, "left", rateRef.current);
     }
     console.log("profiles", profiles.length);
 
@@ -294,7 +298,11 @@ export default function SwipeableCardDeck() {
     nextCardScale.setValue(1);
   };
 
-  const sendSwipeToBackend = async (userId: string, direction: string) => {
+  const sendSwipeToBackend = async (
+    userId: string,
+    direction: string,
+    rate: number | null
+  ) => {
     console.log(`Sending ${direction} swipe for user ${userId} to backend...`);
 
     try {
@@ -306,6 +314,7 @@ export default function SwipeableCardDeck() {
         body: JSON.stringify({
           swipedId: userId,
           direction,
+          rate,
         }),
       });
       const data = await res?.json();
@@ -607,7 +616,7 @@ export default function SwipeableCardDeck() {
                     >
                       <View className="text-center ">
                         <Text className="text-2xl font-bold text-white text-center">
-                          {user.name}, {user.age - 1}
+                          {user.name}, {user.age}
                         </Text>
                         <Text className="text-lg text-gray-300 text-center">
                           Distance: {user.distance} Miles

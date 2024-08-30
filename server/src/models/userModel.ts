@@ -7,7 +7,7 @@ export interface IUser extends Document {
   clerkId: string;
   dob: Date;
   gender?: "Male" | "Female";
-  rate?: number | null;
+  ratings?: number[] | null;
   images?: string[];
   location?: {
     type: string;
@@ -31,7 +31,7 @@ const userSchema = new Schema<IUser>({
   clerkId: { type: String, required: true, unique: true, index: true },
   dob: { type: Date, required: false },
   gender: { type: String, enum: ["Male", "Female"], required: false },
-  rate: { type: Number, required: false, default: null },
+  ratings: { type: [Number], required: false },
   images: [{ type: String, required: false }],
   location: {
     type: { type: String, enum: ["Point"], required: false },

@@ -1,6 +1,11 @@
 // src/controllers/feedController.ts
 import { Request, Response, NextFunction } from "express";
-import { getUserFeed, likeUser, viewUser } from "../services/feedService";
+import {
+  getUserFeed,
+  likeUser,
+  rateUser,
+  viewUser,
+} from "../services/feedService";
 import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 
 export const getFeed = async (
@@ -26,11 +31,15 @@ export const handleSwipe = async (
 
   try {
     const { userId } = req.auth;
-    const { swipedId, direction } = req.body;
+    const { swipedId, direction, rate } = req.body;
     console.log("req.body", req.body);
 
     if (!swipedId || !direction) {
       return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    if (rate) {
+      await rateUser(swipedId, rate);
     }
 
     if (direction === "right") {
