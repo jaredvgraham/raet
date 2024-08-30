@@ -8,6 +8,7 @@ export interface IUser extends Document {
   dob: Date;
   gender?: "Male" | "Female";
   rate?: number | null;
+  images?: string[];
   location?: {
     type: string;
     coordinates: [number, number];
@@ -31,6 +32,7 @@ const userSchema = new Schema<IUser>({
   dob: { type: Date, required: false },
   gender: { type: String, enum: ["Male", "Female"], required: false },
   rate: { type: Number, required: false, default: null },
+  images: [{ type: String, required: false }],
   location: {
     type: { type: String, enum: ["Point"], required: false },
     coordinates: { type: [Number], required: false },

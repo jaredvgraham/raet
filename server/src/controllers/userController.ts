@@ -10,6 +10,7 @@ import clerkClient from "../config/clerk";
 import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 import { calculateAge } from "../utils/calculateAge";
 import User from "../models/userModel";
+import { uploadImagesBucket } from "../services/uploadImageService";
 
 export const registerUser = async (
   req: Request,
@@ -127,6 +128,42 @@ export const updateLocation = async (
     await updateUserLocation(userId, lon, lat);
 
     res.status(200).json({ message: "Location updated successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const uploadImages = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { userId } = req.auth;
+    const user = await User.findOne({ clerkId: userId });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    console.log("req.files", req.files);
+    console.log("req.body", req.body);
+
+    if (!req.files) {
+      return res.status(400).json({ message: "Please upload images" });
+    }
+
+    console.log("req.files", req.files);
+
+    const imageUrls = await uploadImagesBucket(
+      req.files as Express.Multer.File[]
+    );
+    console.log("imageUrls", imageUrls);
+
+    user.images = imageUrls;
+    await user.save();
+
+    res.status(200).json({ message: "Images uploaded successfully", user });
   } catch (error) {
     next(error);
   }

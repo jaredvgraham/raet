@@ -5,8 +5,12 @@ import {
   getProfile,
   registerUser,
   updateLocation,
+  uploadImages,
 } from "../controllers/userController";
 import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
+import multer from "multer";
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const router = Router();
 
@@ -17,5 +21,12 @@ router.get("/profile", ClerkExpressRequireAuth(), getProfile);
 router.patch("/profile", ClerkExpressRequireAuth(), createProfile);
 
 router.patch("/location", ClerkExpressRequireAuth(), updateLocation);
+
+router.patch(
+  "/upload-images",
+  ClerkExpressRequireAuth(),
+  upload.array("images", 10),
+  uploadImages
+);
 
 export default router;
