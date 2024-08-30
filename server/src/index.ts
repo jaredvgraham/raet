@@ -10,6 +10,7 @@ import {
   StrictAuthProp,
 } from "@clerk/clerk-sdk-node";
 import { CustomError } from "./middlewares/customError";
+import feedRoutes from "./routes/feedRoutes";
 
 dotenv.config();
 const app: Application = express();
@@ -26,10 +27,11 @@ app.use(express.json());
 connectDB();
 
 app.use("/api/user", userRoutes);
+app.use("/api/feed", feedRoutes);
 
 app.get(
   "/api/chat",
-  ClerkExpressRequireAuth,
+  ClerkExpressRequireAuth(),
   (req: RequireAuthProp<Request>, res: Response) => {
     console.log("backend hit", req.auth);
     console.log("user id is", req.auth.userId);

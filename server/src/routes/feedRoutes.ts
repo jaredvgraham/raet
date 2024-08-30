@@ -5,3 +5,5 @@ import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 const router = Router();
 
 router.get("/", ClerkExpressRequireAuth(), getFeed);
+
+export default router;

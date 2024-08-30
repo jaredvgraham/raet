@@ -1,6 +1,7 @@
 import { View, Text } from "react-native";
 import React, { useEffect } from "react";
 import { useAuthFetch } from "@/hooks/Privatefetch";
+import { SignOutButton } from "@/components/SignOut";
 
 const profile = () => {
   const authFetch = useAuthFetch();
@@ -26,6 +27,7 @@ const profile = () => {
   return (
     <View>
       <Text>profile</Text>
+      <SignOutButton />
     </View>
   );
 };

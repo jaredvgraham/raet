@@ -14,7 +14,6 @@ const upload = multer({ storage: storage });
 
 const router = Router();
 
-// POST /api/users/register - Register a new user
 router.post("/sign-up", registerUser);
 
 router.get("/profile", ClerkExpressRequireAuth(), getProfile);
