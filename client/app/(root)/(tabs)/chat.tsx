@@ -1,36 +1,41 @@
-import { View, Text } from "react-native";
-import React, { useEffect } from "react";
-import { useSession } from "@clerk/clerk-expo";
-import { useAuthFetch } from "@/hooks/Privatefetch";
+import React, { useState, useEffect } from "react";
+import { SafeAreaView } from "react-native";
+import Notification from "@/components/Notification"; // Adjust the import path as necessary
 
-const Chat = () => {
-  const authFetch = useAuthFetch();
-  const { session } = useSession();
-  console.log("session", session?.user.externalId);
+export default function NotificationDemo() {
+  const [showNotification, setShowNotification] = useState({
+    visible: true,
+    message: "Welcome to the app! 🎉",
+    type: "success",
+  });
 
   useEffect(() => {
-    const fetchData = async () => {
-      console.log("fetching data");
-
-      const response = await authFetch("/api/chat", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+    // Optionally hide the notification after a few seconds
+    const timer = setTimeout(() => {
+      setShowNotification({
+        visible: false,
+        message: "",
+        type: "success",
       });
-      const data = await response?.json();
+    }, 3000); // Hide after 3 seconds
 
-      console.log(data);
-    };
-
-    fetchData();
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <View>
-      <Text>chat</Text>
-    </View>
+    <SafeAreaView className="flex-1 items-center justify-center">
+      {showNotification.visible && (
+        <Notification
+          {...showNotification}
+          onHide={() =>
+            setShowNotification({
+              visible: false,
+              message: "",
+              type: "success",
+            })
+          }
+        />
+      )}
+    </SafeAreaView>
   );
-};
-
-export default Chat;
+}

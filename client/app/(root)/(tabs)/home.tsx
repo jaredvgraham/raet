@@ -1,3 +1,7 @@
+//
+//   THIS FILE IS INSANITY
+//
+
 import React, { useState, useRef, useEffect } from "react";
 import {
   SafeAreaView,
@@ -16,6 +20,7 @@ import Header from "@/components/header";
 import { getUserLocation } from "@/utils/contants";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import { Profile } from "@/types";
+import Notification from "@/components/Notification";
 
 export const users = [
   {
@@ -108,6 +113,7 @@ const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 export default function SwipeableCardDeck() {
   const authFetch = useAuthFetch();
+  const renderedProfiles = new Set();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [rate, setRate] = useState<number | null>(null);
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
@@ -138,6 +144,12 @@ export default function SwipeableCardDeck() {
     profiles ? profiles[currentProfileIndex + 1] : null
   );
   const rateRef = useRef<number | null>(null);
+
+  const [showNotification, setShowNotification] = useState({
+    visible: false,
+    message: "",
+    type: "success",
+  });
 
   useEffect(() => {
     console.log("location", location);
@@ -296,7 +308,17 @@ export default function SwipeableCardDeck() {
           direction,
         }),
       });
-      console.log("res", await res?.json());
+      const data = await res?.json();
+      console.log("res", data);
+
+      if (data.message && data.message.includes("Match")) {
+        // Display a toast notification for a match
+        setShowNotification({
+          visible: true,
+          message: `${data.message} 🎉`,
+          type: "success",
+        });
+      }
     } catch (error) {
       console.log("error", error);
     }
@@ -440,6 +462,19 @@ export default function SwipeableCardDeck() {
   if (noProfilesLeft) {
     return (
       <SafeAreaView className="flex-1 bg-gray-100 justify-center items-center">
+        <Header />
+        {showNotification.visible && (
+          <Notification
+            {...showNotification}
+            onHide={() =>
+              setShowNotification({
+                visible: false,
+                message: "",
+                type: "success",
+              })
+            }
+          />
+        )}
         <Text>No more users to show.</Text>
       </SafeAreaView>
     );
@@ -481,127 +516,147 @@ export default function SwipeableCardDeck() {
   //
 
   return (
-    <SafeAreaView className="flex-1 bg-white items-center ">
-      <Header />
-      <View
-        className="relative  rounded-lg shadow-2xl  items-center"
-        style={{
-          width: SCREEN_WIDTH - 0.4,
-          height: SCREEN_HEIGHT * 0.7,
-          // Center the container vertically
-        }}
-      >
-        {profiles.map((user, index) => {
-          if (index < currentProfileIndex) {
-            return null; // Don't render cards that have been swiped away
-          }
+    <>
+      <SafeAreaView className="flex-1 bg-white items-center ">
+        <Header />
+        {showNotification.visible && (
+          <Notification
+            {...showNotification}
+            onHide={() =>
+              setShowNotification({
+                visible: false,
+                message: "",
+                type: "success",
+              })
+            }
+          />
+        )}
+        <View
+          className="relative  rounded-lg shadow-2xl  items-center"
+          style={{
+            width: SCREEN_WIDTH - 0.4,
+            height: SCREEN_HEIGHT * 0.7,
+            // Center the container vertically
+          }}
+        >
+          {profiles.map((user, index) => {
+            if (renderedProfiles.has(user._id)) {
+              return null;
+            }
+            renderedProfiles.add(user._id);
+            if (index < currentProfileIndex) {
+              return null; // Don't render cards that have been swiped away
+            }
 
-          const isCurrentCard = index === currentProfileIndex;
+            const isCurrentCard = index === currentProfileIndex;
 
-          return (
-            <Animated.View
-              key={user._id}
-              {...(isCurrentCard ? panResponder.panHandlers : {})}
-              style={[
-                {
-                  position: "absolute",
-                  width: "100%",
-                  height: "100%",
-                  zIndex: -index,
-                },
-                isCurrentCard && position.getLayout(),
-              ]}
-              className="   "
-            >
-              {isCurrentCard && swipingDirection === "right" && (
-                <Text
-                  className="absolute top-10 left-10 text-2xl z-10 text-white bg-green-400 p-1 font-bold"
-                  style={{
-                    transform: [{ rotate: "20deg" }],
-                  }}
-                >
-                  YES
-                </Text>
-              )}
-              {isCurrentCard && swipingDirection === "left" && (
-                <Text
-                  className="absolute top-10 right-10 text-2xl z-10 text-white bg-red-400 p-1 font-bold"
-                  style={{
-                    transform: [{ rotate: "-20deg" }],
-                  }}
-                >
-                  NOPE
-                </Text>
-              )}
-              {currentProfileRef.current && (
-                <ImageBackground
-                  source={{
-                    uri:
-                      currentProfileRef.current._id === user._id
-                        ? currentProfileRef.current.images[currentImageIndex]
-                        : user.images[0],
-                  }}
-                  className="w-full h-full overflow-hidden rounded-t-2xl bg-white"
-                  style={{
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  {isCurrentCard && <RenderImageIndicators />}
-                  <LinearGradient
-                    colors={["rgba(0,0,0,0.01)", "rgba(0,0,0,0.8)"]}
+            return (
+              <Animated.View
+                key={user._id}
+                {...(isCurrentCard ? panResponder.panHandlers : {})}
+                style={[
+                  {
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    zIndex: -index,
+                  },
+                  isCurrentCard && position.getLayout(),
+                ]}
+                className="   "
+              >
+                {isCurrentCard && swipingDirection === "right" && (
+                  <Text
+                    className="absolute top-10 left-10 text-2xl z-10 text-white bg-green-400 p-1 font-bold"
                     style={{
-                      padding: 10,
+                      transform: [{ rotate: "20deg" }],
                     }}
                   >
-                    <View className="text-center ">
-                      <Text className="text-2xl font-bold text-white text-center">
-                        {user.name}, {user.age - 1}
-                      </Text>
-                      <Text className="text-lg text-gray-300 text-center">
-                        Distance: {user.distance} Miles
-                      </Text>
-                    </View>
-                  </LinearGradient>
-                  <TouchableOpacity onPress={() => triggerSwipe("right")}>
-                    <Image
-                      source={require("../../../assets/images/like.png")}
-                      className="w-10 h-10 absolute bottom-5 right-3"
-                    />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity onPress={() => triggerSwipe("left")}>
-                    <Image
-                      source={require("../../../assets/images/dislike.png")}
-                      className="w-10 h-10 absolute bottom-5 left-3"
-                    />
-                  </TouchableOpacity>
-                </ImageBackground>
-              )}
-
-              {/* Rating Buttons */}
-              <View
-                className="flex-row justify-between bg-black p-3 "
-                style={{
-                  borderBottomLeftRadius: 20,
-                  borderBottomRightRadius: 20,
-                }}
-              >
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number, index) => (
-                  <TouchableOpacity
-                    className={`${
-                      rate === number ? "bg-teal-300" : "bg-white"
-                    }  p-2 min-w-[30px] rounded-lg `}
-                    key={index}
-                    onPress={() => handleRateChange(number)}
+                    YES
+                  </Text>
+                )}
+                {isCurrentCard && swipingDirection === "left" && (
+                  <Text
+                    className="absolute top-10 right-10 text-2xl z-10 text-white bg-red-400 p-1 font-bold"
+                    style={{
+                      transform: [{ rotate: "-20deg" }],
+                    }}
                   >
-                    <Text className="text-center text-gray-800">{number}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </Animated.View>
-          );
-        })}
-      </View>
-    </SafeAreaView>
+                    NOPE
+                  </Text>
+                )}
+                {currentProfileRef.current && (
+                  <ImageBackground
+                    source={{
+                      uri:
+                        currentProfileRef.current._id === user._id
+                          ? currentProfileRef.current.images[currentImageIndex]
+                          : user.images[0],
+                    }}
+                    className="w-full h-full overflow-hidden rounded-t-2xl bg-white"
+                    style={{
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    {isCurrentCard && <RenderImageIndicators />}
+                    <LinearGradient
+                      colors={["rgba(0,0,0,0.01)", "rgba(0,0,0,0.8)"]}
+                      style={{
+                        padding: 10,
+                      }}
+                    >
+                      <View className="text-center ">
+                        <Text className="text-2xl font-bold text-white text-center">
+                          {user.name}, {user.age - 1}
+                        </Text>
+                        <Text className="text-lg text-gray-300 text-center">
+                          Distance: {user.distance} Miles
+                        </Text>
+                      </View>
+                    </LinearGradient>
+                    <TouchableOpacity onPress={() => triggerSwipe("right")}>
+                      <Image
+                        source={require("../../../assets/images/like.png")}
+                        className="w-10 h-10 absolute bottom-5 right-3"
+                      />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => triggerSwipe("left")}>
+                      <Image
+                        source={require("../../../assets/images/dislike.png")}
+                        className="w-10 h-10 absolute bottom-5 left-3"
+                      />
+                    </TouchableOpacity>
+                  </ImageBackground>
+                )}
+
+                {/* Rating Buttons */}
+                <View
+                  className="flex-row justify-between bg-black p-3 "
+                  style={{
+                    borderBottomLeftRadius: 20,
+                    borderBottomRightRadius: 20,
+                  }}
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number, index) => (
+                    <TouchableOpacity
+                      className={`${
+                        rate === number ? "bg-teal-300" : "bg-white"
+                      }  p-2 min-w-[30px] rounded-lg `}
+                      key={index}
+                      onPress={() => handleRateChange(number)}
+                    >
+                      <Text className="text-center text-gray-800">
+                        {number}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </Animated.View>
+            );
+          })}
+        </View>
+      </SafeAreaView>
+    </>
   );
 }

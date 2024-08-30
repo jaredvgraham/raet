@@ -19,6 +19,7 @@ import { useSignIn } from "@clerk/clerk-expo";
 const SignIn = () => {
   const { signIn, isLoaded, setActive } = useSignIn();
   const router = useRouter();
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -45,6 +46,7 @@ const SignIn = () => {
       }
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2));
+      setError(err.errors[0].longMessage);
     }
   }, [isLoaded, formData.email, formData.password]);
 
@@ -98,6 +100,7 @@ const SignIn = () => {
           </View>
 
           {/* Sign Up Button */}
+          {error && <Text style={{ color: "red" }}>{error}</Text>}
 
           <TouchableOpacity onPress={onSignIn} className="shadow-2xl">
             <View className="flex items-center justify-center w-full bg-blue-500 rounded-full py-3 ">

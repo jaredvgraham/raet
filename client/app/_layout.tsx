@@ -4,8 +4,10 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
+import React, { useRef } from "react";
+
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
-import { Slot } from "expo-router";
+
 import { tokenCache } from "@/lib/auth";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
