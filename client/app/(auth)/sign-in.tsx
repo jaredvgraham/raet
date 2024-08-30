@@ -101,7 +101,7 @@ const SignIn = () => {
 
           <TouchableOpacity onPress={onSignIn} className="shadow-2xl">
             <View className="flex items-center justify-center w-full bg-blue-500 rounded-full py-3 ">
-              <Text className="text-white text-lg font-semibold">Sign Up</Text>
+              <Text className="text-white text-lg font-semibold">Sign In</Text>
             </View>
           </TouchableOpacity>
 
@@ -109,10 +109,14 @@ const SignIn = () => {
           <OAuth />
 
           {/* Sign In */}
-          <View className="ml-2">
-            <Text className="text-gray-500">Dont have an account?</Text>
+          <View className="mx-auto">
+            <Text className="text-gray-500 text-center">
+              Dont have an account?
+            </Text>
             <TouchableOpacity onPress={() => router.push("/(auth)/sign-up")}>
-              <Text className="text-blue-500 font-bold ">Sign Up</Text>
+              <Text className="text-blue-500 font-bold text-center ">
+                Sign Up
+              </Text>
             </TouchableOpacity>
           </View>
 

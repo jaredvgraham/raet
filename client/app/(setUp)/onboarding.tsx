@@ -12,6 +12,7 @@ import Swiper from "react-native-swiper";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import { formatError } from "@/utils";
+import UploadImageComponent from "@/components/UploadImage";
 
 const Onboarding = () => {
   const authFetch = useAuthFetch();
@@ -78,6 +79,8 @@ const Onboarding = () => {
       router.push("/(root)/(tabs)/home");
     } catch (error: any) {
       setError(formatError(error));
+      alert(error);
+      throw error;
     }
   };
 
@@ -86,7 +89,6 @@ const Onboarding = () => {
       title: "What's your date of birth?",
       component: (
         <View className="w-full">
-          <Text className="mb-4 text-lg">Select your date of birth</Text>
           <DateTimePicker
             value={dateOfBirth || new Date()}
             mode="date"
@@ -195,15 +197,24 @@ const Onboarding = () => {
                 <Text className="text-white">{interest}</Text>
               </TouchableOpacity>
             ))}
-            {error && <Text className="text-red-500 text-sm">{error}</Text>}
           </ScrollView>
         </View>
+      ),
+    },
+    {
+      title: "Pick your best pictures",
+      component: (
+        <UploadImageComponent
+          onSubmit={handleSubmit as any}
+          buttonTitle="Finish"
+        />
       ),
     },
   ];
 
   return (
     <SafeAreaView className="flex h-full items-center justify-between bg-white">
+      {error && <Text className="text-red-500 text-lg">{error}</Text>}
       <Swiper
         ref={swiperRef}
         loop={false}
@@ -216,25 +227,25 @@ const Onboarding = () => {
             key={index}
             className="flex flex-col items-center justify-center h-3/4 px-6"
           >
-            <Text className="text-3xl font-bold mb-6">{item.title}</Text>
+            <Text className="text-3xl font-bold mb-6 text-center">
+              {item.title}
+            </Text>
             {item.component}
           </View>
         ))}
       </Swiper>
-      <TouchableOpacity
-        className="w-4/5 p-4 bg-green-500 rounded-lg justify-center items-center mb-6"
-        onPress={() => {
-          if (activeIndex === data.length - 1) {
-            handleSubmit();
-          } else {
+      {activeIndex !== data.length - 1 && (
+        <TouchableOpacity
+          className="w-4/5 p-4 bg-green-500 rounded-lg justify-center items-center mb-6"
+          onPress={() => {
             swiperRef.current?.scrollBy(1);
-          }
-        }}
-      >
-        <Text className="text-white text-lg font-bold">
-          {activeIndex === data.length - 1 ? "Get Started" : "Next"}
-        </Text>
-      </TouchableOpacity>
+          }}
+        >
+          <Text className="text-white text-lg font-bold">
+            {activeIndex === data.length - 1 ? "Get Started" : "Next"}
+          </Text>
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 };

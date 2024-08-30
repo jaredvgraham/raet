@@ -13,7 +13,7 @@ const likes = () => {
         <TouchableOpacity onPress={onSubmit} className="w-48 h-40 bg-green-400">
           <Text className="text-black">Submit</Text>
         </TouchableOpacity>
-        <UploadImageComponent onSubmit={undefined} />
+        <UploadImageComponent onSubmit={undefined} title={"Finish"} />
       </SafeAreaView>
     </>
   );

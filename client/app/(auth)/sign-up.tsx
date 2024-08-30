@@ -146,7 +146,7 @@ const SignUp = () => {
         <View className="space-y-6">
           {/* Name Input */}
 
-          <View className="flex-row items-center border border-gray-300 rounded-full px-4 py-2 bg-gray-100 focus:border-blue-300">
+          <View className="flex-row items-center border border-gray-300 rounded-full px-4  bg-gray-100 focus:border-blue-300">
             <View className="mr-2">
               <Icon name="user" size={20} color="gray" />
             </View>
@@ -155,12 +155,12 @@ const SignUp = () => {
               placeholderTextColor="gray"
               value={formData.name}
               onChangeText={(text) => setFormData({ ...formData, name: text })}
-              className="flex-1 text-start text-gray-800 "
+              className="flex-1 text-start text-gray-800 py-2 "
             />
           </View>
 
           {/* Email Input */}
-          <View className="flex-row items-center border border-gray-300 rounded-full px-4 py-2 bg-gray-100 focus:border-blue-300">
+          <View className="flex-row items-center border border-gray-300 rounded-full px-4  bg-gray-100 focus:border-blue-300">
             <View className="mr-2">
               <Icon name="envelope" size={20} color="gray" />
             </View>
@@ -169,13 +169,13 @@ const SignUp = () => {
               placeholderTextColor="gray"
               value={formData.email}
               onChangeText={(text) => setFormData({ ...formData, email: text })}
-              className="flex-1 text-start text-gray-800"
+              className="flex-1 text-start text-gray-800 py-2"
               keyboardType="email-address"
             />
           </View>
 
           {/* Password Input */}
-          <View className="flex-row items-center border border-gray-300 rounded-full px-4 py-2 bg-gray-100 focus:border-blue-300">
+          <View className="flex-row items-center border border-gray-300 rounded-full px-4   bg-gray-100 focus:border-blue-300">
             <View className="mr-2">
               <Icon name="lock" size={20} color="gray" />
             </View>
@@ -187,7 +187,7 @@ const SignUp = () => {
                 setFormData({ ...formData, password: text })
               }
               secureTextEntry
-              className="flex-1 text-start text-gray-800"
+              className="flex-1 text-start text-gray-800 py-2"
             />
           </View>
 
