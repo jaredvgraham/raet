@@ -53,11 +53,11 @@ export const createProfile = async (
 ) => {
   try {
     const { userId } = req.auth;
-    const { dateOfBirth, gender, interests } = req.body;
+    const { dateOfBirth, gender, interests, preferredGender } = req.body;
 
     console.log("req.body", req.body);
 
-    if (!dateOfBirth || !gender || !interests) {
+    if (!dateOfBirth || !gender || !interests || !preferredGender) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -71,7 +71,8 @@ export const createProfile = async (
       userId,
       dateOfBirth,
       gender,
-      interests
+      interests,
+      preferredGender
     );
     console.log("profile", profile);
 

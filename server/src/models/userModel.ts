@@ -6,7 +6,7 @@ export interface IUser extends Document {
   email: string;
   clerkId: string;
   dob: Date;
-  gender?: string;
+  gender?: "Male" | "Female";
   rate?: number | null;
   location?: {
     type: string;
@@ -15,7 +15,7 @@ export interface IUser extends Document {
   maxDistance?: number;
   interests?: string[];
   preferredAgeRange?: [number, number];
-  preferredGender?: string;
+  preferredGender?: "Male" | "Female" | "Both";
   likedUsers?: mongoose.Types.ObjectId[];
   viewedUsers?: {
     userId: mongoose.Types.ObjectId;
@@ -29,7 +29,7 @@ const userSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
   clerkId: { type: String, required: true, unique: true, index: true },
   dob: { type: Date, required: false },
-  gender: { type: String, required: false },
+  gender: { type: String, enum: ["Male", "Female"], required: false },
   rate: { type: Number, required: false, default: null },
   location: {
     type: { type: String, enum: ["Point"], required: false },
@@ -38,7 +38,11 @@ const userSchema = new Schema<IUser>({
   maxDistance: { type: Number, required: false, default: 10000 },
   interests: [{ type: String, required: false }],
   preferredAgeRange: { type: [Number], required: false, default: [18, 100] },
-  preferredGender: { type: String, required: false },
+  preferredGender: {
+    type: String,
+    enum: ["Male", "Female", "Both"],
+    required: false,
+  },
   likedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   viewedUsers: [
     {

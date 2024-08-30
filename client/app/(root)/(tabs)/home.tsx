@@ -145,7 +145,9 @@ const SCREEN_HEIGHT = Dimensions.get("window").height;
 export default function SwipeableCardDeck() {
   const authFetch = useAuthFetch();
   const [profiles, setProfiles] = useState(users);
+  const [rate, setRate] = useState<number | null>(null);
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
+  const [swipingDirection, setSwipingDirection] = useState("");
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const rateRef = useRef<number | null>(null);
@@ -209,7 +211,7 @@ export default function SwipeableCardDeck() {
 
     setTimeout(() => {
       setIsReady(true); // Ensure RenderImageIndicators uses the updated profile
-    }, 10);
+    }, 1);
   }, [profiles, currentProfileIndex]);
 
   const fetchMoreProfiles = () => {
@@ -223,6 +225,7 @@ export default function SwipeableCardDeck() {
 
   const handleSwipeAction = async (direction: string) => {
     console.log("Handling swipe starting...");
+    setSwipingDirection(""); // Reset the swiping direction
 
     const currentProfile = currentProfileRef.current;
 
@@ -244,6 +247,7 @@ export default function SwipeableCardDeck() {
       // Handle the rating logic here
 
       rateRef.current = null; // Reset the ref after using it
+      setRate(null); // Reset the state after using it
     }
 
     // Now update the profile state
@@ -276,6 +280,7 @@ export default function SwipeableCardDeck() {
 
   const handleRateChange = (number: number) => {
     rateRef.current = number;
+    setRate(number);
     console.log("Rate set via ref:", rateRef.current); // For debugging
   };
 
@@ -328,6 +333,7 @@ export default function SwipeableCardDeck() {
         swipeDetected.current = false;
 
         position.setValue({ x: 0, y: 0 });
+        setSwipingDirection("");
       },
       onPanResponderMove: (_, gestureState) => {
         const dx = Math.abs(gestureState.moveX - gestureStartX.current);
@@ -335,6 +341,15 @@ export default function SwipeableCardDeck() {
         const distance = dx + dy;
 
         if (distance > 10) {
+          console.log(distance, "is distance");
+          if (gestureState.dx > 0) {
+            setSwipingDirection("right");
+          } else if (gestureState.dx < 0) {
+            setSwipingDirection("left");
+          } else {
+            setSwipingDirection("");
+          }
+
           swipeDetected.current = true;
           position.setValue({ x: gestureState.dx, y: gestureState.dy });
 
@@ -355,6 +370,9 @@ export default function SwipeableCardDeck() {
         const touchDuration = Date.now() - touchStartTime.current;
 
         if (swipeDetected.current) {
+          if (gestureState.dx < 60 && gestureState.dx > -60) {
+            setSwipingDirection("");
+          }
           if (gestureState.dx > 60) {
             Animated.spring(position, {
               speed: 50,
@@ -381,7 +399,9 @@ export default function SwipeableCardDeck() {
             Animated.spring(position, {
               toValue: { x: 0, y: 0 },
               useNativeDriver: false,
-            }).start();
+            }).start(() => {
+              setSwipingDirection("");
+            });
           }
         } else if (touchDuration < 200 && !swipeDetected.current) {
           handleImageTap(gestureState);
@@ -435,10 +455,10 @@ export default function SwipeableCardDeck() {
   //
 
   return (
-    <SafeAreaView className="flex-1   items-center ">
+    <SafeAreaView className="flex-1 bg-white items-center ">
       <Header />
       <View
-        className="relative    items-center"
+        className="relative  rounded-lg shadow-2xl  items-center"
         style={{
           width: SCREEN_WIDTH - 0.4,
           height: SCREEN_HEIGHT * 0.7,
@@ -465,15 +485,35 @@ export default function SwipeableCardDeck() {
                 },
                 isCurrentCard && position.getLayout(),
               ]}
-              className=" rounded-2xl shadow-lg  "
+              className="   "
             >
+              {isCurrentCard && swipingDirection === "right" && (
+                <Text
+                  className="absolute top-10 left-10 text-2xl z-10 text-white bg-green-400 p-1 font-bold"
+                  style={{
+                    transform: [{ rotate: "20deg" }],
+                  }}
+                >
+                  YES
+                </Text>
+              )}
+              {isCurrentCard && swipingDirection === "left" && (
+                <Text
+                  className="absolute top-10 right-10 text-2xl z-10 text-white bg-red-400 p-1 font-bold"
+                  style={{
+                    transform: [{ rotate: "-20deg" }],
+                  }}
+                >
+                  NOPE
+                </Text>
+              )}
               <ImageBackground
                 source={
                   currentProfileRef.current.id === user.id
                     ? currentProfileRef.current.images[currentImageIndex].imgUrl
                     : user.images[0].imgUrl
                 }
-                className="w-full h-full overflow-hidden rounded-t-2xl bg-black"
+                className="w-full h-full overflow-hidden rounded-t-2xl bg-white"
                 style={{
                   justifyContent: "flex-end",
                 }}
@@ -518,7 +558,9 @@ export default function SwipeableCardDeck() {
               >
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number, index) => (
                   <TouchableOpacity
-                    className="bg-white p-2 min-w-[30px] rounded-lg "
+                    className={`${
+                      rate === number ? "bg-teal-300" : "bg-white"
+                    }  p-2 min-w-[30px] rounded-lg `}
                     key={index}
                     onPress={() => handleRateChange(number)}
                   >

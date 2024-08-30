@@ -279,7 +279,7 @@ const SignUp = () => {
               <TouchableOpacity
                 onPress={() => {
                   setShowSuccessModal(false);
-                  router.push("/(root)/(tabs)/home");
+                  router.push("/(setUp)/onboarding");
                 }}
                 className="mt-5"
               >

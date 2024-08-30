@@ -75,6 +75,7 @@ const Onboarding = () => {
         }),
       });
       console.log(res);
+      router.push("/(root)/(tabs)/home");
     } catch (error: any) {
       setError(formatError(error));
     }
@@ -126,16 +127,16 @@ const Onboarding = () => {
       component: (
         <View className="flex flex-row justify-around w-full  ">
           <TouchableOpacity
-            className={`p-4 rounded-lg w-4/12 m-2 ${
-              gender === "Male" ? "bg-blue-500" : "bg-gray-300"
+            className={`p-4 rounded-lg w-3/12 m-2 ${
+              preferredGender === "Male" ? "bg-blue-500" : "bg-gray-300"
             }`}
             onPress={() => setpreferredGender("Male")}
           >
             <Text className="text-white text-center">Male</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className={`p-4 rounded-lg w-4/12 m-2 text-center ${
-              gender === "Female" ? "bg-pink-500" : "bg-gray-300"
+            className={`p-4 rounded-lg w-3/12 m-2 text-center ${
+              preferredGender === "Female" ? "bg-pink-500" : "bg-gray-300"
             }`}
             onPress={() => setpreferredGender("Female")}
           >
@@ -143,10 +144,10 @@ const Onboarding = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            className={`p-4 rounded-lg w-4/12 m-2 text-center ${
-              gender === "Both" ? "bg-indigo-300" : "bg-gray-300"
+            className={`p-4 rounded-lg w-3/12 m-2 text-center ${
+              preferredGender === "Both" ? "bg-indigo-300" : "bg-gray-300"
             }`}
-            onPress={() => setpreferredGender("Female")}
+            onPress={() => setpreferredGender("Both")}
           >
             <Text className="text-white text-center">Both</Text>
           </TouchableOpacity>
