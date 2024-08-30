@@ -15,126 +15,90 @@ import { LinearGradient } from "expo-linear-gradient";
 import Header from "@/components/header";
 import { getUserLocation } from "@/utils/contants";
 import { useAuthFetch } from "@/hooks/Privatefetch";
+import { Profile } from "@/types";
 
 export const users = [
   {
-    id: 1,
+    _id: "64e4bc66f0c1b462bc5df8b7",
     name: "Emily Johnson",
     age: 28,
-    location: "5",
+    clerkId: "ckr1",
+    distance: 5,
     bio: "Love exploring the city, trying new restaurants, and reading mystery novels.",
+    interests: ["Reading", "Traveling", "Cooking"],
     images: [
-      {
-        imgUrl: require("../../../assets/images/wom2.jpeg"),
-      },
-      {
-        imgUrl: require("../../../assets/images/man2.jpeg"),
-      },
-      {
-        imgUrl: require("../../../assets/images/wom5.jpeg"),
-      },
-      {
-        imgUrl: require("../../../assets/images/wom5alt.jpeg"),
-      },
+      require("../../../assets/images/wom2.jpeg"),
+      require("../../../assets/images/man2.jpeg"),
+      require("../../../assets/images/wom5.jpeg"),
+      require("../../../assets/images/wom5alt.jpeg"),
     ],
   },
   {
-    id: 2,
+    _id: "64e4bc66f0c1b462bc5df8b8",
     name: "Sophia Martinez",
     age: 26,
-    location: "10",
+    clerkId: "ckr2",
+    distance: 10,
     bio: "Actress by day, fitness enthusiast by night. Let's go on an adventure!",
+    interests: ["Acting", "Fitness", "Adventures"],
     images: [
-      {
-        imgUrl: require("../../../assets/images/wom3alt.jpeg"),
-      },
-      {
-        imgUrl: require("../../../assets/images/man2.jpeg"),
-      },
+      require("../../../assets/images/wom3alt.jpeg"),
+      require("../../../assets/images/man2.jpeg"),
     ],
   },
   {
-    id: 3,
+    _id: "64e4bc66f0c1b462bc5df8b9",
     name: "Olivia Brown",
     age: 30,
-    location: "4",
+    clerkId: "ckr3",
+    distance: 4,
     bio: "Tech geek and coffee lover. Always up for a good conversation.",
+    interests: ["Technology", "Coffee", "Conversation"],
     images: [
-      {
-        imgUrl: require("../../../assets/images/man2.jpeg"),
-      },
-      {
-        imgUrl: require("../../../assets/images/wom5alt.jpeg"),
-      },
-    ],
-  },
-  {
-    id: 1,
-    name: "Emily Johnson",
-    age: 28,
-    location: "5",
-    bio: "Love exploring the city, trying new restaurants, and reading mystery novels.",
-    images: [
-      {
-        imgUrl: require("../../../assets/images/wom2.jpeg"),
-      },
-      {
-        imgUrl: require("../../../assets/images/man2.jpeg"),
-      },
-      {
-        imgUrl: require("../../../assets/images/wom5.jpeg"),
-      },
-      {
-        imgUrl: require("../../../assets/images/wom5alt.jpeg"),
-      },
+      require("../../../assets/images/man2.jpeg"),
+      require("../../../assets/images/wom5alt.jpeg"),
     ],
   },
 ];
 
 export const users2 = [
   {
-    id: 4,
+    _id: "64e4bc66f0c1b462bc5df8ba",
     name: "Ava Wilson",
     age: 25,
-    location: "3",
+    clerkId: "ckr4",
+    distance: 3,
     bio: "Traveling the world, one country at a time. Looking for a travel buddy!",
+    interests: ["Travel", "Photography", "Blogging"],
     images: [
-      {
-        imgUrl: require("../../../assets/images/wom3alt.jpeg"),
-      },
-      {
-        imgUrl: require("../../../assets/images/man2.jpeg"),
-      },
+      require("../../../assets/images/wom3alt.jpeg"),
+      require("../../../assets/images/man2.jpeg"),
     ],
   },
   {
-    id: 5,
+    _id: "64e4bc66f0c1b462bc5df8bb",
     name: "Isabella Moore",
     age: 27,
-    location: "7",
+    clerkId: "ckr5",
+    distance: 7,
     bio: "Dog lover, foodie, and fitness enthusiast. Let's go on a run!",
+    interests: ["Dogs", "Food", "Fitness"],
     images: [
-      {
-        imgUrl: require("../../../assets/images/man2.jpeg"),
-      },
-      {
-        imgUrl: require("../../../assets/images/wom5alt.jpeg"),
-      },
+      require("../../../assets/images/man2.jpeg"),
+      require("../../../assets/images/wom5alt.jpeg"),
     ],
   },
   {
-    id: 6,
+    _id: "64e4bc66f0c1b462bc5df8bc",
     name: "Mia Taylor",
     age: 29,
-    location: "2",
+    clerkId: "ckr6",
+    distance: 2,
     bio: "Yoga instructor and nature lover. Let's go on a hike!",
+    interests: ["Yoga", "Nature", "Hiking"],
     images: [
-      {
-        imgUrl: require("../../../assets/images/wom2.jpeg"),
-      },
-      {
-        imgUrl: require("../../../assets/images/man2.jpeg"),
-      },
+      require("../../../assets/images/wom2.jpeg"),
+      require("../../../assets/images/man2.jpeg"),
     ],
   },
 ];
@@ -144,13 +108,18 @@ const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 export default function SwipeableCardDeck() {
   const authFetch = useAuthFetch();
-  const [profiles, setProfiles] = useState(users);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
   const [rate, setRate] = useState<number | null>(null);
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
   const [swipingDirection, setSwipingDirection] = useState("");
+  const [noProfilesLeft, setNoProfilesLeft] = useState(false);
+  const [location, setLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const rateRef = useRef<number | null>(null);
+
   const [isReady, setIsReady] = useState(false);
 
   const position = useRef(new Animated.ValueXY()).current;
@@ -162,18 +131,25 @@ export default function SwipeableCardDeck() {
   const gestureStartX = useRef(0);
   const gestureStartY = useRef(0);
 
-  const currentProfileRef = useRef(profiles[currentProfileIndex]);
-  const nextProfileRef = useRef(profiles[currentProfileIndex + 1]);
+  const currentProfileRef = useRef(
+    profiles ? profiles[currentProfileIndex] : null
+  );
+  const nextProfileRef = useRef(
+    profiles ? profiles[currentProfileIndex + 1] : null
+  );
+  const rateRef = useRef<number | null>(null);
 
   useEffect(() => {
     console.log("location", location);
 
     const sendLocation = async () => {
-      const location = await getUserLocation();
-      if (!location) {
+      if (location) return;
+      const newLocation = await getUserLocation();
+      if (!newLocation) {
         return;
       }
-      const { latitude, longitude } = location;
+      const { latitude, longitude } = newLocation;
+      setLocation({ latitude, longitude });
       console.log("location from effect", location);
 
       try {
@@ -193,18 +169,27 @@ export default function SwipeableCardDeck() {
       }
     };
     sendLocation();
+  }, [location]);
+
+  useEffect(() => {
+    fetchMoreProfiles();
   }, []);
 
   useEffect(() => {
-    currentProfileRef.current = profiles[currentProfileIndex];
-    nextProfileRef.current = profiles[currentProfileIndex + 1];
-    console.log(
-      "profiles",
-      profiles.map((profile) => profile.name)
-    );
-    if (profiles.length === 1) {
-      fetchMoreProfiles();
-    }
+    const handleProfileChange = () => {
+      if (!profiles) return;
+
+      currentProfileRef.current = profiles[currentProfileIndex];
+      nextProfileRef.current = profiles[currentProfileIndex + 1];
+      console.log(
+        "profiles",
+        profiles.map((profile: Profile) => profile.name)
+      );
+      if (profiles.length <= 1 && !noProfilesLeft) {
+        fetchMoreProfiles();
+      }
+    };
+    handleProfileChange();
 
     setIsReady(false); // Reset readiness state
     setCurrentImageIndex(0); // Reset image index when profile changes
@@ -216,14 +201,21 @@ export default function SwipeableCardDeck() {
 
   const fetchMoreProfiles = () => {
     console.log("Fetching more profiles...");
+    if (profiles.length > 3) return;
 
     // Simulate a network request with a timeout
-    setTimeout(() => {
+
+    if (profiles) {
       setProfiles((prevProfiles) => [...prevProfiles, ...users2]);
-    }, 1000);
+    } else {
+      setProfiles(users);
+    }
   };
 
   const handleSwipeAction = async (direction: string) => {
+    if (!currentProfileRef.current) {
+      return;
+    }
     console.log("Handling swipe starting...");
     setSwipingDirection(""); // Reset the swiping direction
 
@@ -235,10 +227,10 @@ export default function SwipeableCardDeck() {
 
     if (direction === "right") {
       // Send 'like' action to backend
-      await sendSwipeToBackend(currentProfile.id, "right");
+      await sendSwipeToBackend(currentProfile._id, "right");
     } else if (direction === "left") {
       // Send 'dislike' action to backend
-      await sendSwipeToBackend(currentProfile.id, "left");
+      await sendSwipeToBackend(currentProfile._id, "left");
     }
     console.log("profiles", profiles.length);
 
@@ -250,10 +242,9 @@ export default function SwipeableCardDeck() {
       setRate(null); // Reset the state after using it
     }
 
-    // Now update the profile state
     setProfiles((prevProfiles) => {
       const nextProfiles = prevProfiles.filter(
-        (profile) => profile.id !== currentProfile.id
+        (profile) => profile._id !== currentProfile._id
       );
 
       if (nextProfiles.length === 0) {
@@ -286,6 +277,7 @@ export default function SwipeableCardDeck() {
 
   const handleImageTap = (gestureState: PanResponderGestureState) => {
     const user = currentProfileRef.current;
+    if (!user) return;
     const screenWidthHalf = SCREEN_WIDTH / 2;
     console.log("getureState.x0", gestureState.x0);
     console.log("Screen width half:", screenWidthHalf);
@@ -412,7 +404,7 @@ export default function SwipeableCardDeck() {
     })
   ).current;
 
-  if (profiles.length === 0) {
+  if (noProfilesLeft) {
     return (
       <SafeAreaView className="flex-1 bg-gray-100 justify-center items-center">
         <Text>No more users to show.</Text>
@@ -421,6 +413,7 @@ export default function SwipeableCardDeck() {
   }
 
   const RenderImageIndicators = () => {
+    if (!currentProfileRef.current) return null;
     const user = currentProfileRef.current;
     if (!user.images || !isReady) {
       return null;
@@ -474,7 +467,7 @@ export default function SwipeableCardDeck() {
 
           return (
             <Animated.View
-              key={user.id}
+              key={user._id}
               {...(isCurrentCard ? panResponder.panHandlers : {})}
               style={[
                 {
@@ -507,47 +500,51 @@ export default function SwipeableCardDeck() {
                   NOPE
                 </Text>
               )}
-              <ImageBackground
-                source={
-                  currentProfileRef.current.id === user.id
-                    ? currentProfileRef.current.images[currentImageIndex].imgUrl
-                    : user.images[0].imgUrl
-                }
-                className="w-full h-full overflow-hidden rounded-t-2xl bg-white"
-                style={{
-                  justifyContent: "flex-end",
-                }}
-              >
-                {isCurrentCard && <RenderImageIndicators />}
-                <LinearGradient
-                  colors={["rgba(0,0,0,0.01)", "rgba(0,0,0,0.8)"]}
+              {currentProfileRef.current && (
+                <ImageBackground
+                  source={{
+                    uri:
+                      currentProfileRef.current._id === user._id
+                        ? currentProfileRef.current.images[currentImageIndex]
+                        : user.images[0],
+                  }}
+                  className="w-full h-full overflow-hidden rounded-t-2xl bg-white"
                   style={{
-                    padding: 10,
+                    justifyContent: "flex-end",
                   }}
                 >
-                  <View className="text-center ">
-                    <Text className="text-2xl font-bold text-white text-center">
-                      {user.name}, {user.age}
-                    </Text>
-                    <Text className="text-lg text-gray-300 text-center">
-                      Distance: {user.location} Miles
-                    </Text>
-                  </View>
-                </LinearGradient>
-                <TouchableOpacity onPress={() => triggerSwipe("right")}>
-                  <Image
-                    source={require("../../../assets/images/like.png")}
-                    className="w-10 h-10 absolute bottom-5 right-3"
-                  />
-                </TouchableOpacity>
+                  {isCurrentCard && <RenderImageIndicators />}
+                  <LinearGradient
+                    colors={["rgba(0,0,0,0.01)", "rgba(0,0,0,0.8)"]}
+                    style={{
+                      padding: 10,
+                    }}
+                  >
+                    <View className="text-center ">
+                      <Text className="text-2xl font-bold text-white text-center">
+                        {user.name}, {user.age}
+                      </Text>
+                      <Text className="text-lg text-gray-300 text-center">
+                        Distance: {user.distance} Miles
+                      </Text>
+                    </View>
+                  </LinearGradient>
+                  <TouchableOpacity onPress={() => triggerSwipe("right")}>
+                    <Image
+                      source={require("../../../assets/images/like.png")}
+                      className="w-10 h-10 absolute bottom-5 right-3"
+                    />
+                  </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => triggerSwipe("left")}>
-                  <Image
-                    source={require("../../../assets/images/dislike.png")}
-                    className="w-10 h-10 absolute bottom-5 left-3"
-                  />
-                </TouchableOpacity>
-              </ImageBackground>
+                  <TouchableOpacity onPress={() => triggerSwipe("left")}>
+                    <Image
+                      source={require("../../../assets/images/dislike.png")}
+                      className="w-10 h-10 absolute bottom-5 left-3"
+                    />
+                  </TouchableOpacity>
+                </ImageBackground>
+              )}
+
               {/* Rating Buttons */}
               <View
                 className="flex-row justify-between bg-black p-3 "
