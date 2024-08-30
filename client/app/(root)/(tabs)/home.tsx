@@ -251,10 +251,10 @@ export default function SwipeableCardDeck() {
 
     if (direction === "right") {
       // Send 'like' action to backend
-      await sendSwipeToBackend(currentProfile._id, "right");
+      await sendSwipeToBackend(currentProfile.clerkId, "right");
     } else if (direction === "left") {
       // Send 'dislike' action to backend
-      await sendSwipeToBackend(currentProfile._id, "left");
+      await sendSwipeToBackend(currentProfile.clerkId, "left");
     }
     console.log("profiles", profiles.length);
 
@@ -283,9 +283,23 @@ export default function SwipeableCardDeck() {
   };
 
   const sendSwipeToBackend = async (userId: string, direction: string) => {
-    // Replace this with the actual API call
     console.log(`Sending ${direction} swipe for user ${userId} to backend...`);
-    // Simulate a network request with a timeout
+
+    try {
+      const res = await authFetch("/api/feed/swipe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          swipedId: userId,
+          direction,
+        }),
+      });
+      console.log("res", await res?.json());
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
   const handleRateChange = (number: number) => {
@@ -430,8 +444,6 @@ export default function SwipeableCardDeck() {
       </SafeAreaView>
     );
   }
-
-  return <Text>SwipeableCardDeck</Text>;
 
   const RenderImageIndicators = () => {
     if (!currentProfileRef.current) return null;

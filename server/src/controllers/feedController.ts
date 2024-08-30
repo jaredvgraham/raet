@@ -1,6 +1,6 @@
 // src/controllers/feedController.ts
 import { Request, Response, NextFunction } from "express";
-import { getUserFeed, likeUser } from "../services/feedService";
+import { getUserFeed, likeUser, viewUser } from "../services/feedService";
 import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 
 export const getFeed = async (
@@ -17,16 +17,29 @@ export const getFeed = async (
   }
 };
 
-export const handleLike = async (
+export const handleSwipe = async (
   req: RequireAuthProp<Request>,
   res: Response,
   next: NextFunction
 ) => {
+  console.log("endpoint hit");
+
   try {
     const { userId } = req.auth;
-    const { likedId } = req.body;
-    const msg = await likeUser(userId, likedId);
-    res.status(200).json({ message: msg?.message || "Liked" });
+    const { swipedId, direction } = req.body;
+    console.log("req.body", req.body);
+
+    if (!swipedId || !direction) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    if (direction === "right") {
+      const msg = await likeUser(userId, swipedId);
+      res.status(200).json({ message: msg?.message || "Liked" });
+    } else if (direction === "left") {
+      await viewUser(userId, swipedId);
+      res.status(200).json({ message: "Disliked" });
+    }
   } catch (error) {
     next(error);
   }

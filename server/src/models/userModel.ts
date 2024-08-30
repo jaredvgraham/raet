@@ -19,7 +19,7 @@ export interface IUser extends Document {
   preferredGender?: "Male" | "Female" | "Both";
   likedUsers?: string[];
   viewedUsers?: {
-    userId: mongoose.Types.ObjectId;
+    userId: string;
     viewedAt: Date;
   }[];
   matchedUsers?: string[];
@@ -48,7 +48,7 @@ const userSchema = new Schema<IUser>({
   likedUsers: [{ type: String, ref: "User" }],
   viewedUsers: [
     {
-      userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      userId: { type: String, ref: "User" },
       viewedAt: { type: Date, default: Date.now },
     },
   ],
