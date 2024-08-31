@@ -101,6 +101,9 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
         averageRating: 1, // Include the calculated average rating
       },
     },
+    {
+      $limit: 10,
+    },
   ]);
 
   return nearbyUsers;

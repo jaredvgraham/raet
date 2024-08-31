@@ -5,7 +5,7 @@ export interface IMatch extends Document {
   user1ClerkId: string;
   user2ClerkId: string;
   matchedAt: Date;
-  messages?: string[]; // Optional: store message IDs if you want to link to a Message model
+  chat?: mongoose.Types.ObjectId[]; // Optional: store message IDs if you want to link to a Message model
 }
 
 const matchSchema = new Schema<IMatch>({
@@ -13,7 +13,7 @@ const matchSchema = new Schema<IMatch>({
   user2ClerkId: { type: String, required: true },
   matchedAt: { type: Date, default: Date.now },
 
-  messages: [{ type: mongoose.Schema.Types.ObjectId, ref: "Message" }], // Assuming you have a Message model
+  chat: [{ type: mongoose.Schema.Types.ObjectId, ref: "Message" }], // Assuming you have a Message model
 });
 
 matchSchema.index({ user1: 1, user2: 1 }, { unique: true });
