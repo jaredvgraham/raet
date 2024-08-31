@@ -31,3 +31,11 @@ export interface Profile {
   distance: number;
   interests: string[];
 }
+
+export interface Message {
+  _id: string;
+  senderId: string;
+  receiverId: string;
+  message: string;
+  sentAt: Date;
+}

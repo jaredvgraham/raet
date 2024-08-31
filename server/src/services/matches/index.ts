@@ -1,8 +1,11 @@
 import Match from "../../models/matchModel"; // Assuming the model is in models folder
 
-export const createMatch = async (user1Id: string, user2Id: string) => {
+export const createMatch = async (
+  user1ClerkId: string,
+  user2ClerkId: string
+) => {
   try {
-    const newMatch = new Match({ user1: user1Id, user2: user2Id });
+    const newMatch = new Match({ user1ClerkId, user2ClerkId });
     await newMatch.save();
     console.log("Match created successfully:", newMatch);
   } catch (error) {
@@ -21,3 +24,5 @@ export const getUserMatches = async (clerkId: string) => {
     return [];
   }
 };
+
+export const getMatchesProfile = async (userIdclerkId: string) => {};

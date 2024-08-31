@@ -14,6 +14,7 @@ import http from "http";
 
 import feedRoutes from "./routes/feedRoutes";
 import { initializeWebSocket } from "./services/websocketService";
+import chatRoutes from "./routes/chatRoutes";
 
 dotenv.config();
 const app: Application = express();
@@ -34,17 +35,7 @@ const io = initializeWebSocket(server);
 
 app.use("/api/user", userRoutes);
 app.use("/api/feed", feedRoutes);
-
-app.get(
-  "/api/chat",
-  ClerkExpressRequireAuth(),
-  (req: RequireAuthProp<Request>, res: Response) => {
-    console.log("backend hit", req.auth);
-    console.log("user id is", req.auth.userId);
-
-    res.json(req.headers.authorization);
-  }
-);
+app.use("/api/chat", chatRoutes);
 
 app.use(errorHandler);
 
