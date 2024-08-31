@@ -20,6 +20,7 @@ dotenv.config();
 const app: Application = express();
 const server = http.createServer(app);
 const port = process.env.PORT || 3001;
+const ipAddress = "192.168.1.177";
 
 declare global {
   namespace Express {
@@ -39,6 +40,6 @@ app.use("/api/chat", chatRoutes);
 
 app.use(errorHandler);
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+app.listen(3000, ipAddress, () => {
+  console.log(`Server is running on http://${ipAddress}:${port}`);
 });

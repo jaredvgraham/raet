@@ -28,7 +28,7 @@ const chat = () => {
       try {
         const response = await authFetch("/api/chat/matches");
         const data = await response?.json();
-        console.log("data", data);
+        console.log("data", data.matchedProfiles);
 
         setMatches(data.matchedProfiles);
         setNoMatches(false);
@@ -55,7 +55,7 @@ const chat = () => {
 
   const handleConvoClick = (matchId: string) => {
     console.log("matchId", matchId);
-    router.push(`/(root)/(tabs)/chat/${matchId}`);
+    router.push(`/(root)/(chat)/${matchId}`);
   };
 
   return (

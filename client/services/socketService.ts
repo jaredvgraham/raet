@@ -1,16 +1,33 @@
 // src/services/socketService.ts
-import io from "socket.io-client";
+import { io } from "socket.io-client";
 
-const SOCKET_URL = process.env.API_URL; // Replace with your actual backend URL
+let socket;
 
-const socket = io(SOCKET_URL!);
+try {
+  socket = io("http://192.168.1.177:3000", {
+    transports: ["websocket"],
+    upgrade: false,
+  });
 
-socket.on("connect", () => {
-  console.log("Connected to WebSocket server");
-});
+  socket.on("connect", () => {
+    console.log("WebSocket connected with ID:", socket.id);
+  });
 
-socket.on("disconnect", () => {
-  console.log("Disconnected from WebSocket server");
-});
+  socket.on("connect_error", (err) => {
+    console.error("WebSocket connection error:", err.message, err.code, err);
+  });
+
+  socket.on("error", (err) => {
+    console.error("WebSocket error:", err);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("WebSocket disconnected.");
+  });
+
+  // Additional event listeners or logic can go here
+} catch (error) {
+  console.error("Error during WebSocket setup:", error);
+}
 
 export default socket;

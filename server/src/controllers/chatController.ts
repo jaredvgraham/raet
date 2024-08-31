@@ -48,7 +48,7 @@ export const getMatches = async (
 
     const matchedProfiles = await User.find({
       clerkId: { $in: matchedUserIds },
-    }).select("name age bio images");
+    }).select("name age bio images clerkId");
 
     return res.status(200).json({ matchedProfiles });
   } catch (error) {
