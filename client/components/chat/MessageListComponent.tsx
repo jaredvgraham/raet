@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text } from "react-native";
-import socket from "@/services/socketService";
+
 import { Message } from "@/types";
 
 const MessageListComponent = ({ userId }: { userId: string }) => {
@@ -20,16 +20,6 @@ const MessageListComponent = ({ userId }: { userId: string }) => {
 
     fetchMessages();
   }, [userId]);
-
-  useEffect(() => {
-    socket.on("receiveMessage", (message: Message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
-
-    return () => {
-      socket.off("receiveMessage"); // Clean up on unmount
-    };
-  }, []);
 
   return (
     <View>

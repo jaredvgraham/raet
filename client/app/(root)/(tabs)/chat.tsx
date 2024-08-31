@@ -6,20 +6,21 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Message, Profile } from "@/types";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import { router } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 
-const chat = () => {
+const Chat = () => {
   const authFetch = useAuthFetch();
   const { userId } = useAuth();
 
-  console.log("userId", userId);
-
-  const [matches, setMatches] = useState<Profile[] | null>(null);
+  const [matches, setMatches] = useState<
+    {
+      matchId: string;
+      profile: { clerkId: string; images: string[]; name: string };
+    }[]
+  >([]);
   const [noMatches, setNoMatches] = useState<boolean>(true);
-  const [selectedMatch, setSelectedMatch] = useState<Profile | null>(null);
   const [conversations, setConversations] = useState<any>([]);
   const [noConversations, setNoConversations] = useState<boolean>(true);
 
@@ -28,13 +29,13 @@ const chat = () => {
       try {
         const response = await authFetch("/api/chat/matches");
         const data = await response?.json();
-        console.log("data", data.matchedProfiles);
+        console.log("data", data.matches);
+        const matches = data.matches;
 
-        setMatches(data.matchedProfiles);
-        setNoMatches(false);
+        setMatches(matches);
+        setNoMatches(matches.length === 0);
       } catch (error) {
         console.error("Error fetching matches:", error);
-
         setNoMatches(true);
       }
     };
@@ -43,13 +44,23 @@ const chat = () => {
       try {
         const response = await authFetch("/api/chat/conversations");
         const data = await response?.json();
+        console.log("conversations", data);
+
         setConversations(data);
+        console.log(data.length);
+        if (data === undefined || data.length === 0) {
+          setNoConversations(true);
+        }
+
+        setNoConversations(data.length === 1);
       } catch (error) {
         console.error("Error fetching conversations:", error);
-        setConversations(true);
+        setConversations([]);
+        setNoConversations(true);
       }
     };
-    fetchConversations();
+
+    // fetchConversations();
     fetchMatches();
   }, []);
 
@@ -71,15 +82,16 @@ const chat = () => {
         ) : (
           <View className="">
             <View className="p-4 border-b border-gray-300 flex flex-row items-center overflow-auto overflow-x-scroll">
-              {matches?.map((match) => (
-                <View key={match._id}>
+              {matches.map((match) => (
+                <View key={match.matchId}>
                   <TouchableOpacity
-                    onPress={() => handleConvoClick(match.clerkId)}
+                    onPress={() => handleConvoClick(match.matchId)}
                   >
                     <Image
-                      src={match.images[0]}
+                      source={{ uri: match.profile.images[0] }}
                       className="w-12 h-12 rounded-full"
                     />
+                    <Text className="text-center">{match.profile.name}</Text>
                   </TouchableOpacity>
                 </View>
               ))}
@@ -119,4 +131,4 @@ const chat = () => {
   );
 };
 
-export default chat;
+export default Chat;

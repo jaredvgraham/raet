@@ -10,17 +10,17 @@ import {
   StrictAuthProp,
 } from "@clerk/clerk-sdk-node";
 import { CustomError } from "./middlewares/customError";
-import http from "http";
 
 import feedRoutes from "./routes/feedRoutes";
-import { initializeWebSocket } from "./services/websocketService";
+
 import chatRoutes from "./routes/chatRoutes";
+import matchRoutes from "./routes/matchRoutes";
 
 dotenv.config();
 const app: Application = express();
-const server = http.createServer(app);
+
 const port = process.env.PORT || 3001;
-const ipAddress = "192.168.1.177";
+const ipAddress = process.env.IP_ADDRESS || "localhost";
 
 declare global {
   namespace Express {
@@ -32,11 +32,10 @@ app.use(express.json());
 
 connectDB();
 
-const io = initializeWebSocket(server);
-
 app.use("/api/user", userRoutes);
 app.use("/api/feed", feedRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/match", matchRoutes);
 
 app.use(errorHandler);
 
