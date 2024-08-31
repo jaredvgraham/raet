@@ -8,6 +8,7 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import { ref, push, onChildAdded, set } from "firebase/database";
 import { useLocalSearchParams } from "expo-router";
@@ -19,7 +20,7 @@ import { useAuthFetch } from "@/hooks/Privatefetch";
 const ChatScreen = () => {
   const { matchId } = useLocalSearchParams(); // Assume matchId and userId are passed as route params
   const authFetch = useAuthFetch();
-  const [mtach, setMatch] = useState<Profile>();
+  const [match, setMatch] = useState<Profile>();
   const { userId } = useAuth();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -54,9 +55,9 @@ const ChatScreen = () => {
         });
 
         const data = await response?.json();
-        console.log("data match", data);
+        console.log("data match", data.matchProfile);
 
-        setMatch(data);
+        setMatch(data.matchProfile);
       } catch (error) {
         console.error("Error fetching match:", error);
       }
@@ -97,6 +98,7 @@ const ChatScreen = () => {
       }, 100); // small delay to ensure that FlatList has rendered
     }
   }, [messages]);
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -110,16 +112,23 @@ const ChatScreen = () => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <View
-              className={`p-3 my-2 rounded-lg ${
-                item.senderId === userId
-                  ? "bg-blue-100 self-end"
-                  : "bg-gray-200"
+              className={`flex-row items-end ${
+                item.senderId === userId ? "justify-end" : ""
               }`}
             >
-              <Text className="font-bold">
-                {item.senderId === userId ? "You" : "Them"}:
-              </Text>
-              <Text className="text-lg">{item.message}</Text>
+              {item.senderId !== userId && (
+                <Image
+                  src={match?.images[0]}
+                  className="w-[40px] h-[40px] rounded-full mr-2 mb-2"
+                />
+              )}
+              <View
+                className={`max-w-[80%] p-3 my-2 rounded-xl ${
+                  item.senderId === userId ? "bg-blue-100" : "bg-gray-200"
+                }`}
+              >
+                <Text className="text-lg flex-wrap">{item.message}</Text>
+              </View>
             </View>
           )}
           onContentSizeChange={() =>
