@@ -10,9 +10,10 @@ type HeaderProps = {
   backDestination?: string;
   image?: string;
   userName?: string;
+  style?: string;
 };
 
-const Header = ({ backArrow, backDestination, image }: HeaderProps) => {
+const Header = ({ backArrow, backDestination, image, style }: HeaderProps) => {
   const router = useRouter();
 
   const handleBackPress = () => {
@@ -25,13 +26,7 @@ const Header = ({ backArrow, backDestination, image }: HeaderProps) => {
 
   return (
     <View
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between", // Adjust this to distribute space evenly
-        paddingHorizontal: 10, // Add padding to the sides if needed
-        height: 50, // Adjust height as needed
-      }}
+      className={`flex flex-row items-center justify-between px-3 h-6 ${style}`}
     >
       {backArrow && (
         <TouchableOpacity onPress={handleBackPress} style={{ width: 40 }}>
