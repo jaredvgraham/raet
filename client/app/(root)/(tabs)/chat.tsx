@@ -46,7 +46,10 @@ const Chat = () => {
       const data = await response?.json();
       const initialConversations = data.conversations;
 
-      console.log("initialConversations last message", initialConversations);
+      console.log(
+        "initialConversations length is",
+        initialConversations.length
+      );
 
       if (!initialConversations || initialConversations.length === 0) {
         setNoConversations(true);
@@ -78,7 +81,10 @@ const Chat = () => {
                 }
                 return convo;
               });
-              console.log("updatedConversations", updatedConversations);
+              console.log(
+                "updatedConversations length is ",
+                updatedConversations.length
+              );
               return updatedConversations;
             });
           });
@@ -119,7 +125,7 @@ const Chat = () => {
           </Text>
         ) : (
           <View className="">
-            <View className="p-4 border-b border-gray-300 flex flex-row items-center overflow-auto overflow-x-scroll">
+            <View className="p-4 border-b border-gray-300 flex flex-row items-center overflow-auto overflow-x-scroll gap-2">
               {matches.map((match) => (
                 <View key={match.matchId}>
                   <TouchableOpacity
@@ -141,44 +147,58 @@ const Chat = () => {
         <Text className="text-xl font-bold">Conversations</Text>
       </View>
 
-      <View className="flex">
+      <View className="flex ">
         {noConversations ? (
           <Text className="text-center text-gray-500">
             No conversations found. Please try again later.
           </Text>
         ) : (
           <View className="">
-            {conversations.map((conversation) => (
-              <View
-                key={conversation.matchId}
-                className={`p-4 border-b border-gray-300 flex-row items-center ${
-                  conversation.lastMessage &&
-                  conversation.lastMessage.senderId &&
-                  conversation.lastMessage.senderId !== userId &&
-                  !conversation.lastMessage.receiverViewed
-                    ? "bg-black"
-                    : ""
-                }`}
-              >
+            {conversations.map((conversation) => {
+              const notRead =
+                conversation.lastMessage &&
+                conversation.lastMessage.senderId &&
+                conversation.lastMessage.senderId !== userId &&
+                !conversation.lastMessage.receiverViewed;
+
+              return (
                 <TouchableOpacity
                   onPress={() => handleConvoClick(conversation.matchId)}
-                  className="flex-row items-center "
+                  className={`flex-row items-center border-b border-gray-300 ${
+                    notRead ? "bg-black text-gray-300" : ""
+                  }`}
+                  key={conversation.matchId}
                 >
-                  <Image
-                    source={{ uri: conversation?.matchedUser?.images[0] }}
-                    className="w-12 h-12 rounded-full mr-4"
-                  />
-                  <View>
-                    <Text className="font-bold">
-                      {conversation?.matchedUser?.name}
-                    </Text>
-                    <Text numberOfLines={1} className="text-gray-600">
-                      {conversation?.lastMessage.message}
-                    </Text>
+                  <View
+                    className={`p-4  flex-row items-center ${
+                      notRead ? "bg-black text-gray-300" : ""
+                    }`}
+                  >
+                    <Image
+                      source={{ uri: conversation?.matchedUser?.images[0] }}
+                      className="w-12 h-12 rounded-full mr-4"
+                    />
+                    <View>
+                      <Text
+                        className={`font-bold ${
+                          notRead ? "text-gray-300" : "text-black"
+                        } `}
+                      >
+                        {conversation?.matchedUser?.name}
+                      </Text>
+                      <Text
+                        numberOfLines={1}
+                        className={`${
+                          notRead ? "text-gray-300" : "text-black"
+                        } `}
+                      >
+                        {conversation?.lastMessage.message}
+                      </Text>
+                    </View>
                   </View>
                 </TouchableOpacity>
-              </View>
-            ))}
+              );
+            })}
           </View>
         )}
       </View>

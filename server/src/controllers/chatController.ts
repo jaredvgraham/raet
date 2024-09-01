@@ -94,12 +94,14 @@ export const getLastMsgAndMatch = async (
   next: NextFunction
 ) => {
   const { userId } = req.auth;
+  console.log("getLastMsgAndMatch");
 
   try {
     const matches = await Match.find({
       $or: [{ user1ClerkId: userId }, { user2ClerkId: userId }],
     }).populate({
       path: "chat",
+      model: "Message",
       options: { sort: { sentAt: -1 }, limit: 1 }, // Get the last message only
     });
 
@@ -118,10 +120,11 @@ export const getLastMsgAndMatch = async (
           clerkId: matchedUserId,
         }).select("name age bio images");
 
-        const lastMessage =
-          match.chat && match.chat.length > 0
-            ? match.chat[0] // The latest message is now the first one due to the sort order
-            : null;
+        console.log("match.chat from user", match, match.chat);
+
+        const lastMessage = match.chat
+          ? match.chat[0] // The latest message is now the first one due to the sort order
+          : null;
 
         if (lastMessage) {
           return {
@@ -136,9 +139,14 @@ export const getLastMsgAndMatch = async (
     );
 
     // Filter out null values (i.e., matches without messages)
+
+    console.log("conversations before filtering ", conversations);
+
     const filteredConversations = conversations.filter(
       (conversation) => conversation !== null
     );
+
+    console.log("conversations after filtering ", filteredConversations);
 
     if (filteredConversations.length === 0) {
       return res.status(404).json({ message: "No conversations found" });
@@ -194,12 +202,11 @@ export const sendMessage = async (
 
     // Update Match with the new message
 
-    if (!match.chat) {
-      match.chat = [];
-    }
-
-    match.chat.push((message as any)._id);
-    await match.save();
+    await Match.findByIdAndUpdate(
+      matchId,
+      { $push: { chat: message._id } },
+      { new: true } // Return the updated document
+    );
 
     return res.status(200).json({ message: "Message sent" });
   } catch (error) {

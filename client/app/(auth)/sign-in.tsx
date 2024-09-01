@@ -51,82 +51,92 @@ const SignIn = () => {
   }, [isLoaded, formData.email, formData.password]);
 
   return (
-    <ScrollView className="flex-1 bg-white">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1 p-6"
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <ScrollView
+        className="flex-1 bg-white"
+        keyboardShouldPersistTaps="handled"
       >
-        <View className="flex items-center mb-12">
-          <Image
-            source={require("../../assets/r-logo.png")}
-            className="w-24 h-24 mb-4"
-          />
-          <Text className="text-3xl font-light text-gray-900">
-            Welcome back!
-          </Text>
-        </View>
-
-        <View className="space-y-6">
-          {/* Email Input */}
-          <View className="flex-row items-center border border-gray-300 rounded-full px-4  bg-gray-100 focus:border-blue-300">
-            <View className="mr-2">
-              <Icon name="envelope" size={20} color="gray" />
-            </View>
-            <TextInput
-              placeholder="Email"
-              placeholderTextColor="gray"
-              value={formData.email}
-              onChangeText={(text) => setFormData({ ...formData, email: text })}
-              className="flex-1 text-start text-gray-800 py-2"
-              keyboardType="email-address"
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+          className="flex-1 p-6 justify-around"
+        >
+          <View className="flex items-center mb-12">
+            <Image
+              source={require("../../assets/r-logo.png")}
+              className="w-24 h-24 mb-4"
             />
-          </View>
-
-          {/* Password Input */}
-          <View className="flex-row items-center border border-gray-300 rounded-full px-4  bg-gray-100 focus:border-blue-300">
-            <View className="mr-2">
-              <Icon name="lock" size={20} color="gray" />
-            </View>
-            <TextInput
-              placeholder="Password"
-              placeholderTextColor="gray"
-              value={formData.password}
-              onChangeText={(text) =>
-                setFormData({ ...formData, password: text })
-              }
-              secureTextEntry
-              className="flex-1 text-start text-gray-800 py-2"
-            />
-          </View>
-
-          {/* Sign Up Button */}
-          {error && <Text style={{ color: "red" }}>{error}</Text>}
-
-          <TouchableOpacity onPress={onSignIn} className="shadow-2xl">
-            <View className="flex items-center justify-center w-full bg-blue-500 rounded-full py-3 ">
-              <Text className="text-white text-lg font-semibold">Sign In</Text>
-            </View>
-          </TouchableOpacity>
-
-          {/* OAuth*/}
-          <OAuth />
-
-          {/* Sign In */}
-          <View className="mx-auto">
-            <Text className="text-gray-500 text-center">
-              Dont have an account?
+            <Text className="text-3xl font-light text-gray-900">
+              Welcome back!
             </Text>
-            <TouchableOpacity onPress={() => router.push("/(auth)/sign-up")}>
-              <Text className="text-blue-500 font-bold text-center ">
-                Sign Up
-              </Text>
-            </TouchableOpacity>
           </View>
 
-          {/* Verification Modal */}
-        </View>
-      </KeyboardAvoidingView>
-    </ScrollView>
+          <View className="space-y-6">
+            {/* Email Input */}
+            <View className="flex-row items-center border border-gray-300 rounded-full px-4  bg-gray-100 focus:border-blue-300">
+              <View className="mr-2">
+                <Icon name="envelope" size={20} color="gray" />
+              </View>
+              <TextInput
+                placeholder="Email"
+                placeholderTextColor="gray"
+                value={formData.email}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, email: text })
+                }
+                className="flex-1 text-start text-gray-800 py-2"
+                keyboardType="email-address"
+              />
+            </View>
+
+            {/* Password Input */}
+            <View className="flex-row items-center border border-gray-300 rounded-full px-4  bg-gray-100 focus:border-blue-300">
+              <View className="mr-2">
+                <Icon name="lock" size={20} color="gray" />
+              </View>
+              <TextInput
+                placeholder="Password"
+                placeholderTextColor="gray"
+                value={formData.password}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, password: text })
+                }
+                secureTextEntry
+                className="flex-1 text-start text-gray-800 py-2"
+              />
+            </View>
+
+            {/* Sign Up Button */}
+            {error && <Text style={{ color: "red" }}>{error}</Text>}
+
+            <TouchableOpacity onPress={onSignIn} className="shadow-2xl">
+              <View className="flex items-center justify-center w-full bg-blue-500 rounded-full py-3 ">
+                <Text className="text-white text-lg font-semibold">
+                  Sign In
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* OAuth*/}
+            <OAuth />
+
+            {/* Sign In */}
+            <View className="mx-auto">
+              <Text className="text-gray-500 text-center">
+                Dont have an account?
+              </Text>
+              <TouchableOpacity onPress={() => router.push("/(auth)/sign-up")}>
+                <Text className="text-blue-500 font-bold text-center ">
+                  Sign Up
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Verification Modal */}
+          </View>
+        </KeyboardAvoidingView>
+      </ScrollView>
+    </TouchableWithoutFeedback>
   );
 };
 

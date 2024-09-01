@@ -128,172 +128,184 @@ const SignUp = () => {
   };
 
   return (
-    <ScrollView className="flex-1 bg-white">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1 p-6"
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <ScrollView
+        className="flex-1 bg-white"
+        keyboardShouldPersistTaps="handled"
       >
-        <View className="flex items-center mb-12">
-          <Image
-            source={require("../../assets/r-logo.png")}
-            className="w-24 h-24 mb-4"
-          />
-          <Text className="text-3xl font-light text-gray-900">
-            Create an account!
-          </Text>
-        </View>
-
-        <View className="space-y-6">
-          {/* Name Input */}
-
-          <View className="flex-row items-center border border-gray-300 rounded-full px-4  bg-gray-100 focus:border-blue-300">
-            <View className="mr-2">
-              <Icon name="user" size={20} color="gray" />
-            </View>
-            <TextInput
-              placeholder="Name"
-              placeholderTextColor="gray"
-              value={formData.name}
-              onChangeText={(text) => setFormData({ ...formData, name: text })}
-              className="flex-1 text-start text-gray-800 py-2 "
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+          className="flex-1 p-6"
+        >
+          <View className="flex items-center mb-12">
+            <Image
+              source={require("../../assets/r-logo.png")}
+              className="w-24 h-24 mb-4"
             />
+            <Text className="text-3xl font-light text-gray-900">
+              Create an account!
+            </Text>
           </View>
 
-          {/* Email Input */}
-          <View className="flex-row items-center border border-gray-300 rounded-full px-4  bg-gray-100 focus:border-blue-300">
-            <View className="mr-2">
-              <Icon name="envelope" size={20} color="gray" />
+          <View className="space-y-6">
+            {/* Name Input */}
+
+            <View className="flex-row items-center border border-gray-300 rounded-full px-4  bg-gray-100 focus:border-blue-300">
+              <View className="mr-2">
+                <Icon name="user" size={20} color="gray" />
+              </View>
+              <TextInput
+                placeholder="Name"
+                placeholderTextColor="gray"
+                value={formData.name}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, name: text })
+                }
+                className="flex-1 text-start text-gray-800 py-2 "
+              />
             </View>
-            <TextInput
-              placeholder="Email"
-              placeholderTextColor="gray"
-              value={formData.email}
-              onChangeText={(text) => setFormData({ ...formData, email: text })}
-              className="flex-1 text-start text-gray-800 py-2"
-              keyboardType="email-address"
-            />
-          </View>
 
-          {/* Password Input */}
-          <View className="flex-row items-center border border-gray-300 rounded-full px-4   bg-gray-100 focus:border-blue-300">
-            <View className="mr-2">
-              <Icon name="lock" size={20} color="gray" />
+            {/* Email Input */}
+            <View className="flex-row items-center border border-gray-300 rounded-full px-4  bg-gray-100 focus:border-blue-300">
+              <View className="mr-2">
+                <Icon name="envelope" size={20} color="gray" />
+              </View>
+              <TextInput
+                placeholder="Email"
+                placeholderTextColor="gray"
+                value={formData.email}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, email: text })
+                }
+                className="flex-1 text-start text-gray-800 py-2"
+                keyboardType="email-address"
+              />
             </View>
-            <TextInput
-              placeholder="Password"
-              placeholderTextColor="gray"
-              value={formData.password}
-              onChangeText={(text) =>
-                setFormData({ ...formData, password: text })
-              }
-              secureTextEntry
-              className="flex-1 text-start text-gray-800 py-2"
-            />
-          </View>
 
-          {/* Sign Up Button */}
-
-          <TouchableOpacity onPress={onSignUp} className="shadow-2xl">
-            <View className="flex items-center justify-center w-full bg-blue-500 rounded-full py-3 ">
-              <Text className="text-white text-lg font-semibold">Sign Up</Text>
+            {/* Password Input */}
+            <View className="flex-row items-center border border-gray-300 rounded-full px-4   bg-gray-100 focus:border-blue-300">
+              <View className="mr-2">
+                <Icon name="lock" size={20} color="gray" />
+              </View>
+              <TextInput
+                placeholder="Password"
+                placeholderTextColor="gray"
+                value={formData.password}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, password: text })
+                }
+                secureTextEntry
+                className="flex-1 text-start text-gray-800 py-2"
+              />
             </View>
-          </TouchableOpacity>
 
-          {error && (
-            <Text className="text-red-500 text-sm text-center">{error}</Text>
-          )}
+            {/* Sign Up Button */}
 
-          {/* OAuth*/}
-          <OAuth />
-
-          {/* Sign In */}
-          <View className="ml-2">
-            <Text className="text-gray-500">Already have an account?</Text>
-            <TouchableOpacity onPress={() => router.push("/(auth)/sign-in")}>
-              <Text className="text-blue-500 font-bold ">Sign In</Text>
+            <TouchableOpacity onPress={onSignUp} className="shadow-2xl">
+              <View className="flex items-center justify-center w-full bg-blue-500 rounded-full py-3 ">
+                <Text className="text-white text-lg font-semibold">
+                  Sign Up
+                </Text>
+              </View>
             </TouchableOpacity>
+
+            {error && (
+              <Text className="text-red-500 text-sm text-center">{error}</Text>
+            )}
+
+            {/* OAuth*/}
+            <OAuth />
+
+            {/* Sign In */}
+            <View className="ml-2">
+              <Text className="text-gray-500">Already have an account?</Text>
+              <TouchableOpacity onPress={() => router.push("/(auth)/sign-in")}>
+                <Text className="text-blue-500 font-bold ">Sign In</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Verification Modal */}
+
+            <ReactNativeModal
+              isVisible={pendingVerification.state === "pending"}
+              onModalHide={() => {
+                if (pendingVerification.state === "success") {
+                  setShowSuccessModal(true);
+                }
+              }}
+            >
+              <View className=" bg-white px-7 py-9 rounded-2xl min-h-[300px]">
+                <Text className="text-2xl text-center font-semibold">
+                  Verify your email
+                </Text>
+                <Text className="text-base text-gray-400 text-center mt-2">
+                  We have sent a verification code to your email address{" "}
+                  {formData.email}. Please enter the code below.
+                </Text>
+                <View className="flex-row items-center border border-gray-300 rounded-full px-4 py-2 bg-gray-100 focus:border-blue-300 mt-5">
+                  <View className="mr-2">
+                    <Icon name="lock" size={20} color="gray" />
+                  </View>
+                  <TextInput
+                    placeholder="12345"
+                    placeholderTextColor="gray"
+                    value={pendingVerification.code}
+                    keyboardType="numeric"
+                    onChangeText={(text) =>
+                      setPendingVerification({
+                        ...pendingVerification,
+                        code: text,
+                      })
+                    }
+                    className="flex-1 text-start text-gray-800"
+                  />
+                  {pendingVerification.error && (
+                    <Text className="text-red-500 text-sm">
+                      {pendingVerification.error}
+                    </Text>
+                  )}
+                </View>
+                <TouchableOpacity onPress={onPressVerify} className="mt-5">
+                  <View className="flex items-center justify-center w-full bg-green-500 rounded-full py-3 ">
+                    <Text className="text-white text-lg font-semibold">
+                      Verify
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </ReactNativeModal>
+
+            <ReactNativeModal isVisible={showSuccessModal}>
+              <View className=" bg-white px-7 py-9 rounded-2xl min-h-[300px]">
+                <View className="mx-auto my-5">
+                  <Icon name="check-circle" size={100} color="green" />
+                </View>
+                <Text className="text-2xl text-center font-semibold">
+                  Verified
+                </Text>
+                <Text className="text-base text-gray-400 text-center mt-2">
+                  Your email has been verified successfully!
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setShowSuccessModal(false);
+                    router.push("/(setUp)/onboarding");
+                  }}
+                  className="mt-5"
+                >
+                  <View className="flex items-center justify-center w-full bg-blue-500 rounded-full py-3 ">
+                    <Text className="text-white text-lg font-semibold">
+                      Get Started
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </ReactNativeModal>
           </View>
-
-          {/* Verification Modal */}
-
-          <ReactNativeModal
-            isVisible={pendingVerification.state === "pending"}
-            onModalHide={() => {
-              if (pendingVerification.state === "success") {
-                setShowSuccessModal(true);
-              }
-            }}
-          >
-            <View className=" bg-white px-7 py-9 rounded-2xl min-h-[300px]">
-              <Text className="text-2xl text-center font-semibold">
-                Verify your email
-              </Text>
-              <Text className="text-base text-gray-400 text-center mt-2">
-                We have sent a verification code to your email address{" "}
-                {formData.email}. Please enter the code below.
-              </Text>
-              <View className="flex-row items-center border border-gray-300 rounded-full px-4 py-2 bg-gray-100 focus:border-blue-300 mt-5">
-                <View className="mr-2">
-                  <Icon name="lock" size={20} color="gray" />
-                </View>
-                <TextInput
-                  placeholder="12345"
-                  placeholderTextColor="gray"
-                  value={pendingVerification.code}
-                  keyboardType="numeric"
-                  onChangeText={(text) =>
-                    setPendingVerification({
-                      ...pendingVerification,
-                      code: text,
-                    })
-                  }
-                  className="flex-1 text-start text-gray-800"
-                />
-                {pendingVerification.error && (
-                  <Text className="text-red-500 text-sm">
-                    {pendingVerification.error}
-                  </Text>
-                )}
-              </View>
-              <TouchableOpacity onPress={onPressVerify} className="mt-5">
-                <View className="flex items-center justify-center w-full bg-green-500 rounded-full py-3 ">
-                  <Text className="text-white text-lg font-semibold">
-                    Verify
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          </ReactNativeModal>
-
-          <ReactNativeModal isVisible={showSuccessModal}>
-            <View className=" bg-white px-7 py-9 rounded-2xl min-h-[300px]">
-              <View className="mx-auto my-5">
-                <Icon name="check-circle" size={100} color="green" />
-              </View>
-              <Text className="text-2xl text-center font-semibold">
-                Verified
-              </Text>
-              <Text className="text-base text-gray-400 text-center mt-2">
-                Your email has been verified successfully!
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setShowSuccessModal(false);
-                  router.push("/(setUp)/onboarding");
-                }}
-                className="mt-5"
-              >
-                <View className="flex items-center justify-center w-full bg-blue-500 rounded-full py-3 ">
-                  <Text className="text-white text-lg font-semibold">
-                    Get Started
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          </ReactNativeModal>
-        </View>
-      </KeyboardAvoidingView>
-    </ScrollView>
+        </KeyboardAvoidingView>
+      </ScrollView>
+    </TouchableWithoutFeedback>
   );
 };
 

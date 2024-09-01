@@ -12,7 +12,7 @@ const matchSchema = new Schema<IMatch>({
   user2ClerkId: { type: String, required: true },
   matchedAt: { type: Date, default: Date.now },
 
-  chat: [{ type: mongoose.Schema.Types.ObjectId, ref: "Message" }],
+  chat: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
 });
 
 matchSchema.index({ user1ClerkId: 1, user2ClerkId: 1 }, { unique: true });

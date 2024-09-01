@@ -2,7 +2,7 @@
 //   THIS FILE IS INSANITY
 //
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   SafeAreaView,
   View,
@@ -21,6 +21,7 @@ import { getUserLocation } from "@/utils/contants";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import { Profile } from "@/types";
 import Notification from "@/components/Notification";
+import { useFocusEffect } from "expo-router";
 
 export const users = [
   {
@@ -151,20 +152,21 @@ export default function SwipeableCardDeck() {
     fetchMoreProfiles();
   }, []);
 
-  useEffect(() => {
-    const handleProfileChange = () => {
-      if (!profiles) return;
+  const handleProfileChange = () => {
+    if (!profiles) return;
 
-      currentProfileRef.current = profiles[currentProfileIndex];
-      nextProfileRef.current = profiles[currentProfileIndex + 1];
-      console.log(
-        "profiles",
-        profiles.map((profile: Profile) => profile.name)
-      );
-      if (profiles.length <= 1 && !noProfilesLeft) {
-        fetchMoreProfiles();
-      }
-    };
+    currentProfileRef.current = profiles[currentProfileIndex];
+    nextProfileRef.current = profiles[currentProfileIndex + 1];
+    console.log(
+      "profiles",
+      profiles.map((profile: Profile) => profile.name)
+    );
+    if (profiles.length <= 1 && !noProfilesLeft) {
+      fetchMoreProfiles();
+    }
+  };
+
+  useEffect(() => {
     handleProfileChange();
 
     setIsReady(false); // Reset readiness state
@@ -204,6 +206,19 @@ export default function SwipeableCardDeck() {
       setNoProfilesLeft(true);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      console.log("Hello, I am focused!");
+      fetchMoreProfiles();
+      handleProfileChange();
+      setCurrentImageIndex(0);
+
+      return () => {
+        console.log("This route is now unfocused.");
+      };
+    }, [profiles, currentProfileIndex])
+  );
 
   const handleSwipeAction = async (direction: string) => {
     if (!currentProfileRef.current) {

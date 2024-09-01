@@ -159,7 +159,11 @@ const ChatScreen = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0} // Adjust this value if needed
       >
-        <Header backArrow={true} />
+        <Header
+          backArrow={true}
+          image={match?.images[0]}
+          userName={match?.name}
+        />
         <View className="flex-1 justify-center p-4 bg-gray-100">
           <FlatList
             ref={flatListRef}

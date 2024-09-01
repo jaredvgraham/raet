@@ -1,21 +1,25 @@
 import React from "react";
-import { View, Image, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
-import Icon from "react-native-vector-icons/FontAwesome"; // Using FontAwesome as an example
+import Icon from "react-native-vector-icons/FontAwesome";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { Image } from "expo-image";
 
 type HeaderProps = {
   backArrow?: boolean;
-  backDestination?: string; // Optional prop to specify where the back button should navigate
+  backDestination?: string;
+  image?: string;
+  userName?: string;
 };
 
-const Header = ({ backArrow, backDestination }: HeaderProps) => {
+const Header = ({ backArrow, backDestination, image }: HeaderProps) => {
   const router = useRouter();
 
   const handleBackPress = () => {
     if (backDestination) {
-      router.push(backDestination as any); // Navigate to the specified destination
+      router.push(backDestination as any);
     } else {
-      router.back(); // Go back to the previous screen
+      router.back();
     }
   };
 
@@ -24,22 +28,35 @@ const Header = ({ backArrow, backDestination }: HeaderProps) => {
       style={{
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "space-between", // Adjust this to distribute space evenly
+        paddingHorizontal: 10, // Add padding to the sides if needed
+        height: 50, // Adjust height as needed
       }}
     >
       {backArrow && (
-        <TouchableOpacity
-          onPress={handleBackPress}
-          style={{ position: "absolute", left: 10 }}
-        >
-          <Icon name="arrow-left" size={20} color="black" />
+        <TouchableOpacity onPress={handleBackPress} style={{ width: 40 }}>
+          <Icon
+            name="angle-left"
+            size={40}
+            color="black"
+            style={{ transform: [{ scaleX: 0.8 }] }}
+          />
         </TouchableOpacity>
       )}
+
       <Image
         source={require("../assets/r-logo.png")} // Update this path to your logo
         style={{ width: 40, height: 40 }}
-        resizeMode="contain"
       />
+
+      {image && (
+        <View style={{ width: 40 }}>
+          <Image
+            source={{ uri: image }}
+            style={{ width: 40, height: 40, borderRadius: 20 }}
+          />
+        </View>
+      )}
     </View>
   );
 };
