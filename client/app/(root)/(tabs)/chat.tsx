@@ -9,6 +9,8 @@ import React, { useEffect, useState } from "react";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import { router } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
+import { ref, query, limitToLast, onChildAdded } from "firebase/database";
+import { db } from "@/services/firebaseConfig";
 
 const Chat = () => {
   const authFetch = useAuthFetch();
@@ -20,16 +22,20 @@ const Chat = () => {
       profile: { clerkId: string; images: string[]; name: string };
     }[]
   >([]);
+  const [conversations, setConversations] = useState<any[]>([]);
   const [noMatches, setNoMatches] = useState<boolean>(true);
-  const [conversations, setConversations] = useState<any>([]);
   const [noConversations, setNoConversations] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const response = await authFetch("/api/chat/matches");
+        const response = await authFetch("/api/chat/matches", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         const data = await response?.json();
-        console.log("data", data.matches);
         const matches = data.matches;
 
         setMatches(matches);
@@ -44,15 +50,46 @@ const Chat = () => {
       try {
         const response = await authFetch("/api/chat/conversations");
         const data = await response?.json();
-        console.log("conversations", data);
+        const initialConversations = data.conversations;
 
-        setConversations(data);
-        console.log(data.length);
-        if (data === undefined || data.length === 0) {
+        console.log("initialConversations last message", initialConversations);
+
+        if (!initialConversations || initialConversations.length === 0) {
           setNoConversations(true);
-        }
+        } else {
+          setConversations(initialConversations);
+          setNoConversations(false);
 
-        setNoConversations(data.length === 1);
+          // Listen for the latest message in each conversation
+          initialConversations.forEach((conversation: any) => {
+            const chatRef = query(
+              ref(db, `chats/${conversation.matchId}`),
+              limitToLast(1)
+            );
+
+            // Listen for new messages
+            onChildAdded(chatRef, (snapshot) => {
+              const newMessage = snapshot.val();
+              setConversations((prevConversations) => {
+                const updatedConversations = prevConversations.map((convo) => {
+                  if (convo.matchId === conversation.matchId) {
+                    // Merge the new message with the existing lastMessage object
+                    return {
+                      ...convo,
+                      lastMessage: {
+                        ...convo.lastMessage, // Retain the previous properties
+                        ...newMessage, // Merge in new properties from newMessage
+                      },
+                    };
+                  }
+                  return convo;
+                });
+                console.log("updatedConversations", updatedConversations);
+                return updatedConversations;
+              });
+            });
+          });
+        }
       } catch (error) {
         console.error("Error fetching conversations:", error);
         setConversations([]);
@@ -60,17 +97,16 @@ const Chat = () => {
       }
     };
 
-    // fetchConversations();
     fetchMatches();
-  }, []);
+    fetchConversations();
+  }, [userId]);
 
   const handleConvoClick = (matchId: string) => {
-    console.log("matchId", matchId);
     router.push(`/(root)/(chat)/${matchId}`);
   };
 
   return (
-    <SafeAreaView className=" flex bg-white">
+    <SafeAreaView className="flex bg-white">
       <View className="p-4 border-b border-gray-300">
         <Text className="text-xl font-bold">Matches</Text>
       </View>
@@ -110,17 +146,35 @@ const Chat = () => {
             No conversations found. Please try again later.
           </Text>
         ) : (
-          <View className="flex-1">
-            {conversations?.map((conversation: any) => (
+          <View className="">
+            {conversations.map((conversation) => (
               <View
-                key={conversation._id}
-                className="p-4 border-b border-gray-300 flex items-center"
+                key={conversation.matchId}
+                className={`p-4 border-b border-gray-300 flex-row items-center ${
+                  conversation.lastMessage &&
+                  conversation.lastMessage.senderId &&
+                  conversation.lastMessage.senderId !== userId &&
+                  !conversation.lastMessage.receiverViewed
+                    ? "bg-black"
+                    : ""
+                }`}
               >
                 <TouchableOpacity
                   onPress={() => handleConvoClick(conversation.matchId)}
+                  className="flex-row items-center "
                 >
-                  <Text className="font-bold">{conversation.name}</Text>
-                  <Text>{conversation.lastMessage}</Text>
+                  <Image
+                    source={{ uri: conversation?.matchedUser?.images[0] }}
+                    className="w-12 h-12 rounded-full mr-4"
+                  />
+                  <View>
+                    <Text className="font-bold">
+                      {conversation?.matchedUser?.name}
+                    </Text>
+                    <Text numberOfLines={1} className="text-gray-600">
+                      {conversation?.lastMessage.message}
+                    </Text>
+                  </View>
                 </TouchableOpacity>
               </View>
             ))}

@@ -2,6 +2,7 @@ import { View, Text } from "react-native";
 import React, { useEffect } from "react";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import { SignOutButton } from "@/components/SignOut";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const profile = () => {
   const authFetch = useAuthFetch();
@@ -25,10 +26,10 @@ const profile = () => {
   }, []);
 
   return (
-    <View>
+    <SafeAreaView>
       <Text>profile</Text>
       <SignOutButton />
-    </View>
+    </SafeAreaView>
   );
 };
 

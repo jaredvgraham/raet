@@ -14,6 +14,25 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
 
   const [lon, lat] = user.location?.coordinates || [0, 0];
 
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+  console.log("user.location.cordinates", user.location?.coordinates);
+
   if (!lon || !lat) {
     throw new CustomError("User location not available", 400);
   }
@@ -101,9 +120,9 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
         averageRating: 1, // Include the calculated average rating
       },
     },
-    {
-      $limit: 10,
-    },
+    // {
+    //   $limit: 10,
+    // },
   ]);
 
   return nearbyUsers;

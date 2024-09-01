@@ -8,7 +8,6 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  Image,
 } from "react-native";
 import { ref, push, onChildAdded, set } from "firebase/database";
 import { useLocalSearchParams } from "expo-router";
@@ -16,12 +15,16 @@ import { useAuth } from "@clerk/clerk-expo";
 import { db } from "@/services/firebaseConfig";
 import { Message, Profile } from "@/types";
 import { useAuthFetch } from "@/hooks/Privatefetch";
+import { Image } from "expo-image";
+import Header from "@/components/header";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ChatScreen = () => {
   const { matchId } = useLocalSearchParams(); // Assume matchId and userId are passed as route params
   const authFetch = useAuthFetch();
   const [match, setMatch] = useState<Profile>();
   const { userId } = useAuth();
+  const [gotMessages, setGotMessages] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputHeight, setInputHeight] = useState(40);
@@ -31,14 +34,12 @@ const ChatScreen = () => {
   useEffect(() => {
     const chatRef = ref(db, `chats/${matchId}`);
 
-    onChildAdded(chatRef, (snapshot) => {
+    onChildAdded(chatRef, async (snapshot) => {
+      console.log("new message snapshot", snapshot.val());
+
       const newMessage = snapshot.val();
-      const messageExists = messages.some(
-        (message) => message.sentAt === newMessage.sentAt
-      );
-      setMessages((prevMessages) =>
-        messageExists ? prevMessages : [...prevMessages, newMessage]
-      );
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setGotMessages(true);
     });
   }, [matchId]);
 
@@ -64,6 +65,56 @@ const ChatScreen = () => {
     };
     fetchMatch();
   }, [matchId]);
+
+  useEffect(() => {
+    const readMsg = async () => {
+      console.log("readMsg");
+      console.log("readMsg");
+      console.log("readMsg");
+      console.log("readMsg");
+      console.log("readMsg");
+      console.log("readMsg");
+      console.log("readMsg");
+      console.log("readMsg");
+      console.log("readMsg");
+      console.log("readMsg");
+
+      try {
+        if (messages.length === 0 || !gotMessages) {
+          console.log("no messages to read");
+          console.log("no messages to read");
+          console.log("no messages to read");
+          console.log("no messages to read");
+          console.log("no messages to read");
+          console.log("no messages to read");
+          console.log("no messages to read");
+          return;
+        }
+        const newMessage = messages[messages.length - 1];
+
+        console.log("newMessage", newMessage);
+
+        if (
+          newMessage.senderId === userId ||
+          newMessage.receiverViewed === true
+        )
+          return;
+
+        // Inform the backend that the message has been read
+        const res = await authFetch(`/api/chat/message/read/${newMessage.id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ matchId }),
+        });
+        console.log("res from read", res);
+      } catch (error) {
+        console.error("Failed to mark message as read:", error);
+      }
+    };
+    readMsg();
+  }, [gotMessages]);
 
   const sendMessage = async () => {
     if (message.trim() === "") return;
@@ -95,65 +146,80 @@ const ChatScreen = () => {
     if (flatListRef.current && messages.length > 0) {
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100); // small delay to ensure that FlatList has rendered
+      }, 250); // small delay to ensure that FlatList has rendered
     }
   }, [messages]);
 
+  const icon = require("@/assets/images/icon.jpeg");
+
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0} // Adjust this value if needed
-    >
-      <View className="flex-1 justify-center p-4 bg-gray-100">
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <View
-              className={`flex-row items-end ${
-                item.senderId === userId ? "justify-end" : ""
-              }`}
-            >
-              {item.senderId !== userId && (
-                <Image
-                  src={match?.images[0]}
-                  className="w-[40px] h-[40px] rounded-full mr-2 mb-2"
-                />
-              )}
+    <SafeAreaView className="flex-1">
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0} // Adjust this value if needed
+      >
+        <Header backArrow={true} />
+        <View className="flex-1 justify-center p-4 bg-gray-100">
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
               <View
-                className={`max-w-[80%] p-3 my-2 rounded-xl ${
-                  item.senderId === userId ? "bg-blue-100" : "bg-gray-200"
+                className={`flex-row items-end ${
+                  item.senderId === userId ? "justify-end" : ""
                 }`}
               >
-                <Text className="text-lg flex-wrap">{item.message}</Text>
+                {item.senderId !== userId && (
+                  <Image
+                    source={match?.images[0]}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                      marginRight: 8,
+                      marginBottom: 8,
+                    }}
+                    contentFit="cover"
+                    transition={1000}
+                  />
+                )}
+                <View
+                  className={`max-w-[80%] p-3 my-2 rounded-xl ${
+                    item.senderId === userId ? "bg-blue-100" : "bg-gray-200"
+                  }`}
+                >
+                  <Text className="text-lg flex-wrap">{item.message}</Text>
+                </View>
               </View>
-            </View>
-          )}
-          onContentSizeChange={() =>
-            flatListRef.current?.scrollToEnd({ animated: true })
-          }
-          onLayout={() => flatListRef.current?.scrollToEnd({ animated: true })}
-        />
-        <View className="flex-row items-center p-3 border-t border-gray-300">
-          <TextInput
-            className={`flex-1 border border-gray-400 p-3 mr-2 ${
-              inputHeight > 40 ? "rounded-3xl" : "rounded-full"
-            }`}
-            value={message}
-            onChangeText={setMessage}
-            multiline={true}
-            placeholder="Type a message"
-            onContentSizeChange={(event) =>
-              setInputHeight(event.nativeEvent.contentSize.height)
+            )}
+            onContentSizeChange={() =>
+              flatListRef.current?.scrollToEnd({ animated: true })
             }
-            style={{ height: Math.max(40, inputHeight) }} // Ensure min height is 40
+            onLayout={() =>
+              flatListRef.current?.scrollToEnd({ animated: true })
+            }
           />
-          <Button title="Send" onPress={sendMessage} />
+          <View className="flex-row items-center p-3 border-t border-gray-300">
+            <TextInput
+              className={`flex-1 border border-gray-400 p-3 mr-2 ${
+                inputHeight > 40 ? "rounded-3xl" : "rounded-full"
+              }`}
+              value={message}
+              onChangeText={setMessage}
+              multiline={true}
+              placeholder="Type a message"
+              onContentSizeChange={(event) =>
+                setInputHeight(event.nativeEvent.contentSize.height)
+              }
+              style={{ height: Math.max(40, inputHeight) }} // Ensure min height is 40
+            />
+            <Button title="Send" onPress={sendMessage} />
+          </View>
         </View>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 

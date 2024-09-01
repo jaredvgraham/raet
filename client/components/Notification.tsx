@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Text, Animated } from "react-native";
+import { Text, Animated, SafeAreaView } from "react-native";
 
 type NotificationProps = {
   visible: boolean;
@@ -47,14 +47,20 @@ const Notification = ({
   if (!visible) return null;
 
   return (
-    <Animated.View
-      style={[{ transform: [{ translateY: slideAnim }] }]}
+    <SafeAreaView
       className={`w-full  p-4 z-50 absolute top-0 left-0 right-0   ${
         type === "success" ? "bg-green-500" : "bg-red-500"
       }`}
     >
-      <Text className="text-white text-center text-base">{message}</Text>
-    </Animated.View>
+      <Animated.View
+        style={[{ transform: [{ translateY: slideAnim }] }]}
+        className={`w-full  p-4 z-50 absolute top-0 left-0 right-0   ${
+          type === "success" ? "bg-green-500" : "bg-red-500"
+        }`}
+      >
+        <Text className="text-white text-center text-base">{message}</Text>
+      </Animated.View>
+    </SafeAreaView>
   );
 };
 

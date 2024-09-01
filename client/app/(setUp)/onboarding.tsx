@@ -97,6 +97,7 @@ const Onboarding = () => {
               setDateOfBirth(selectedDate || dateOfBirth)
             }
             style={{ width: "100%" }}
+            textColor="black"
           />
         </View>
       ),

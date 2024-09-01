@@ -4,6 +4,7 @@ import {
   getChat,
   getLastMsgAndMatch,
   getMatches,
+  markMessageAsRead,
   sendMessage,
 } from "../controllers/chatController";
 import { getMatch } from "../controllers/matchController";
@@ -17,5 +18,11 @@ router.get("/conversations", ClerkExpressRequireAuth(), getLastMsgAndMatch);
 router.get("/:matchId", ClerkExpressRequireAuth(), getChat);
 
 router.post("/send-message", ClerkExpressRequireAuth(), sendMessage);
+
+router.patch(
+  "/message/read/:messageId",
+  ClerkExpressRequireAuth(),
+  markMessageAsRead
+);
 
 export default router;

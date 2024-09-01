@@ -162,14 +162,10 @@ export default function SwipeableCardDeck() {
       }
       const { latitude, longitude } = newLocation;
       setLocation({ latitude, longitude });
-      console.log("location from effect", "lon", longitude, "lat", latitude);
-      console.log("location from effect", longitude, latitude);
-      console.log("location from effect", longitude, latitude);
-      console.log("location from effect", longitude, latitude);
-      console.log("location from effect", longitude, latitude);
-      console.log("location from effect", longitude, latitude);
-      console.log("location from effect", longitude, latitude);
-      console.log("location from effect", longitude, latitude);
+
+      if (!latitude || !longitude) {
+        return;
+      }
 
       try {
         const res = await authFetch("/api/user/location", {
@@ -188,7 +184,7 @@ export default function SwipeableCardDeck() {
       }
     };
     sendLocation();
-  }, [location]);
+  }, []);
 
   useEffect(() => {
     fetchMoreProfiles();

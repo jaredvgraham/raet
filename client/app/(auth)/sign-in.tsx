@@ -32,7 +32,7 @@ const SignIn = () => {
 
     try {
       const signInAttempt = await signIn.create({
-        identifier: formData.email,
+        identifier: formData.email.toLowerCase(),
         password: formData.password,
       });
 

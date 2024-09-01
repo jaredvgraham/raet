@@ -76,6 +76,7 @@ const Layout = () => {
         options={{
           title: "Chat",
           headerShown: false,
+
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} icon="comment" />
           ),

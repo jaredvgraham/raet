@@ -36,6 +36,19 @@ export interface Message {
   id: string;
   senderId: string;
   receiverId: string;
+  receiverViewed: boolean;
   message: string;
   sentAt: Date;
+}
+
+export interface MatchedUser {
+  clerkId: string;
+  images: string[];
+  name: string;
+}
+
+export interface Conversation {
+  matchId: string;
+  matchedUser: MatchedUser;
+  lastMessage: Message;
 }
