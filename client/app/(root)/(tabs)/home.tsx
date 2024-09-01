@@ -22,6 +22,7 @@ import { useAuthFetch } from "@/hooks/Privatefetch";
 import { Profile } from "@/types";
 import Notification from "@/components/Notification";
 import { useFocusEffect } from "expo-router";
+import { set } from "firebase/database";
 
 export const users = [
   {
@@ -201,6 +202,7 @@ export default function SwipeableCardDeck() {
       } else {
         setProfiles(data.feed);
       }
+      setNoProfilesLeft(false);
     } catch (error) {
       console.log("error fetching profiles", error);
       setNoProfilesLeft(true);

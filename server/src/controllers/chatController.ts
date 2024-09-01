@@ -147,6 +147,13 @@ export const getLastMsgAndMatch = async (
       return res.status(404).json({ message: "No conversations found" });
     }
 
+    filteredConversations.sort((a, b) => {
+      return (
+        new Date((b?.lastMessage as any).sentAt).getTime() -
+        new Date((a?.lastMessage as any).sentAt).getTime()
+      );
+    });
+
     return res.status(200).json({ conversations: filteredConversations });
   } catch (error) {
     console.error("Error fetching conversations:", error);
