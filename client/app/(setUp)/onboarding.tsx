@@ -5,7 +5,7 @@ import {
   TextInput,
   ScrollView,
 } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import Swiper from "react-native-swiper";
@@ -13,6 +13,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import { formatError } from "@/utils";
 import UploadImageComponent from "@/components/UploadImage";
+import { getUserLocation } from "@/utils/contants";
 
 const Onboarding = () => {
   const authFetch = useAuthFetch();
@@ -27,6 +28,10 @@ const Onboarding = () => {
   const [interests, setInterests] = useState<string[]>([]);
   const [customInterest, setCustomInterest] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [location, setLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
 
   // Predefined interests
   const predefinedInterests = [
@@ -37,6 +42,41 @@ const Onboarding = () => {
     "Books",
     "Art",
   ];
+
+  useEffect(() => {
+    console.log("location", location);
+
+    const sendLocation = async () => {
+      if (location) return;
+      const newLocation = await getUserLocation();
+      if (!newLocation) {
+        return;
+      }
+      const { latitude, longitude } = newLocation;
+      setLocation({ latitude, longitude });
+
+      if (!latitude || !longitude) {
+        return;
+      }
+
+      try {
+        const res = await authFetch("/api/user/location", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            lat: latitude,
+            lon: longitude,
+          }),
+        });
+        console.log("location", res);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+    sendLocation();
+  }, []);
 
   const handleAddInterest = (interest: string) => {
     if (!interests.includes(interest)) {

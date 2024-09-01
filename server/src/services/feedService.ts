@@ -136,11 +136,14 @@ export const likeUser = async (userId: string, likedUserId: string) => {
     throw new CustomError("User not found", 404);
   }
 
-  if (user.likedUsers && user.likedUsers.includes(likedUserId)) {
+  if (user.likedUsers?.includes(likedUserId)) {
     throw new CustomError("User already liked", 400);
   }
 
-  user.likedUsers?.push(likedUserId);
+  user.likedUsers = user.likedUsers || [];
+  likedUser.likedUsers = likedUser.likedUsers || [];
+
+  user.likedUsers.push(likedUserId);
   await user.save();
 
   const newLike = new Like({
@@ -150,14 +153,18 @@ export const likeUser = async (userId: string, likedUserId: string) => {
 
   await newLike.save();
 
-  if (likedUser.likedUsers && likedUser.likedUsers.includes(userId)) {
+  if (likedUser.likedUsers.includes(userId)) {
     console.log("Match found!");
+    user.matchedUsers = user.matchedUsers || [];
+    likedUser.matchedUsers = likedUser.matchedUsers || [];
     user.matchedUsers?.push(likedUserId);
     likedUser.matchedUsers?.push(userId);
     await user.save();
     await likedUser.save();
 
-    await createMatch(user.clerkId, likedUser.clerkId);
+    console.log("sending match match...", user.clerkId, likedUser.clerkId);
+
+    const match = await createMatch(user.clerkId, likedUser.clerkId);
 
     return { message: `Match found for ${likedUser.name}` };
   }

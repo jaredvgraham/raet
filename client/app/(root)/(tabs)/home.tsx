@@ -119,10 +119,6 @@ export default function SwipeableCardDeck() {
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
   const [swipingDirection, setSwipingDirection] = useState("");
   const [noProfilesLeft, setNoProfilesLeft] = useState(false);
-  const [location, setLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -150,41 +146,6 @@ export default function SwipeableCardDeck() {
     message: "",
     type: "success",
   });
-
-  useEffect(() => {
-    console.log("location", location);
-
-    const sendLocation = async () => {
-      if (location) return;
-      const newLocation = await getUserLocation();
-      if (!newLocation) {
-        return;
-      }
-      const { latitude, longitude } = newLocation;
-      setLocation({ latitude, longitude });
-
-      if (!latitude || !longitude) {
-        return;
-      }
-
-      try {
-        const res = await authFetch("/api/user/location", {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            lat: latitude,
-            lon: longitude,
-          }),
-        });
-        console.log("location", res);
-      } catch (error) {
-        console.log("error", error);
-      }
-    };
-    sendLocation();
-  }, []);
 
   useEffect(() => {
     fetchMoreProfiles();

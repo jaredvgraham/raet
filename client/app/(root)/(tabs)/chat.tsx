@@ -1,16 +1,11 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  Image,
-  TouchableOpacity,
-} from "react-native";
-import React, { useEffect, useState } from "react";
+import { View, Text, SafeAreaView, TouchableOpacity } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
 import { useAuthFetch } from "@/hooks/Privatefetch";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { ref, query, limitToLast, onChildAdded } from "firebase/database";
 import { db } from "@/services/firebaseConfig";
+import { Image } from "expo-image";
 
 const Chat = () => {
   const authFetch = useAuthFetch();
@@ -26,80 +21,87 @@ const Chat = () => {
   const [noMatches, setNoMatches] = useState<boolean>(true);
   const [noConversations, setNoConversations] = useState<boolean>(true);
 
-  useEffect(() => {
-    const fetchMatches = async () => {
-      try {
-        const response = await authFetch("/api/chat/matches", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await response?.json();
-        const matches = data.matches;
+  const fetchMatches = async () => {
+    try {
+      const response = await authFetch("/api/chat/matches", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response?.json();
+      const matches = data.matches;
 
-        setMatches(matches);
-        setNoMatches(matches.length === 0);
-      } catch (error) {
-        console.error("Error fetching matches:", error);
-        setNoMatches(true);
-      }
-    };
+      setMatches(matches);
+      setNoMatches(matches.length === 0);
+    } catch (error) {
+      console.error("Error fetching matches:", error);
+      setNoMatches(true);
+    }
+  };
 
-    const fetchConversations = async () => {
-      try {
-        const response = await authFetch("/api/chat/conversations");
-        const data = await response?.json();
-        const initialConversations = data.conversations;
+  const fetchConversations = async () => {
+    try {
+      const response = await authFetch("/api/chat/conversations");
+      const data = await response?.json();
+      const initialConversations = data.conversations;
 
-        console.log("initialConversations last message", initialConversations);
+      console.log("initialConversations last message", initialConversations);
 
-        if (!initialConversations || initialConversations.length === 0) {
-          setNoConversations(true);
-        } else {
-          setConversations(initialConversations);
-          setNoConversations(false);
+      if (!initialConversations || initialConversations.length === 0) {
+        setNoConversations(true);
+      } else {
+        setConversations(initialConversations);
+        setNoConversations(false);
 
-          // Listen for the latest message in each conversation
-          initialConversations.forEach((conversation: any) => {
-            const chatRef = query(
-              ref(db, `chats/${conversation.matchId}`),
-              limitToLast(1)
-            );
+        // Listen for the latest message in each conversation
+        initialConversations.forEach((conversation: any) => {
+          const chatRef = query(
+            ref(db, `chats/${conversation.matchId}`),
+            limitToLast(1)
+          );
 
-            // Listen for new messages
-            onChildAdded(chatRef, (snapshot) => {
-              const newMessage = snapshot.val();
-              setConversations((prevConversations) => {
-                const updatedConversations = prevConversations.map((convo) => {
-                  if (convo.matchId === conversation.matchId) {
-                    // Merge the new message with the existing lastMessage object
-                    return {
-                      ...convo,
-                      lastMessage: {
-                        ...convo.lastMessage, // Retain the previous properties
-                        ...newMessage, // Merge in new properties from newMessage
-                      },
-                    };
-                  }
-                  return convo;
-                });
-                console.log("updatedConversations", updatedConversations);
-                return updatedConversations;
+          // Listen for new messages
+          onChildAdded(chatRef, (snapshot) => {
+            const newMessage = snapshot.val();
+            setConversations((prevConversations) => {
+              const updatedConversations = prevConversations.map((convo) => {
+                if (convo.matchId === conversation.matchId) {
+                  // Merge the new message with the existing lastMessage object
+                  return {
+                    ...convo,
+                    lastMessage: {
+                      ...convo.lastMessage, // Retain the previous properties
+                      ...newMessage, // Merge in new properties from newMessage
+                    },
+                  };
+                }
+                return convo;
               });
+              console.log("updatedConversations", updatedConversations);
+              return updatedConversations;
             });
           });
-        }
-      } catch (error) {
-        console.error("Error fetching conversations:", error);
-        setConversations([]);
-        setNoConversations(true);
+        });
       }
-    };
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+      setConversations([]);
+      setNoConversations(true);
+    }
+  };
 
-    fetchMatches();
-    fetchConversations();
-  }, [userId]);
+  useFocusEffect(
+    useCallback(() => {
+      console.log("Hello, I am focused!");
+      fetchMatches();
+      fetchConversations();
+
+      return () => {
+        console.log("This route is now unfocused.");
+      };
+    }, [])
+  );
 
   const handleConvoClick = (matchId: string) => {
     router.push(`/(root)/(chat)/${matchId}`);
@@ -127,7 +129,6 @@ const Chat = () => {
                       source={{ uri: match.profile.images[0] }}
                       className="w-12 h-12 rounded-full"
                     />
-                    <Text className="text-center">{match.profile.name}</Text>
                   </TouchableOpacity>
                 </View>
               ))}
