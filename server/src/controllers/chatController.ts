@@ -5,6 +5,7 @@ import User, { IUser } from "../models/userModel";
 import { db } from "../config/firebase";
 import Message from "../models/messageModel";
 import { v4 as uuidv4 } from "uuid";
+import Chat from "../models/chatModel";
 
 export const getChat = async (
   req: Request,
@@ -13,14 +14,11 @@ export const getChat = async (
 ) => {
   const { matchId } = req.params;
   try {
-    const match = await Match.findById(matchId).populate("chat");
-    if (!match) {
-      return res.status(404).json({ message: "Match not found" });
+    const chat = await Chat.findOne({ matchId }).populate("messages");
+    if (!chat) {
+      return res.status(404).json({ message: "Chat not found" });
     }
-    if (!match.chat) {
-      return res.status(400).json({ message: "Chat not found" });
-    }
-    return res.status(200).json({ chat: match.chat });
+    return res.status(200).json({ chat: chat.messages });
   } catch (error) {
     console.error("Error fetching chat:", error);
     return res.status(500).json({ message: "Internal server error" });
@@ -99,11 +97,7 @@ export const getLastMsgAndMatch = async (
   try {
     const matches = await Match.find({
       $or: [{ user1ClerkId: userId }, { user2ClerkId: userId }],
-    }).populate({
-      path: "chat",
-      model: "Message",
-      options: { sort: { sentAt: -1 }, limit: 1 }, // Get the last message only
-    });
+    }).populate("chat"); // Populate the chat field to get the chat IDs
 
     if (!matches || matches.length === 0) {
       return res.status(404).json({ message: "Matches not found" });
@@ -111,6 +105,11 @@ export const getLastMsgAndMatch = async (
 
     const conversations = await Promise.all(
       matches.map(async (match) => {
+        const chat = await Chat.findOne({ matchId: match._id }).populate({
+          path: "messages",
+          options: { sort: { sentAt: -1 }, limit: 1 },
+        });
+
         const matchedUserId =
           match.user1ClerkId === userId
             ? match.user2ClerkId
@@ -120,11 +119,8 @@ export const getLastMsgAndMatch = async (
           clerkId: matchedUserId,
         }).select("name age bio images");
 
-        console.log("match.chat from user", match, match.chat);
-
-        const lastMessage = match.chat
-          ? match.chat[0] // The latest message is now the first one due to the sort order
-          : null;
+        const lastMessage =
+          chat && chat.messages.length > 0 ? chat.messages[0] : null;
 
         if (lastMessage) {
           return {
@@ -139,7 +135,6 @@ export const getLastMsgAndMatch = async (
     );
 
     // Filter out null values (i.e., matches without messages)
-
     console.log("conversations before filtering ", conversations);
 
     const filteredConversations = conversations.filter(
@@ -175,6 +170,20 @@ export const sendMessage = async (
       return res.status(404).json({ message: "Match not found" });
     }
 
+    let chat = await Chat.findOne({ matchId: matchId });
+    if (!chat) {
+      // Create a new chat if it doesn't exist
+      chat = new Chat({
+        matchId: matchId,
+        messages: [],
+      });
+      await chat.save();
+
+      // Update the Match to reference the new Chat
+      (match as any).chat = chat._id;
+      await match.save();
+    }
+
     // Create and save the message in MongoDB
     const message = new Message({
       id: uuidv4(),
@@ -200,13 +209,9 @@ export const sendMessage = async (
 
     await chatRef.child((message as any).id).set(msg);
 
-    // Update Match with the new message
-
-    await Match.findByIdAndUpdate(
-      matchId,
-      { $push: { chat: message._id } },
-      { new: true } // Return the updated document
-    );
+    // Update Chat with the new message
+    chat.messages.push((message as any)._id);
+    await chat.save();
 
     return res.status(200).json({ message: "Message sent" });
   } catch (error) {
@@ -227,18 +232,6 @@ export const markMessageAsRead = async (
   const { matchId } = req.body; // Assuming matchId is passed in the request body
 
   try {
-    console.log("markMessageAsRead", req.params, req.body);
-    console.log("markMessageAsRead", req.params, req.body);
-    console.log("markMessageAsRead", req.params, req.body);
-    console.log("markMessageAsRead", req.params, req.body);
-    console.log("markMessageAsRead", req.params, req.body);
-    console.log("markMessageAsRead", req.params, req.body);
-    console.log("markMessageAsRead", req.params, req.body);
-    console.log("markMessageAsRead", req.params, req.body);
-    console.log("markMessageAsRead", req.params, req.body);
-    console.log("markMessageAsRead", req.params, req.body);
-    console.log("markMessageAsRead", req.params, req.body);
-
     // Fetch the message from Firebase
     const messageRef = db.ref(`chats/${matchId}/${messageId}`);
     const messageSnapshot = await messageRef.once("value");
