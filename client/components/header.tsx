@@ -26,7 +26,7 @@ const Header = ({ backArrow, backDestination, image, style }: HeaderProps) => {
 
   return (
     <View
-      className={`flex flex-row items-center justify-between px-3 h-6 ${style}`}
+      className={`flex flex-row items-center justify-between px-3 h-11 ${style}`}
     >
       {backArrow && (
         <TouchableOpacity onPress={handleBackPress} style={{ width: 40 }}>

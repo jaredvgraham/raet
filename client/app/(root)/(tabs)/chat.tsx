@@ -13,6 +13,7 @@ import { ref, query, limitToLast, onChildAdded } from "firebase/database";
 import { db } from "@/services/firebaseConfig";
 import { Image } from "expo-image";
 import Header from "@/components/header";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const Chat = () => {
   const authFetch = useAuthFetch();
@@ -121,7 +122,7 @@ const Chat = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1 ">
       <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
         <Header style="w-full flex items-center justify-center" />
         <View className="p-4 border-b border-gray-300">
@@ -143,6 +144,12 @@ const Chat = () => {
                 alignItems: "center",
               }}
             >
+              <View className=" w-28 h-32 bg-black border border-gray-300 mb-6 rounded-2xl text-white flex items-center justify-center">
+                <Text className="text-center text-3xl text-teal-300">
+                  {matches.length}
+                </Text>
+                <Text className="text-center text-gray-300">Matches</Text>
+              </View>
               {matches.map((match) => (
                 <View key={match.matchId}>
                   <TouchableOpacity
@@ -150,9 +157,9 @@ const Chat = () => {
                   >
                     <Image
                       source={{ uri: match.profile.images[0] }}
-                      className="w-24 h-28 rounded-2xl"
+                      className="w-28 h-32 rounded-2xl shadow-2xl"
                     />
-                    <Text className="text-center font-semibold">
+                    <Text className="text-center font-semibold mt-2">
                       {match.profile.name.split(" ")[0]}
                     </Text>
                   </TouchableOpacity>
@@ -180,6 +187,8 @@ const Chat = () => {
                   conversation.lastMessage.senderId !== userId &&
                   !conversation.lastMessage.receiverViewed;
 
+                const sentByMe = conversation.lastMessage.senderId === userId;
+
                 return (
                   <TouchableOpacity
                     onPress={() => handleConvoClick(conversation.matchId)}
@@ -190,12 +199,12 @@ const Chat = () => {
                   >
                     <View
                       className={`p-4 flex-row items-center ${
-                        notRead ? "bg-black text-gray-300" : ""
+                        notRead ? "bg-black text-gray-100" : ""
                       }`}
                     >
                       <Image
                         source={{ uri: conversation?.matchedUser?.images[0] }}
-                        className="w-12 h-12 rounded-full mr-4"
+                        className="w-16 h-16 rounded-full mr-4"
                       />
                       <View>
                         <Text
@@ -205,14 +214,27 @@ const Chat = () => {
                         >
                           {conversation?.matchedUser?.name}
                         </Text>
-                        <Text
-                          numberOfLines={1}
-                          className={`${
-                            notRead ? "text-gray-300" : "text-black"
-                          } `}
-                        >
-                          {conversation?.lastMessage.message}
-                        </Text>
+                        <View className="flex-row items-center">
+                          {sentByMe && (
+                            <Icon
+                              name="check"
+                              size={15}
+                              color={"lightgray"}
+                              style={{ marginRight: 4 }}
+                            />
+                          )}
+                          {!sentByMe && (
+                            <Icon
+                              name="bell"
+                              size={15}
+                              color={`${notRead ? "lightgreen" : "gray"}`}
+                              style={{ marginRight: 4 }}
+                            />
+                          )}
+                          <Text numberOfLines={1} className="text-gray-600">
+                            {conversation?.lastMessage.message}
+                          </Text>
+                        </View>
                       </View>
                     </View>
                   </TouchableOpacity>
