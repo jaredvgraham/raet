@@ -25,8 +25,18 @@ export interface Profile {
   _id: string;
   name: string;
   clerkId: string;
+  email: string;
+  gender: string;
+  preferredGender: string;
+  maxDistance: number;
+  matchedUsers: string[];
+
   bio?: string;
   age: number;
+  location: {
+    type: string;
+    coordinates: [number, number];
+  };
   images: string[];
   distance: number;
   interests: string[];
