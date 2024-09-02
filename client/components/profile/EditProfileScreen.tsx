@@ -42,15 +42,17 @@ const EditProfileScreen = ({
   const [sliderValue, setSliderValue] = useState(() => {
     return profile.maxDistance === MAX_DISTANCE_MILES
       ? SLIDER_MAX_VALUE
-      : profile.maxDistance / 100;
+      : profile.maxDistance;
   });
+  const [isMaxDistance, setIsMaxDistance] = useState(
+    profile.maxDistance === MAX_DISTANCE_MILES
+  );
   const [interests, setInterests] = useState<string[]>(profile.interests);
   const [customInterest, setCustomInterest] = useState<string>("");
   const [images, setImages] = useState<string[]>(profile.images);
 
   const handleSave = async () => {
-    const maxDistance =
-      sliderValue === SLIDER_MAX_VALUE ? MAX_DISTANCE_MILES : sliderValue;
+    const maxDistance = isMaxDistance ? MAX_DISTANCE_MILES : sliderValue;
 
     const updatedProfile = {
       ...profile,
@@ -138,17 +140,39 @@ const EditProfileScreen = ({
         {/* Max Distance */}
         <View className="mb-4">
           <Text className="text-base text-gray-800">
-            Max Distance:{" "}
-            {sliderValue === SLIDER_MAX_VALUE ? "Max" : sliderValue} miles
+            Max Distance: {isMaxDistance ? "Max" : sliderValue} miles
           </Text>
-          <Slider
-            minimumValue={1}
-            maximumValue={SLIDER_MAX_VALUE}
-            value={sliderValue}
-            onValueChange={setSliderValue}
-            step={1}
-            minimumTrackTintColor={colors.teal}
-          />
+          {!isMaxDistance && (
+            <>
+              <Slider
+                minimumValue={1}
+                maximumValue={SLIDER_MAX_VALUE} // Slider only goes to 100
+                value={sliderValue}
+                onValueChange={setSliderValue}
+                step={1}
+                minimumTrackTintColor={colors.teal}
+              />
+              <TouchableOpacity
+                onPress={() => setIsMaxDistance(true)}
+                className={`mt-2 py-2 px-4 rounded-full bg-gray-300`}
+              >
+                <Text className="text-center text-blue-500">
+                  Set Max Distance
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          {isMaxDistance && (
+            <TouchableOpacity
+              onPress={() => setIsMaxDistance(false)}
+              className={`mt-2 py-2 px-4 rounded-full bg-gray-300`}
+            >
+              <Text className="text-center text-blue-500">
+                Set Specific Distance
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Interests */}
