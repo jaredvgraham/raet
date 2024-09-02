@@ -1,114 +1,22 @@
 //
 //   THIS FILE IS INSANITY
 //
-
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   SafeAreaView,
   View,
   Text,
-  Image,
   Animated,
   PanResponder,
   Dimensions,
-  ImageBackground,
-  TouchableOpacity,
   PanResponderGestureState,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import Header from "@/components/header";
-import { getUserLocation } from "@/utils/contants";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import { Profile } from "@/types";
 import Notification from "@/components/Notification";
 import { useFocusEffect } from "expo-router";
-import { set } from "firebase/database";
-
-export const users = [
-  {
-    _id: "64e4bc66f0c1b462bc5df8b7",
-    name: "Emily Johnson",
-    age: 28,
-    clerkId: "ckr1",
-    distance: 5,
-    bio: "Love exploring the city, trying new restaurants, and reading mystery novels.",
-    interests: ["Reading", "Traveling", "Cooking"],
-    images: [
-      require("../../../assets/images/wom2.jpeg"),
-      require("../../../assets/images/man2.jpeg"),
-      require("../../../assets/images/wom5.jpeg"),
-      require("../../../assets/images/wom5alt.jpeg"),
-    ],
-  },
-  {
-    _id: "64e4bc66f0c1b462bc5df8b8",
-    name: "Sophia Martinez",
-    age: 26,
-    clerkId: "ckr2",
-    distance: 10,
-    bio: "Actress by day, fitness enthusiast by night. Let's go on an adventure!",
-    interests: ["Acting", "Fitness", "Adventures"],
-    images: [
-      require("../../../assets/images/wom3alt.jpeg"),
-      require("../../../assets/images/man2.jpeg"),
-    ],
-  },
-  {
-    _id: "64e4bc66f0c1b462bc5df8b9",
-    name: "Olivia Brown",
-    age: 30,
-    clerkId: "ckr3",
-    distance: 4,
-    bio: "Tech geek and coffee lover. Always up for a good conversation.",
-    interests: ["Technology", "Coffee", "Conversation"],
-    images: [
-      require("../../../assets/images/man2.jpeg"),
-      require("../../../assets/images/wom5alt.jpeg"),
-    ],
-  },
-];
-
-export const users2 = [
-  {
-    _id: "64e4bc66f0c1b462bc5df8ba",
-    name: "Ava Wilson",
-    age: 25,
-    clerkId: "ckr4",
-    distance: 3,
-    bio: "Traveling the world, one country at a time. Looking for a travel buddy!",
-    interests: ["Travel", "Photography", "Blogging"],
-    images: [
-      require("../../../assets/images/wom3alt.jpeg"),
-      require("../../../assets/images/man2.jpeg"),
-    ],
-  },
-  {
-    _id: "64e4bc66f0c1b462bc5df8bb",
-    name: "Isabella Moore",
-    age: 27,
-    clerkId: "ckr5",
-    distance: 7,
-    bio: "Dog lover, foodie, and fitness enthusiast. Let's go on a run!",
-    interests: ["Dogs", "Food", "Fitness"],
-    images: [
-      require("../../../assets/images/man2.jpeg"),
-      require("../../../assets/images/wom5alt.jpeg"),
-    ],
-  },
-  {
-    _id: "64e4bc66f0c1b462bc5df8bc",
-    name: "Mia Taylor",
-    age: 29,
-    clerkId: "ckr6",
-    distance: 2,
-    bio: "Yoga instructor and nature lover. Let's go on a hike!",
-    interests: ["Yoga", "Nature", "Hiking"],
-    images: [
-      require("../../../assets/images/wom2.jpeg"),
-      require("../../../assets/images/man2.jpeg"),
-    ],
-  },
-];
+import SwipeableCard from "@/components/feed/SwipeableCard";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -121,20 +29,21 @@ export default function SwipeableCardDeck() {
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
   const [swipingDirection, setSwipingDirection] = useState("");
   const [noProfilesLeft, setNoProfilesLeft] = useState(false);
-
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
   const [isReady, setIsReady] = useState(false);
+  const [showNotification, setShowNotification] = useState({
+    visible: false,
+    message: "",
+    type: "success",
+  });
 
   const position = useRef(new Animated.ValueXY()).current;
   const nextCardOpacity = useRef(new Animated.Value(0)).current;
-
   const nextCardScale = useRef(new Animated.Value(0.9)).current;
   const touchStartTime = useRef(0);
   const swipeDetected = useRef(false);
   const gestureStartX = useRef(0);
   const gestureStartY = useRef(0);
-
   const currentProfileRef = useRef(
     profiles ? profiles[currentProfileIndex] : null
   );
@@ -142,16 +51,6 @@ export default function SwipeableCardDeck() {
     profiles ? profiles[currentProfileIndex + 1] : null
   );
   const rateRef = useRef<number | null>(null);
-
-  const [showNotification, setShowNotification] = useState({
-    visible: false,
-    message: "",
-    type: "success",
-  });
-
-  useEffect(() => {
-    fetchMoreProfiles();
-  }, []);
 
   const handleProfileChange = () => {
     if (!profiles) return;
@@ -197,7 +96,7 @@ export default function SwipeableCardDeck() {
         return;
       }
 
-      if (profiles) {
+      if (profiles.length > 0) {
         setProfiles((prevProfiles) => [...prevProfiles, ...data.feed]);
       } else {
         setProfiles(data.feed);
@@ -213,13 +112,11 @@ export default function SwipeableCardDeck() {
     useCallback(() => {
       console.log("Hello, I am focused!");
       fetchMoreProfiles();
-      handleProfileChange();
-      setCurrentImageIndex(0);
 
       return () => {
         console.log("This route is now unfocused.");
       };
-    }, [profiles, currentProfileIndex])
+    }, [])
   );
 
   const handleSwipeAction = async (direction: string) => {
@@ -534,108 +431,21 @@ export default function SwipeableCardDeck() {
             const isCurrentCard = index === currentProfileIndex;
 
             return (
-              <Animated.View
+              <SwipeableCard
                 key={user._id}
-                {...(isCurrentCard ? panResponder.panHandlers : {})}
-                style={[
-                  {
-                    position: "absolute",
-                    width: "100%",
-                    height: "100%",
-                    zIndex: -index,
-                  },
-                  isCurrentCard && position.getLayout(),
-                ]}
-                className="   "
-              >
-                {isCurrentCard && swipingDirection === "right" && (
-                  <Text
-                    className="absolute top-10 left-10 text-2xl z-10 text-white bg-green-400 p-1 font-bold"
-                    style={{
-                      transform: [{ rotate: "20deg" }],
-                    }}
-                  >
-                    YES
-                  </Text>
-                )}
-                {isCurrentCard && swipingDirection === "left" && (
-                  <Text
-                    className="absolute top-10 right-10 text-2xl z-10 text-white bg-red-400 p-1 font-bold"
-                    style={{
-                      transform: [{ rotate: "-20deg" }],
-                    }}
-                  >
-                    NOPE
-                  </Text>
-                )}
-                {currentProfileRef.current && (
-                  <ImageBackground
-                    source={{
-                      uri:
-                        currentProfileRef.current._id === user._id
-                          ? currentProfileRef.current.images[currentImageIndex]
-                          : user.images[0],
-                    }}
-                    className="w-full h-full overflow-hidden rounded-t-2xl bg-white"
-                    style={{
-                      justifyContent: "flex-end",
-                    }}
-                  >
-                    {isCurrentCard && <RenderImageIndicators />}
-                    <LinearGradient
-                      colors={["rgba(0,0,0,0.01)", "rgba(0,0,0,0.8)"]}
-                      style={{
-                        padding: 10,
-                      }}
-                    >
-                      <View className="text-center ">
-                        <Text className="text-2xl font-bold text-white text-center">
-                          {user.name}, {user.age}
-                        </Text>
-                        <Text className="text-lg text-gray-300 text-center">
-                          Distance: {user.distance} Miles
-                        </Text>
-                      </View>
-                    </LinearGradient>
-                    <TouchableOpacity onPress={() => triggerSwipe("right")}>
-                      <Image
-                        source={require("../../../assets/images/like.png")}
-                        className="w-10 h-10 absolute bottom-5 right-3"
-                      />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => triggerSwipe("left")}>
-                      <Image
-                        source={require("../../../assets/images/dislike.png")}
-                        className="w-10 h-10 absolute bottom-5 left-3"
-                      />
-                    </TouchableOpacity>
-                  </ImageBackground>
-                )}
-
-                {/* Rating Buttons */}
-                <View
-                  className="flex-row justify-between bg-black p-3 "
-                  style={{
-                    borderBottomLeftRadius: 20,
-                    borderBottomRightRadius: 20,
-                  }}
-                >
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number, index) => (
-                    <TouchableOpacity
-                      className={`${
-                        rate === number ? "bg-teal-300" : "bg-white"
-                      }  p-2 min-w-[30px] rounded-lg `}
-                      key={index}
-                      onPress={() => handleRateChange(number)}
-                    >
-                      <Text className="text-center text-gray-800">
-                        {number}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </Animated.View>
+                user={user}
+                index={index}
+                isCurrentCard={isCurrentCard}
+                swipingDirection={swipingDirection}
+                position={position}
+                panHandlers={isCurrentCard ? panResponder.panHandlers : {}}
+                currentImageIndex={currentImageIndex}
+                onSwipeRight={() => triggerSwipe("right")}
+                onSwipeLeft={() => triggerSwipe("left")}
+                onRateChange={handleRateChange}
+                rate={rate}
+                RenderImageIndicators={RenderImageIndicators}
+              />
             );
           })}
         </View>

@@ -18,6 +18,7 @@ import { useAuthFetch } from "@/hooks/Privatefetch";
 import { Image } from "expo-image";
 import Header from "@/components/header";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const ChatScreen = () => {
   const { matchId } = useLocalSearchParams(); // Assume matchId and userId are passed as route params
@@ -28,6 +29,7 @@ const ChatScreen = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputHeight, setInputHeight] = useState(40);
+  const [isSending, setIsSending] = useState(false);
 
   const flatListRef = useRef<FlatList>(null);
 
@@ -68,26 +70,8 @@ const ChatScreen = () => {
 
   useEffect(() => {
     const readMsg = async () => {
-      console.log("readMsg");
-      console.log("readMsg");
-      console.log("readMsg");
-      console.log("readMsg");
-      console.log("readMsg");
-      console.log("readMsg");
-      console.log("readMsg");
-      console.log("readMsg");
-      console.log("readMsg");
-      console.log("readMsg");
-
       try {
         if (messages.length === 0 || !gotMessages) {
-          console.log("no messages to read");
-          console.log("no messages to read");
-          console.log("no messages to read");
-          console.log("no messages to read");
-          console.log("no messages to read");
-          console.log("no messages to read");
-          console.log("no messages to read");
           return;
         }
         const newMessage = messages[messages.length - 1];
@@ -120,6 +104,7 @@ const ChatScreen = () => {
     if (message.trim() === "") return;
 
     console.log("sending message", message, "to", matchId);
+    setIsSending(true);
 
     try {
       const response = await authFetch("/api/chat/send-message", {
@@ -189,12 +174,21 @@ const ChatScreen = () => {
                     transition={1000}
                   />
                 )}
-                <View
-                  className={`max-w-[80%] p-3 my-2 rounded-xl ${
-                    item.senderId === userId ? "bg-blue-100" : "bg-gray-200"
-                  }`}
-                >
-                  <Text className="text-lg flex-wrap">{item.message}</Text>
+                <View className="max-w-[80%]">
+                  <View
+                    className={` p-3 my-2 rounded-xl ${
+                      item.senderId === userId ? "bg-blue-100" : "bg-gray-200"
+                    }`}
+                  >
+                    <Text className="text-lg flex-wrap">{item.message}</Text>
+                  </View>
+                  {item.senderId === userId && (
+                    <View className="flex flex-row items-center self-end mr-2">
+                      <Text className="text-xs mr-2 text-gray-500">Sent</Text>
+
+                      <Icon name="check-circle" size={20} color="#8fb3a1" />
+                    </View>
+                  )}
                 </View>
               </View>
             )}
@@ -214,12 +208,13 @@ const ChatScreen = () => {
               onChangeText={setMessage}
               multiline={true}
               placeholder="Type a message"
+              placeholderTextColor="#6B7280"
               onContentSizeChange={(event) =>
                 setInputHeight(event.nativeEvent.contentSize.height)
               }
               style={{ height: Math.max(40, inputHeight) }} // Ensure min height is 40
             />
-            <Button title="Send" onPress={sendMessage} />
+            <Button title="Send" onPress={sendMessage} disabled={isSending} />
           </View>
         </View>
       </KeyboardAvoidingView>

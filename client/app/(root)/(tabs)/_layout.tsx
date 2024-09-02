@@ -39,10 +39,9 @@ const Layout = () => {
           backgroundColor: "white",
 
           borderRadius: 50,
-          paddingBottom: 0,
+          paddingBottom: 10,
           overflow: "hidden",
-          marginHorizontal: 20,
-          marginBottom: 10,
+
           height: 68,
 
           display: "flex",
