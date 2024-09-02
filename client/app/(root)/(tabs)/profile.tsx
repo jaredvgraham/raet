@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Profile } from "@/types";
 import ProfileData from "@/components/profile/ProfileData";
 import SwipeableCard from "@/components/feed/SwipeableCard";
-import { Animated } from "react-native"; // Required for animation
+import { Animated } from "react-native";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "@/utils/contants";
 import Header from "@/components/header";
 import RenderImageIndicators from "@/components/feed/RenderImageIndicators"; // Import the component
@@ -15,8 +15,7 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState<Profile>();
   const [preview, setPreview] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const position = new Animated.ValueXY(); // Initialize the animation position
-
+  const position = new Animated.ValueXY();
   useEffect(() => {
     const fetchData = async () => {
       const response = await authFetch("/api/user/profile", {
@@ -63,7 +62,7 @@ const ProfilePage = () => {
         <SafeAreaView className="flex-1 bg-white items-center ">
           <Header />
           <TouchableOpacity
-            className="absolute top-20 left-3 z-30 bg-black p-2 rounded-full"
+            className="absolute top-24 left-3 z-30 bg-black p-2 rounded-full"
             onPress={() => setPreview(false)}
           >
             <Text className="text-lg text-gray-200">Done</Text>

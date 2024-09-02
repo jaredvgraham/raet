@@ -24,7 +24,7 @@ const UploadImageComponent = ({
   buttonTitle,
   parentImgs,
   setParentImgs,
-  showButton,
+  showButton = true,
 }: UploadImageComponentProps) => {
   const authFetch = useAuthFetch();
   const [images, setImages] = useState<string[] | null>(parentImgs || null);
