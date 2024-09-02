@@ -6,6 +6,7 @@ export interface IUser extends Document {
   email: string;
   clerkId: string;
   dob: Date;
+  bio?: string;
   gender?: "Male" | "Female";
   ratings?: number[] | null;
   images?: string[];
@@ -30,6 +31,7 @@ const userSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
   clerkId: { type: String, required: true, unique: true, index: true },
   dob: { type: Date, required: false },
+  bio: { type: String, required: false },
   gender: { type: String, enum: ["Male", "Female"], required: false },
   ratings: { type: [Number], required: false },
   images: [{ type: String, required: false }],

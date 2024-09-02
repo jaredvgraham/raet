@@ -14,14 +14,20 @@ import { formatError } from "@/utils";
 type UploadImageComponentProps = {
   onSubmit?: () => void | undefined;
   buttonTitle?: string;
+  parentImgs?: string[] | null;
+  setParentImgs?: (images: string[]) => void;
+  showButton?: boolean;
 };
 
 const UploadImageComponent = ({
   onSubmit,
   buttonTitle,
+  parentImgs,
+  setParentImgs,
+  showButton,
 }: UploadImageComponentProps) => {
   const authFetch = useAuthFetch();
-  const [images, setImages] = useState<string[] | null>(null);
+  const [images, setImages] = useState<string[] | null>(parentImgs || null);
   const [error, setError] = useState<string | null>(null);
 
   const pickImage = async () => {
@@ -38,12 +44,24 @@ const UploadImageComponent = ({
 
     const asset = result.assets as ImagePicker.ImagePickerAsset[];
 
+    if (parentImgs && setParentImgs && !result.canceled) {
+      setParentImgs([...parentImgs, ...asset.map((a) => a.uri)]);
+    }
+
     if (!result.canceled) {
       setImages((prev) => [...(prev || []), ...asset.map((a) => a.uri)]);
     }
   };
 
   const removeImage = (indexToRemove: number) => {
+    if (parentImgs && setParentImgs) {
+      // @ts-ignore
+      setParentImgs((prev) => {
+        console.log(typeof prev, "prev");
+
+        return (prev as string[]).filter((_, index) => index !== indexToRemove);
+      });
+    }
     setImages(
       (prev) => prev?.filter((_, index) => index !== indexToRemove) || null
     );
@@ -162,14 +180,16 @@ const UploadImageComponent = ({
             </View>
           )}
         </View>
-        <TouchableOpacity
-          className="bg-violet-400 w-full p-4 rounded-lg "
-          onPress={handleSubmit}
-        >
-          <Text className="text-white text-lg text-center">
-            {buttonTitle || "Submit"}
-          </Text>
-        </TouchableOpacity>
+        {showButton && (
+          <TouchableOpacity
+            className="bg-violet-400 w-full p-4 rounded-lg "
+            onPress={handleSubmit}
+          >
+            <Text className="text-white text-lg text-center">
+              {buttonTitle || "Submit"}
+            </Text>
+          </TouchableOpacity>
+        )}
       </SafeAreaView>
     </>
   );

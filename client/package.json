@@ -20,6 +20,8 @@
     "@expo/vector-icons": "^14.0.2",
     "@neondatabase/serverless": "^0.9.4",
     "@react-native-community/datetimepicker": "^8.2.0",
+    "@react-native-community/slider": "^4.5.2",
+    "@react-native-picker/picker": "^2.8.0",
     "@react-navigation/native": "^6.0.2",
     "axios": "^1.7.5",
     "expo": "~51.0.28",

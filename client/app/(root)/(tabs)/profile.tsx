@@ -5,17 +5,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Profile } from "@/types";
 import ProfileData from "@/components/profile/ProfileData";
 import SwipeableCard from "@/components/feed/SwipeableCard";
-import { Animated } from "react-native";
+import { Animated } from "react-native"; // Required for animation
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "@/utils/contants";
 import Header from "@/components/header";
-import RenderImageIndicators from "@/components/feed/RenderImageIndicators";
+import RenderImageIndicators from "@/components/feed/RenderImageIndicators"; // Import the component
 
 const ProfilePage = () => {
   const authFetch = useAuthFetch();
   const [profile, setProfile] = useState<Profile>();
   const [preview, setPreview] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const position = new Animated.ValueXY();
+  const position = new Animated.ValueXY(); // Initialize the animation position
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,6 +32,22 @@ const ProfilePage = () => {
 
     fetchData();
   }, []);
+
+  const handleImageTap = (tapX: number) => {
+    const isRightTap = tapX > SCREEN_WIDTH / 2;
+
+    if (isRightTap) {
+      // Go to the next image if it's not the last one
+      if (profile && currentImageIndex < profile.images.length - 1) {
+        setCurrentImageIndex(currentImageIndex + 1);
+      }
+    } else {
+      // Go to the previous image if it's not the first one
+      if (currentImageIndex > 0) {
+        setCurrentImageIndex(currentImageIndex - 1);
+      }
+    }
+  };
 
   if (!profile) {
     return (
@@ -59,15 +75,19 @@ const ProfilePage = () => {
               width: SCREEN_WIDTH - 0.4,
               height: SCREEN_HEIGHT * 0.7,
             }}
+            onStartShouldSetResponder={(event) => true}
+            onResponderRelease={(event) => {
+              handleImageTap(event.nativeEvent.locationX);
+            }}
           >
             <SwipeableCard
               user={profile}
-              isCurrentCard={true}
+              isCurrentCard={true} // Since it's a preview, we want to treat it as the current card
               index={0}
               swipingDirection={""}
               position={position}
               panHandlers={{}} // No panHandlers needed in preview mode
-              currentImageIndex={currentImageIndex}
+              currentImageIndex={currentImageIndex} // Pass the current image index
               onSwipeRight={() => {}} // No swipe actions in preview mode
               onSwipeLeft={() => {}} // No swipe actions in preview mode
               onRateChange={() => {}} // No rating in preview mode
@@ -82,8 +102,7 @@ const ProfilePage = () => {
           </View>
         </SafeAreaView>
       ) : (
-        <SafeAreaView className="flex-1 bg-gray-100 ">
-          <Header style="self-center" />
+        <SafeAreaView className="flex-1 bg-gray-100">
           <ProfileData profile={profile} setPreview={setPreview} />
         </SafeAreaView>
       )}

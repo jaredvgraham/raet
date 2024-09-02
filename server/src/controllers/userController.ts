@@ -170,3 +170,50 @@ export const uploadImages = async (
     next(error);
   }
 };
+
+export const updateProfile = async (
+  req: RequireAuthProp<Request>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { userId } = req.auth;
+    const user = await User.findOne({ clerkId: userId });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const { name, bio, preferredGender, maxDistance, interests } = req.body;
+    const images = req.files as Express.Multer.File[];
+
+    const imageUrls = await uploadImagesBucket(images);
+
+    user.name = name || user.name;
+    user.bio = bio || user.bio;
+    user.preferredGender = preferredGender || user.preferredGender;
+    user.maxDistance = maxDistance
+      ? parseInt(maxDistance, 10)
+      : user.maxDistance;
+    user.interests = interests
+      ? interests.split(",").map((item: string) => item.trim())
+      : user.interests;
+    user.images = imageUrls.length > 0 ? imageUrls : user.images;
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "Profile updated successfully",
+      user: {
+        name: user.name,
+        bio: user.bio,
+        preferredGender: user.preferredGender,
+        maxDistance: user.maxDistance,
+        interests: user.interests,
+        images: user.images,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};

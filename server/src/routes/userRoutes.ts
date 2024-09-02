@@ -5,6 +5,7 @@ import {
   getProfile,
   registerUser,
   updateLocation,
+  updateProfile,
   uploadImages,
 } from "../controllers/userController";
 import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
@@ -26,6 +27,13 @@ router.patch(
   ClerkExpressRequireAuth(),
   upload.array("images", 10),
   uploadImages
+);
+
+router.patch(
+  "/profile/update",
+  ClerkExpressRequireAuth(),
+  upload.array("images", 10),
+  updateProfile
 );
 
 export default router;
