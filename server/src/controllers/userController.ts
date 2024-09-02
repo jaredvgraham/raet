@@ -11,6 +11,7 @@ import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 import { calculateAge } from "../utils/calculateAge";
 import User from "../models/userModel";
 import { uploadImagesBucket } from "../services/uploadImageService";
+import Like from "../models/likeModel";
 
 export const registerUser = async (
   req: Request,
@@ -215,5 +216,57 @@ export const updateProfile = async (
     });
   } catch (error) {
     next(error);
+  }
+};
+
+export const getUserLikes = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
+  try {
+    console.log("entered getUserLikes");
+
+    const { userId } = req.auth; // The logged-in user's clerkId
+    const user = await User.findOne({ clerkId: userId });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Find likes where the current user was liked (i.e., `likedUserId` is the current user's clerkId)
+    const likes = await Like.find({ likedUserId: user.clerkId });
+
+    // Extract the profiles of users who liked the current user
+    const likedUsersProfiles = await Promise.all(
+      likes.map(async (like) => {
+        try {
+          const likedUser = await User.findOne({ clerkId: like.userId });
+          if (likedUser) {
+            return {
+              _id: likedUser._id,
+              name: likedUser.name,
+              clerkId: likedUser.clerkId,
+              email: likedUser.email,
+              age: calculateAge(likedUser.dob),
+              images: likedUser.images,
+            };
+          }
+          return null; // In case the likedUser is not found
+        } catch (err) {
+          console.error("Error fetching user:", err);
+          return null; // Return null if there's an error fetching the user
+        }
+      })
+    );
+
+    // Filter out any null values from the results
+    const validProfiles = likedUsersProfiles.filter(Boolean);
+
+    console.log("validProfiles", validProfiles);
+
+    res.status(200).json({ likes: validProfiles });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+    console.log(error);
   }
 };

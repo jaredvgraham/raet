@@ -3,6 +3,7 @@ import { Router } from "express";
 import {
   createProfile,
   getProfile,
+  getUserLikes,
   registerUser,
   updateLocation,
   updateProfile,
@@ -35,5 +36,7 @@ router.patch(
   upload.array("images", 10),
   updateProfile
 );
+
+router.get("/likes", ClerkExpressRequireAuth(), getUserLikes);
 
 export default router;

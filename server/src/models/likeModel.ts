@@ -9,8 +9,8 @@ export interface ILike extends Document {
 
 // Define the Like schema
 const likeSchema = new Schema<ILike>({
-  userId: { type: String, required: true, index: true },
-  likedUserId: { type: String, required: true, index: true },
+  userId: { type: String, required: true, ref: "User" }, // Ensure ref is set to 'User'
+  likedUserId: { type: String, required: true, ref: "User" }, // Ensure ref is set to 'User'
   createdAt: { type: Date, default: Date.now, required: true },
 });
 
