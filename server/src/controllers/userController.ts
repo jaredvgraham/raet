@@ -241,7 +241,7 @@ export const getUserLikes = async (
       likes.map(async (like) => {
         try {
           const likedUser = await User.findOne({ clerkId: like.userId });
-          if (likedUser) {
+          if (likedUser && !likedUser.matchedUsers?.includes(user.clerkId)) {
             return {
               _id: likedUser._id,
               name: likedUser.name,
