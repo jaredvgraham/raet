@@ -87,7 +87,7 @@ const ProfileData = ({ profile, setPreview }: ProfileDataProps) => {
         <View className="flex-row items-center mb-4">
           <Icon name="map-marker" size={20} color={colors.black} />
           <Text className="ml-3 text-base text-gray-800">
-            Max Distance: {profile.maxDistance} km
+            Max Distance: {profile.maxDistance} miles
           </Text>
         </View>
 
