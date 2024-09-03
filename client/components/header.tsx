@@ -11,9 +11,16 @@ type HeaderProps = {
   image?: string;
   userName?: string;
   style?: string;
+  imageOnpress?: () => void;
 };
 
-const Header = ({ backArrow, backDestination, image, style }: HeaderProps) => {
+const Header = ({
+  backArrow,
+  backDestination,
+  image,
+  style,
+  imageOnpress,
+}: HeaderProps) => {
   const router = useRouter();
 
   const handleBackPress = () => {
@@ -45,12 +52,14 @@ const Header = ({ backArrow, backDestination, image, style }: HeaderProps) => {
       />
 
       {image && (
-        <View style={{ width: 40 }}>
-          <Image
-            source={{ uri: image }}
-            style={{ width: 40, height: 40, borderRadius: 20 }}
-          />
-        </View>
+        <TouchableOpacity onPress={imageOnpress}>
+          <View style={{ width: 40 }}>
+            <Image
+              source={{ uri: image }}
+              style={{ width: 40, height: 40, borderRadius: 20 }}
+            />
+          </View>
+        </TouchableOpacity>
       )}
     </View>
   );

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import User from "../models/userModel";
 import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 import Match from "../models/matchModel";
+import { calculateDistance } from "../utils/calculateDistance";
 
 export const getMatch = async (
   req: RequireAuthProp<Request>,
@@ -37,8 +38,16 @@ export const getMatch = async (
     if (!isMatch) {
       return res.status(400).json({ message: "Match not found" });
     }
+    let distance;
+    if (user.location && matchProfile.location) {
+      distance = await calculateDistance(
+        user?.location?.coordinates,
+        matchProfile.location.coordinates
+      );
+    }
+    console.log("distance", distance);
 
-    res.status(200).json({ matchProfile });
+    res.status(200).json({ matchProfile, distance });
   } catch (error) {
     next(error);
   }

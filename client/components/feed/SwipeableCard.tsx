@@ -98,7 +98,7 @@ const SwipeableCard = ({
               {user.name}, {user.age}
             </Text>
             <Text className="text-lg text-gray-300 text-center">
-              Distance: {user.distance} Miles
+              Distance: {Math.floor(user.distance)} Miles
             </Text>
           </View>
         </LinearGradient>

@@ -19,6 +19,7 @@ import { Image } from "expo-image";
 import Header from "@/components/header";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
+import UserDetailScreen from "@/components/feed/CloserLook";
 
 const ChatScreen = () => {
   const { matchId } = useLocalSearchParams(); // Assume matchId and userId are passed as route params
@@ -30,6 +31,7 @@ const ChatScreen = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputHeight, setInputHeight] = useState(40);
   const [isSending, setIsSending] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   const flatListRef = useRef<FlatList>(null);
 
@@ -61,6 +63,13 @@ const ChatScreen = () => {
         console.log("data match", data.matchProfile);
 
         setMatch(data.matchProfile);
+        // @ts-ignore
+        setMatch((prevMatch) => {
+          return {
+            ...prevMatch,
+            distance: data.distance,
+          };
+        });
       } catch (error) {
         console.error("Error fetching match:", error);
       }
@@ -137,6 +146,26 @@ const ChatScreen = () => {
 
   const icon = require("@/assets/images/icon.jpeg");
 
+  if (!match) {
+    return (
+      <SafeAreaView className="flex-1 justify-center items-center bg-gray-100">
+        <Text className="text-lg text-gray-500">Loading Chat...</Text>
+      </SafeAreaView>
+    );
+  }
+
+  if (showProfile) {
+    return (
+      <UserDetailScreen
+        profile={match}
+        onClose={() => setShowProfile(false)}
+        onSwipeLeft={() => {}}
+        onSwipeRight={() => {}}
+        showButtons={false}
+      />
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1">
       <KeyboardAvoidingView
@@ -148,6 +177,7 @@ const ChatScreen = () => {
           backArrow={true}
           image={match?.images[0]}
           userName={match?.name}
+          imageOnpress={() => setShowProfile(true)}
         />
         <View className="flex-1 justify-center p-4 bg-gray-100">
           <FlatList

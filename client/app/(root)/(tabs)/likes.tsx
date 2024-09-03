@@ -6,11 +6,18 @@ import { Image } from "expo-image";
 import { TouchableOpacity } from "react-native";
 import UserDetailScreen from "@/components/feed/CloserLook";
 import Header from "@/components/header";
+import { set } from "firebase/database";
+import Notification from "@/components/Notification";
 
 const LikesPage = () => {
   const [likes, setLikes] = useState<Profile[]>([]);
   const [moreDetails, setMoreDetails] = useState<boolean>(false);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
+  const [showNotification, setShowNotification] = useState({
+    visible: false,
+    message: "",
+    type: "",
+  });
   const authFetch = useAuthFetch();
 
   useEffect(() => {
@@ -42,10 +49,80 @@ const LikesPage = () => {
     setMoreDetails(true);
   };
 
+  const sendRight = async () => {
+    try {
+      const res = await authFetch("/api/feed/swipe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          swipedId: selectedProfile?.clerkId,
+          direction: "right",
+        }),
+      });
+      const data = await res?.json();
+      console.log("res", data);
+
+      if (data.message && data.message.includes("Match")) {
+        // Display a toast notification for a match
+        setShowNotification({
+          visible: true,
+          message: `${data.message} 🎉`,
+          type: "success",
+        });
+      }
+      setSelectedProfile(null);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  const sendLeft = () => {
+    try {
+      authFetch("/api/feed/swipe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          swipedId: selectedProfile?.clerkId,
+          direction: "left",
+        }),
+      });
+      setSelectedProfile(null);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  if (showNotification.visible) {
+    return (
+      <SafeAreaView className="flex-1 bg-white">
+        <Notification
+          message={showNotification.message}
+          type={showNotification.type}
+          visible={showNotification.visible}
+        />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <>
       {moreDetails && selectedProfile ? (
-        <UserDetailScreen profile={selectedProfile} onClose={setMoreDetails} />
+        <UserDetailScreen
+          profile={selectedProfile}
+          onClose={setMoreDetails}
+          onSwipeLeft={() => {
+            setMoreDetails(false);
+            sendLeft();
+          }}
+          onSwipeRight={() => {
+            setMoreDetails(false);
+            sendRight();
+          }}
+        />
       ) : (
         <SafeAreaView className="flex-1 bg-white">
           <Header style="w-full flex items-center justify-center" />

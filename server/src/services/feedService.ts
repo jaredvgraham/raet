@@ -33,6 +33,24 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
 
   console.log("userAverageRating", userAverageRating);
 
+  const ratingMatch =
+    userAverageRating === 0
+      ? {} // If userAverageRating is 0, match all users regardless of their rating
+      : {
+          $or: [
+            { ratingCount: { $lt: 2 } }, // Include users with fewer than 2 ratings
+            {
+              averageRating: {
+                $gte:
+                  userAverageRating === 10
+                    ? userAverageRating - 2
+                    : userAverageRating - 1,
+                $lte: userAverageRating + 1,
+              },
+            }, // Include users within the rating range
+          ],
+        };
+
   const genderMatch =
     user.preferredGender === "Both"
       ? { gender: { $in: ["Male", "Female"] } }
@@ -77,20 +95,7 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
             },
           }, // Exclude users viewed in the last two months
           genderMatch, // Match gender preference
-          {
-            $or: [
-              { ratingCount: { $lt: 2 } }, // Include users with fewer than 2 ratings
-              {
-                averageRating: {
-                  $gte:
-                    userAverageRating === 10
-                      ? userAverageRating - 2
-                      : userAverageRating - 1,
-                  $lte: userAverageRating + 1,
-                },
-              }, // Include users within the rating range
-            ],
-          },
+          ratingMatch, // Match rating preference
           {
             age: {
               $gte: user.preferredAgeRange?.[0] || 18,

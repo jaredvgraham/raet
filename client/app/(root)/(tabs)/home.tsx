@@ -407,7 +407,18 @@ export default function SwipeableCardDeck() {
   return (
     <>
       {moreDetails && selectedProfile ? (
-        <UserDetailScreen profile={selectedProfile} onClose={setMoreDetails} />
+        <UserDetailScreen
+          profile={selectedProfile}
+          onClose={setMoreDetails}
+          onSwipeRight={() => {
+            triggerSwipe("right");
+            setMoreDetails(false);
+          }}
+          onSwipeLeft={() => {
+            triggerSwipe("left");
+            setMoreDetails(false);
+          }}
+        />
       ) : (
         <SafeAreaView className="flex-1 bg-white items-center ">
           <Header />

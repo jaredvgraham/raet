@@ -15,11 +15,20 @@ import Icon from "react-native-vector-icons/FontAwesome";
 type UserDetailScreenProps = {
   profile: Profile;
   onClose: (value: boolean) => void;
+  onSwipeRight: () => void;
+  onSwipeLeft: () => void;
+  showButtons?: boolean;
 };
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-const UserDetailScreen = ({ profile, onClose }: UserDetailScreenProps) => {
+const UserDetailScreen = ({
+  profile,
+  onClose,
+  onSwipeRight,
+  onSwipeLeft,
+  showButtons = true,
+}: UserDetailScreenProps) => {
   const swiperRef = useRef<Swiper>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -46,6 +55,30 @@ const UserDetailScreen = ({ profile, onClose }: UserDetailScreenProps) => {
               </View>
             ))}
           </Swiper>
+
+          {showButtons && (
+            <>
+              <TouchableOpacity
+                className="absolute bottom-5 left-5 bg-gray-100 p-1 rounded-full w-10 h-10"
+                onPress={() => onSwipeLeft()}
+              >
+                <Image
+                  className="w-full h-full"
+                  source={require("../../assets/images/dislike.png")}
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="absolute bottom-5 right-5 bg-gray-100 p-1 rounded-full w-10 h-10"
+                onPress={() => onSwipeRight()}
+              >
+                <Image
+                  className="w-full h-full"
+                  source={require("../../assets/images/like.png")}
+                />
+              </TouchableOpacity>
+            </>
+          )}
         </View>
 
         <View className="p-5">
@@ -67,7 +100,7 @@ const UserDetailScreen = ({ profile, onClose }: UserDetailScreenProps) => {
                 {profile.interests.map((interest, index) => (
                   <View
                     key={index}
-                    className="px-4 py-2 mr-2 mb-2 rounded-full bg-blue-500"
+                    className="px-4 py-2 mr-2 mb-2 rounded-full bg-black"
                   >
                     <Text className="text-white">{interest}</Text>
                   </View>
