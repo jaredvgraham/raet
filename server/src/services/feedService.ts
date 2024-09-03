@@ -33,6 +33,11 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
 
   console.log("userAverageRating", userAverageRating);
 
+  const genderMatch =
+    user.preferredGender === "Both"
+      ? { gender: { $in: ["Male", "Female"] } }
+      : { gender: user.preferredGender };
+
   const nearbyUsers = await User.aggregate([
     {
       $geoNear: {
@@ -71,7 +76,7 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
               },
             },
           }, // Exclude users viewed in the last two months
-          { gender: user.preferredGender }, // Match gender preference
+          genderMatch, // Match gender preference
           {
             $or: [
               { ratingCount: { $lt: 2 } }, // Include users with fewer than 2 ratings
