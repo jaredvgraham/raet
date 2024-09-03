@@ -10,6 +10,7 @@ import {
   PanResponder,
   Dimensions,
   PanResponderGestureState,
+  TouchableOpacity,
 } from "react-native";
 import Header from "@/components/header";
 import { useAuthFetch } from "@/hooks/Privatefetch";
@@ -17,6 +18,7 @@ import { Profile } from "@/types";
 import Notification from "@/components/Notification";
 import { useFocusEffect } from "expo-router";
 import SwipeableCard from "@/components/feed/SwipeableCard";
+import UserDetailScreen from "@/components/feed/CloserLook";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -25,6 +27,8 @@ export default function SwipeableCardDeck() {
   const authFetch = useAuthFetch();
   const renderedProfiles = new Set();
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [moreDetails, setMoreDetails] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   const [rate, setRate] = useState<number | null>(null);
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
   const [swipingDirection, setSwipingDirection] = useState("");
@@ -250,6 +254,11 @@ export default function SwipeableCardDeck() {
     });
   };
 
+  const handleDetailsClick = (profile: Profile) => {
+    setSelectedProfile(profile);
+    setMoreDetails(true);
+  };
+
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -397,59 +406,66 @@ export default function SwipeableCardDeck() {
 
   return (
     <>
-      <SafeAreaView className="flex-1 bg-white items-center ">
-        <Header />
-        {showNotification.visible && (
-          <Notification
-            {...showNotification}
-            onHide={() =>
-              setShowNotification({
-                visible: false,
-                message: "",
-                type: "success",
-              })
-            }
-          />
-        )}
-        <View
-          className="relative  rounded-lg shadow-2xl  items-center"
-          style={{
-            width: SCREEN_WIDTH - 0.4,
-            height: SCREEN_HEIGHT * 0.7,
-            // Center the container vertically
-          }}
-        >
-          {profiles.map((user, index) => {
-            if (renderedProfiles.has(user._id)) {
-              return null;
-            }
-            renderedProfiles.add(user._id);
-            if (index < currentProfileIndex) {
-              return null; // Don't render cards that have been swiped away
-            }
+      {moreDetails && selectedProfile ? (
+        <UserDetailScreen profile={selectedProfile} onClose={setMoreDetails} />
+      ) : (
+        <SafeAreaView className="flex-1 bg-white items-center ">
+          <Header />
+          {showNotification.visible && (
+            <Notification
+              {...showNotification}
+              onHide={() =>
+                setShowNotification({
+                  visible: false,
+                  message: "",
+                  type: "success",
+                })
+              }
+            />
+          )}
+          <View
+            className="relative  rounded-lg shadow-2xl  items-center"
+            style={{
+              width: SCREEN_WIDTH - 0.4,
+              height: SCREEN_HEIGHT * 0.7,
+              // Center the container vertically
+            }}
+          >
+            {profiles.map((user, index) => {
+              if (renderedProfiles.has(user._id)) {
+                return null;
+              }
+              renderedProfiles.add(user._id);
+              if (index < currentProfileIndex) {
+                return null; // Don't render cards that have been swiped away
+              }
 
-            const isCurrentCard = index === currentProfileIndex;
+              const isCurrentCard = index === currentProfileIndex;
 
-            return (
-              <SwipeableCard
-                key={user._id}
-                user={user}
-                index={index}
-                isCurrentCard={isCurrentCard}
-                swipingDirection={swipingDirection}
-                position={position}
-                panHandlers={isCurrentCard ? panResponder.panHandlers : {}}
-                currentImageIndex={currentImageIndex}
-                onSwipeRight={() => triggerSwipe("right")}
-                onSwipeLeft={() => triggerSwipe("left")}
-                onRateChange={handleRateChange}
-                rate={rate}
-                RenderImageIndicators={RenderImageIndicators}
-              />
-            );
-          })}
-        </View>
-      </SafeAreaView>
+              return (
+                <>
+                  <SwipeableCard
+                    key={user._id}
+                    user={user}
+                    index={index}
+                    isCurrentCard={isCurrentCard}
+                    swipingDirection={swipingDirection}
+                    position={position}
+                    panHandlers={isCurrentCard ? panResponder.panHandlers : {}}
+                    currentImageIndex={currentImageIndex}
+                    onSwipeRight={() => triggerSwipe("right")}
+                    onSwipeLeft={() => triggerSwipe("left")}
+                    onRateChange={handleRateChange}
+                    rate={rate}
+                    RenderImageIndicators={RenderImageIndicators}
+                    onPressDetails={() => handleDetailsClick(user)}
+                  />
+                </>
+              );
+            })}
+          </View>
+        </SafeAreaView>
+      )}
     </>
   );
 }

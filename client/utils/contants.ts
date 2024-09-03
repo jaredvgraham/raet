@@ -33,4 +33,25 @@ export async function getUserLocation() {
   return null;
 }
 
-// Call this function where needed in your component
+export const getCityFromLocation = async (
+  latitude: number,
+  longitude: number
+) => {
+  try {
+    let reverseGeocode = await Location.reverseGeocodeAsync({
+      latitude,
+      longitude,
+    });
+
+    if (reverseGeocode.length > 0) {
+      let city = reverseGeocode[0].city;
+      let region = reverseGeocode[0].region;
+      let country = reverseGeocode[0].country;
+
+      console.log(`City: ${city}, Region: ${region}, Country: ${country}`);
+      return { city, region, country };
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};

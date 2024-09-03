@@ -9,6 +9,7 @@ import { Profile } from "@/types";
 import { Image } from "expo-image";
 import { colors } from "@/constants";
 import EditProfileScreen from "./EditProfileScreen";
+import { getCityFromLocation } from "@/utils/contants";
 
 type ProfileDataProps = {
   profile: Profile;
@@ -18,9 +19,21 @@ type ProfileDataProps = {
 const ProfileData = ({ profile, setPreview }: ProfileDataProps) => {
   const [editing, setEditing] = useState(false);
   const authFetch = useAuthFetch();
+  const [city, setCity] = useState<string>();
 
   useEffect(() => {
     console.log("editing", editing);
+    const getCity = async () => {
+      const cityName = await getCityFromLocation(
+        profile?.location?.coordinates[1],
+        profile?.location?.coordinates[0]
+      );
+
+      if (cityName) {
+        setCity(cityName.city || "Unknown Location");
+      }
+    };
+    getCity();
   }, [editing]);
 
   const sendData = async (updatedProfile: Profile) => {
@@ -98,7 +111,7 @@ const ProfileData = ({ profile, setPreview }: ProfileDataProps) => {
               {profile.name}
             </Text>
             <Text className="text-lg text-white mt-1">
-              {profile?.location?.coordinates.join(", ")}
+              {city ? city : "Unknown Location"}
             </Text>
           </LinearGradient>
           <View className="mt-5 px-5">

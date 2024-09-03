@@ -30,6 +30,7 @@ type SwipeableCardProps = {
   onRateChange: (number: number) => void;
   rate: number | null;
   RenderImageIndicators: React.FC;
+  onPressDetails: () => void;
 };
 
 const SwipeableCard = ({
@@ -45,6 +46,7 @@ const SwipeableCard = ({
   onRateChange,
   rate,
   RenderImageIndicators,
+  onPressDetails,
 }: SwipeableCardProps) => {
   return (
     <Animated.View
@@ -113,6 +115,20 @@ const SwipeableCard = ({
         </TouchableOpacity>
       </ImageBackground>
       <RatingButtons rate={rate} onRateChange={onRateChange} />
+      <TouchableOpacity
+        style={{
+          position: "absolute",
+          top: 10,
+          right: 10,
+          zIndex: 10,
+          backgroundColor: "black",
+          padding: 10,
+          borderRadius: 5,
+        }}
+        onPress={onPressDetails} // Use the provided onPressDetails function
+      >
+        <Text style={{ color: "white" }}>More Details</Text>
+      </TouchableOpacity>
     </Animated.View>
   );
 };

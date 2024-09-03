@@ -12,6 +12,7 @@ import { calculateAge } from "../utils/calculateAge";
 import User from "../models/userModel";
 import { uploadImagesBucket } from "../services/uploadImageService";
 import Like from "../models/likeModel";
+import { calculateDistance } from "../utils/calculateDistance";
 
 export const registerUser = async (
   req: Request,
@@ -242,13 +243,35 @@ export const getUserLikes = async (
         try {
           const likedUser = await User.findOne({ clerkId: like.userId });
           if (likedUser && !likedUser.matchedUsers?.includes(user.clerkId)) {
+            const userAverageRating =
+              likedUser.ratings && likedUser.ratings.length > 0
+                ? likedUser.ratings.reduce((acc, curr) => acc + curr, 0) /
+                  likedUser.ratings.length
+                : 0;
+
+            const maxDistanceMeters =
+              (likedUser.maxDistance || 10000) * 1609.34;
+
+            const [lon, lat] = likedUser.location?.coordinates || [0, 0];
+
             return {
               _id: likedUser._id,
               name: likedUser.name,
               clerkId: likedUser.clerkId,
               email: likedUser.email,
               age: calculateAge(likedUser.dob),
+              bio: likedUser.bio,
+              interests: likedUser.interests,
               images: likedUser.images,
+              distance:
+                lon && lat && user.location
+                  ? await calculateDistance(user.location.coordinates, [
+                      lon,
+                      lat,
+                    ])
+                  : null,
+              averageRating: userAverageRating,
+              maxDistance: maxDistanceMeters / 1609.34, // Convert meters to miles
             };
           }
           return null; // In case the likedUser is not found
