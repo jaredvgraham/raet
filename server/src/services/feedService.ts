@@ -15,23 +15,6 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
   const [lon, lat] = user.location?.coordinates || [0, 0];
 
   console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
-  console.log("user.location.cordinates", user.location?.coordinates);
 
   if (!lon || !lat) {
     throw new CustomError("User location not available", 400);
@@ -47,6 +30,8 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
     user.ratings && user.ratings.length > 0
       ? user.ratings.reduce((acc, curr) => acc + curr, 0) / user.ratings.length
       : 0;
+
+  console.log("userAverageRating", userAverageRating);
 
   const nearbyUsers = await User.aggregate([
     {
@@ -92,7 +77,10 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
               { ratingCount: { $lt: 2 } }, // Include users with fewer than 2 ratings
               {
                 averageRating: {
-                  $gte: userAverageRating - 1,
+                  $gte:
+                    userAverageRating === 10
+                      ? userAverageRating - 2
+                      : userAverageRating - 1,
                   $lte: userAverageRating + 1,
                 },
               }, // Include users within the rating range
@@ -120,9 +108,9 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
         averageRating: 1, // Include the calculated average rating
       },
     },
-    // {
-    //   $limit: 10,
-    // },
+    {
+      $limit: 10,
+    },
   ]);
 
   return nearbyUsers;
