@@ -19,6 +19,7 @@ import Notification from "@/components/Notification";
 import { useFocusEffect } from "expo-router";
 import SwipeableCard from "@/components/feed/SwipeableCard";
 import UserDetailScreen from "@/components/feed/CloserLook";
+import { set } from "firebase/database";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -27,6 +28,7 @@ export default function SwipeableCardDeck() {
   const authFetch = useAuthFetch();
   const renderedProfiles = new Set();
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [Loading, setLoading] = useState(true);
   const [moreDetails, setMoreDetails] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   const [rate, setRate] = useState<number | null>(null);
@@ -40,7 +42,6 @@ export default function SwipeableCardDeck() {
     message: "",
     type: "success",
   });
-
   const position = useRef(new Animated.ValueXY()).current;
   const nextCardOpacity = useRef(new Animated.Value(0)).current;
   const nextCardScale = useRef(new Animated.Value(0.9)).current;
@@ -109,12 +110,15 @@ export default function SwipeableCardDeck() {
     } catch (error) {
       console.log("error fetching profiles", error);
       setNoProfilesLeft(true);
+    } finally {
+      setLoading(false);
     }
   };
 
   useFocusEffect(
     useCallback(() => {
       console.log("Hello, I am focused!");
+      setLoading(true);
       fetchMoreProfiles();
 
       return () => {
@@ -272,35 +276,37 @@ export default function SwipeableCardDeck() {
         setSwipingDirection("");
       },
       onPanResponderMove: (_, gestureState) => {
-        const dx = Math.abs(gestureState.moveX - gestureStartX.current);
-        const dy = Math.abs(gestureState.moveY - gestureStartY.current);
-        const distance = dx + dy;
+        requestAnimationFrame(() => {
+          const dx = Math.abs(gestureState.moveX - gestureStartX.current);
+          const dy = Math.abs(gestureState.moveY - gestureStartY.current);
+          const distance = dx + dy;
 
-        if (distance > 10) {
-          console.log(distance, "is distance");
-          if (gestureState.dx > 0) {
-            setSwipingDirection("right");
-          } else if (gestureState.dx < 0) {
-            setSwipingDirection("left");
-          } else {
-            setSwipingDirection("");
+          if (distance > 10) {
+            console.log(distance, "is distance");
+            if (gestureState.dx > 0) {
+              setSwipingDirection("right");
+            } else if (gestureState.dx < 0) {
+              setSwipingDirection("left");
+            } else {
+              setSwipingDirection("");
+            }
+
+            swipeDetected.current = true;
+            position.setValue({ x: gestureState.dx, y: gestureState.dy });
+
+            Animated.spring(nextCardOpacity, {
+              toValue: 1,
+              friction: 4,
+              useNativeDriver: true,
+            }).start();
+
+            Animated.spring(nextCardScale, {
+              toValue: 1,
+              friction: 4,
+              useNativeDriver: true,
+            }).start();
           }
-
-          swipeDetected.current = true;
-          position.setValue({ x: gestureState.dx, y: gestureState.dy });
-
-          Animated.spring(nextCardOpacity, {
-            toValue: 1,
-            friction: 4,
-            useNativeDriver: true,
-          }).start();
-
-          Animated.spring(nextCardScale, {
-            toValue: 1,
-            friction: 4,
-            useNativeDriver: true,
-          }).start();
-        }
+        });
       },
       onPanResponderRelease: (_, gestureState) => {
         const touchDuration = Date.now() - touchStartTime.current;
@@ -403,6 +409,14 @@ export default function SwipeableCardDeck() {
     );
   };
   //
+
+  if (Loading) {
+    return (
+      <SafeAreaView className="flex-1 justify-center items-center bg-white">
+        <Text className="text-lg text-gray-500">Loading ...</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <>
