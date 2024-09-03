@@ -4,9 +4,14 @@ import { View, TouchableOpacity, Text } from "react-native";
 type RatingButtonsProps = {
   rate: number | null;
   onRateChange: (number: number) => void;
+  isCurrentCard: boolean;
 };
 
-const RatingButtons = ({ rate, onRateChange }: RatingButtonsProps) => {
+const RatingButtons = ({
+  rate,
+  onRateChange,
+  isCurrentCard,
+}: RatingButtonsProps) => {
   return (
     <View
       className="flex-row justify-between bg-black p-3 "
@@ -18,7 +23,7 @@ const RatingButtons = ({ rate, onRateChange }: RatingButtonsProps) => {
       {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((number) => (
         <TouchableOpacity
           className={`${
-            rate === number ? "bg-teal-300" : "bg-white"
+            rate === number && isCurrentCard ? "bg-teal-300" : "bg-white"
           }  p-2 min-w-[30px] rounded-lg `}
           key={number}
           onPress={() => onRateChange(number)}

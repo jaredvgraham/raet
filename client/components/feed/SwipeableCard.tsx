@@ -115,7 +115,11 @@ const SwipeableCard = ({
           />
         </TouchableOpacity>
       </ImageBackground>
-      <RatingButtons rate={rate} onRateChange={onRateChange} />
+      <RatingButtons
+        rate={rate}
+        onRateChange={onRateChange}
+        isCurrentCard={isCurrentCard}
+      />
       <TouchableOpacity
         style={{
           position: "absolute",

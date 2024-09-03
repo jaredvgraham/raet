@@ -3,6 +3,7 @@ import User from "../models/userModel";
 import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 import Match from "../models/matchModel";
 import { calculateDistance } from "../utils/calculateDistance";
+import { calculateAge } from "../utils/calculateAge";
 
 export const getMatch = async (
   req: RequireAuthProp<Request>,
@@ -45,9 +46,10 @@ export const getMatch = async (
         matchProfile.location.coordinates
       );
     }
-    console.log("distance", distance);
 
-    res.status(200).json({ matchProfile, distance });
+    const age = calculateAge(matchProfile.dob);
+
+    res.status(200).json({ matchProfile, distance, age });
   } catch (error) {
     next(error);
   }

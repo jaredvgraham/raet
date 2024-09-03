@@ -68,6 +68,7 @@ const ChatScreen = () => {
           return {
             ...prevMatch,
             distance: data.distance,
+            age: data.age,
           };
         });
       } catch (error) {

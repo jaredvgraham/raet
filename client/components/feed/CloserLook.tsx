@@ -83,8 +83,8 @@ const UserDetailScreen = ({
 
         <View className="p-5">
           {/* Bio */}
-          <View className="mb-4">
-            <Text className="text-2xl font-bold text-gray-800 mb-2">
+          <View className="mb-2">
+            <Text className="text-2xl font-bold text-gray-800 ">
               {profile.name}, {profile.age}
             </Text>
             <Text className="text-base text-gray-800">{profile.bio}</Text>
