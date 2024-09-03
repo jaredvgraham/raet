@@ -13,6 +13,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Profile } from "@/types";
 import RatingButtons from "@/components/feed/RateButtons";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -121,13 +122,13 @@ const SwipeableCard = ({
           top: 10,
           right: 10,
           zIndex: 10,
-          backgroundColor: "black",
+          backgroundColor: "rgba(100,100,100,0.5)",
           padding: 10,
-          borderRadius: 5,
+          borderRadius: 100,
         }}
         onPress={onPressDetails} // Use the provided onPressDetails function
       >
-        <Text style={{ color: "white" }}>More Details</Text>
+        <Icon name="arrow-up" size={20} color="white" />
       </TouchableOpacity>
     </Animated.View>
   );

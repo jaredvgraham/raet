@@ -26,12 +26,7 @@ const UserDetailScreen = ({ profile, onClose }: UserDetailScreenProps) => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView className="flex-1">
-        <View
-          style={{
-            width: SCREEN_WIDTH,
-            height: SCREEN_WIDTH * 0.75, // Maintain the aspect ratio
-          }}
-        >
+        <View className="h-[300px] w-full">
           <Swiper
             ref={swiperRef}
             loop={false}
@@ -42,13 +37,10 @@ const UserDetailScreen = ({ profile, onClose }: UserDetailScreenProps) => {
             onIndexChanged={(index) => setActiveIndex(index)}
           >
             {profile.images.map((image, index) => (
-              <View key={index}>
+              <View key={index} className="h-full w-full">
                 <Image
                   source={{ uri: image }}
-                  style={{
-                    width: SCREEN_WIDTH,
-                    height: SCREEN_WIDTH * 0.75,
-                  }}
+                  className="h-full w-full"
                   resizeMode="cover"
                 />
               </View>

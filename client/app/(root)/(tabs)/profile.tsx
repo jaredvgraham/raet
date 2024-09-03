@@ -97,6 +97,7 @@ const ProfilePage = () => {
                   currentImageIndex={currentImageIndex}
                 />
               )}
+              onPressDetails={() => {}} // No details in preview mode
             />
           </View>
         </SafeAreaView>

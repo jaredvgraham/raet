@@ -10,6 +10,7 @@ import { Image } from "expo-image";
 import { colors } from "@/constants";
 import EditProfileScreen from "./EditProfileScreen";
 import { getCityFromLocation } from "@/utils/contants";
+import Header from "../header";
 
 type ProfileDataProps = {
   profile: Profile;
@@ -75,6 +76,7 @@ const ProfileData = ({ profile, setPreview }: ProfileDataProps) => {
 
   return (
     <ScrollView>
+      <Header style="w-full flex items-center justify-center" />
       {editing ? (
         <EditProfileScreen
           profile={profile}
@@ -88,7 +90,10 @@ const ProfileData = ({ profile, setPreview }: ProfileDataProps) => {
       ) : (
         <>
           <LinearGradient
-            colors={[colors.teal, "#050505"]}
+            colors={[
+              profile.gender === "Male" ? colors.teal : colors.pink,
+              "#050505",
+            ]}
             className="items-center py-5 rounded-b-[30px]"
           >
             {profile.images ? (
@@ -178,10 +183,18 @@ const ProfileData = ({ profile, setPreview }: ProfileDataProps) => {
             </View>
           </View>
           <TouchableOpacity
-            className="mt-7 bg-[#3eaba5] py-4 mx-5 rounded-full items-center"
+            className={`mt-7 ${
+              profile.gender === "Male" ? "bg-[#3eaba5]" : "bg-[#ffc0cb]"
+            } py-4 mx-5 rounded-full items-center`}
             onPress={() => setEditing(true)}
           >
-            <Text className="text-white text-lg font-bold">Edit Profile</Text>
+            <Text
+              className={`${
+                profile.gender === "Male" ? "text-white" : "text-gray-600"
+              } text-lg font-bold`}
+            >
+              Edit Profile
+            </Text>
           </TouchableOpacity>
           <SignOutButton />
         </>

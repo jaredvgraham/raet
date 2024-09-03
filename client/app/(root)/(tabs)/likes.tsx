@@ -5,6 +5,7 @@ import { useAuthFetch } from "@/hooks/Privatefetch";
 import { Image } from "expo-image";
 import { TouchableOpacity } from "react-native";
 import UserDetailScreen from "@/components/feed/CloserLook";
+import Header from "@/components/header";
 
 const LikesPage = () => {
   const [likes, setLikes] = useState<Profile[]>([]);
@@ -47,6 +48,7 @@ const LikesPage = () => {
         <UserDetailScreen profile={selectedProfile} onClose={setMoreDetails} />
       ) : (
         <SafeAreaView className="flex-1 bg-white">
+          <Header style="w-full flex items-center justify-center" />
           <Text className="text-lg text-center text-gray-500 mb-4">
             These Users like you
           </Text>
