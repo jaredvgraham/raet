@@ -276,37 +276,35 @@ export default function SwipeableCardDeck() {
         setSwipingDirection("");
       },
       onPanResponderMove: (_, gestureState) => {
-        requestAnimationFrame(() => {
-          const dx = Math.abs(gestureState.moveX - gestureStartX.current);
-          const dy = Math.abs(gestureState.moveY - gestureStartY.current);
-          const distance = dx + dy;
+        const dx = Math.abs(gestureState.moveX - gestureStartX.current);
+        const dy = Math.abs(gestureState.moveY - gestureStartY.current);
+        const distance = dx + dy;
 
-          if (distance > 10) {
-            console.log(distance, "is distance");
-            if (gestureState.dx > 0) {
-              setSwipingDirection("right");
-            } else if (gestureState.dx < 0) {
-              setSwipingDirection("left");
-            } else {
-              setSwipingDirection("");
-            }
-
-            swipeDetected.current = true;
-            position.setValue({ x: gestureState.dx, y: gestureState.dy });
-
-            Animated.spring(nextCardOpacity, {
-              toValue: 1,
-              friction: 4,
-              useNativeDriver: true,
-            }).start();
-
-            Animated.spring(nextCardScale, {
-              toValue: 1,
-              friction: 4,
-              useNativeDriver: true,
-            }).start();
+        if (distance > 10) {
+          console.log(distance, "is distance");
+          if (gestureState.dx > 0) {
+            setSwipingDirection("right");
+          } else if (gestureState.dx < 0) {
+            setSwipingDirection("left");
+          } else {
+            setSwipingDirection("");
           }
-        });
+
+          swipeDetected.current = true;
+          position.setValue({ x: gestureState.dx, y: gestureState.dy });
+
+          Animated.spring(nextCardOpacity, {
+            toValue: 1,
+            friction: 4,
+            useNativeDriver: true,
+          }).start();
+
+          Animated.spring(nextCardScale, {
+            toValue: 1,
+            friction: 4,
+            useNativeDriver: true,
+          }).start();
+        }
       },
       onPanResponderRelease: (_, gestureState) => {
         const touchDuration = Date.now() - touchStartTime.current;

@@ -22,13 +22,6 @@ export const useAuthFetch = () => {
         headers,
       });
 
-      // Check for 401 Unauthorized response
-      if (response.status === 401) {
-        // Redirect to the sign-in screen
-        router.replace("/(auth)/sign-in");
-        return null;
-      }
-
       if (!response.ok) {
         const errorData = await response.json(); // Parse error response body
         const error = new Error(errorData.message || "Something went wrong");

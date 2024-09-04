@@ -130,7 +130,7 @@ const SignUp = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ScrollView
-        className="flex-1 bg-white"
+        className="flex-1 bg-white pt-10"
         keyboardShouldPersistTaps="handled"
       >
         <KeyboardAvoidingView
@@ -203,7 +203,7 @@ const SignUp = () => {
             {/* Sign Up Button */}
 
             <TouchableOpacity onPress={onSignUp} className="shadow-2xl">
-              <View className="flex items-center justify-center w-full bg-blue-500 rounded-full py-3 ">
+              <View className="flex items-center justify-center w-full bg-teal-300 rounded-full py-3 ">
                 <Text className="text-white text-lg font-semibold">
                   Sign Up
                 </Text>
@@ -215,13 +215,12 @@ const SignUp = () => {
             )}
 
             {/* OAuth*/}
-            <OAuth />
 
             {/* Sign In */}
             <View className="ml-2">
               <Text className="text-gray-500">Already have an account?</Text>
               <TouchableOpacity onPress={() => router.push("/(auth)/sign-in")}>
-                <Text className="text-blue-500 font-bold ">Sign In</Text>
+                <Text className="text-teal-300 font-bold ">Sign In</Text>
               </TouchableOpacity>
             </View>
 

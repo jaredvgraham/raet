@@ -3,61 +3,100 @@ import React, { useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import Swiper from "react-native-swiper";
+import { Image } from "expo-image";
+import { Dimensions } from "react-native";
+
+const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 const data = [
   {
-    title: "Welcome to the app",
-    description: "This is a description",
+    title: "Welcome to Raet",
+    description: "See only the best matches!",
+    image: require("../../assets/images/feed.png"),
   },
   {
-    title: "Welcome to the app",
-    description: "This is a description",
+    title: "See Who Likes You",
+    description: "Match instantly with others",
+    image: require("../../assets/images/likes.png"),
   },
   {
-    title: "Welcome to the app",
-    description: "This is a description",
+    title: "Real-time Conversations",
+    description: "Chat instantly with others",
+    image: require("../../assets/images/chat.png"),
   },
 ];
 
 const Welcome = () => {
-  const swipwerRef = useRef<Swiper>(null);
+  const swiperRef = useRef<Swiper>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+
   return (
-    <SafeAreaView className="flex h-full items-center  justify-between bg-white">
+    <SafeAreaView className="flex h-full items-center ">
+      {/* Skip Button */}
       <TouchableOpacity
-        className="w-full justify-end items-end p-5 rounded-lg"
+        className="self-end mr-4 mt-4"
         onPress={() => router.push("/(auth)/sign-up")}
       >
-        <Text className="text-blue-500 text-md font-bold">Skip</Text>
+        <Text className="text-gray-600 text-sm font-semibold">Skip</Text>
       </TouchableOpacity>
+
+      {/* Dots at the top */}
+      <View className="flex-row items-center justify-center pt-4">
+        {data.map((_, index) => (
+          <View
+            key={index}
+            className={`w-[8px] h-[8px] mx-1 rounded-full ${
+              activeIndex === index
+                ? "bg-teal-300 w-[12px] h-[12px]"
+                : "bg-gray-300"
+            }`}
+          />
+        ))}
+      </View>
+
+      {/* Swiper for Welcome Screens */}
       <Swiper
-        ref={swipwerRef}
+        ref={swiperRef}
         loop={false}
-        dot={<View className="w-[32px] h-4 bg-gray-300 rounded-full mx-1" />}
-        activeDot={<View className="w-[32px] h-4 bg-black rounded-full mx-1" />}
+        showsPagination={false} // Hide default dots as we're custom rendering them at the top
         onIndexChanged={(index) => setActiveIndex(index)}
       >
         {data.map((item, index) => (
-          <View
-            key={index}
-            className="flex flex-col items-center justify-center"
-          >
-            <Text className="text-2xl font-bold">{item.title}</Text>
-            <Text className="text-md text-gray-500">{item.description}</Text>
+          <View key={index} className="flex-1 items-center justify-center px-8">
+            <Text className="text-3xl font-extrabold text-black mb-3 text-center">
+              {item.title}
+            </Text>
+            <Text className="text-base text-gray-500 mb-6 text-center leading-relaxed">
+              {item.description}
+            </Text>
+            <View className="w-full h-96    shadow-lg">
+              <Image
+                source={item.image}
+                className="w-full h-full rounded-3xl"
+                contentFit="contain"
+                style={{
+                  borderColor: "white",
+                  borderBottomLeftRadius: 110,
+                  borderBottomRightRadius: 110,
+                }}
+              />
+            </View>
           </View>
         ))}
       </Swiper>
+
+      {/* Next/Get Started Button */}
       <TouchableOpacity
-        className="w-full justify-center items-center p-5 rounded-lg"
+        className="w-11/12 py-4 bg-teal-300 rounded-full justify-center items-center shadow-lg mb-3"
         onPress={() => {
           if (activeIndex === data.length - 1) {
             router.push("/(auth)/sign-up");
           } else {
-            swipwerRef.current?.scrollBy(1);
+            swiperRef.current?.scrollBy(1);
           }
         }}
       >
-        <Text className="text-blue-500 text-md font-bold">
+        <Text className="text-lg font-bold text-white">
           {activeIndex === data.length - 1 ? "Get Started" : "Next"}
         </Text>
       </TouchableOpacity>

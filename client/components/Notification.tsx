@@ -54,7 +54,7 @@ const Notification = ({
     >
       <Animated.View
         style={[{ transform: [{ translateY: slideAnim }] }]}
-        className={`w-full  p-4 z-50 absolute top-0 left-0 right-0   ${
+        className={`w-full  p-8 z-50 absolute top-0 left-0 right-0   ${
           type === "success" ? "bg-green-500" : "bg-red-500"
         }`}
       >
