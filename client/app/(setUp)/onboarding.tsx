@@ -219,6 +219,7 @@ const Onboarding = () => {
               value={customInterest}
               onChangeText={setCustomInterest}
               placeholder="Add your own..."
+              placeholderTextColor="#6B7280"
               className="flex-1 p-4 text-lg border border-gray-300 rounded-lg bg-white mr-2"
             />
             <TouchableOpacity
