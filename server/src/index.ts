@@ -20,7 +20,6 @@ dotenv.config();
 const app: Application = express();
 
 const port = process.env.PORT || 3001;
-const ipAddress = process.env.IP_ADDRESS || "localhost";
 
 declare global {
   namespace Express {
@@ -39,6 +38,6 @@ app.use("/api/match", matchRoutes);
 
 app.use(errorHandler);
 
-app.listen(3000, ipAddress, () => {
-  console.log(`Server is running on http://${ipAddress}:${port}`);
+app.listen(3000, () => {
+  console.log(`Server is running on ${port}`);
 });
