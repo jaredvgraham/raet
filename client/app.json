@@ -31,7 +31,7 @@
       [
         "expo-router",
         {
-          "origin": "https://raet.com/"
+          "origin": "https://raet.io/"
         }
       ]
     ],
@@ -40,7 +40,7 @@
     },
     "extra": {
       "router": {
-        "origin": "https://raet.com/"
+        "origin": "https://raet.io/"
       },
       "eas": {
         "projectId": "35c5f439-ec79-4e54-9bf4-c4a59d225d9d"
