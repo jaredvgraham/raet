@@ -15,6 +15,11 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        if (!isSignedIn || !session) {
+          setHasProfile(false);
+          return;
+        }
+
         const response = await authFetch("/api/user/profile", {
           method: "GET",
           headers: {

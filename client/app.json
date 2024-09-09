@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.raet"
+      "bundleIdentifier": "io.raet"
     },
     "android": {
       "adaptiveIcon": {
@@ -45,6 +45,12 @@
       "eas": {
         "projectId": "35c5f439-ec79-4e54-9bf4-c4a59d225d9d"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/35c5f439-ec79-4e54-9bf4-c4a59d225d9d"
     }
   }
 }

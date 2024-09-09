@@ -10,6 +10,10 @@ export const useAuthFetch = () => {
       // Get the token from Clerk session
       const token = await session?.getToken();
 
+      if (!token) {
+        throw new Error("Unauthenticated: No token available");
+      }
+
       // Set the Authorization header
       const headers = {
         ...options.headers,
