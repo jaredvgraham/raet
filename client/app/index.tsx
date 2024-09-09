@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Redirect } from "expo-router";
 import { useAuth, useSession } from "@clerk/clerk-expo";
 import { useAuthFetch } from "@/hooks/Privatefetch";
+import "react-native-gesture-handler";
 
 //has profile logic soon
 

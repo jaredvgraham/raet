@@ -10,6 +10,14 @@ import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 
 import { tokenCache } from "@/lib/auth";
 
+ErrorUtils.setGlobalHandler((error, isFatal) => {
+  if (isFatal) {
+    console.error("Fatal Error: ", error);
+  } else {
+    console.log("Non-fatal Error: ", error);
+  }
+});
+
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
 //nice
