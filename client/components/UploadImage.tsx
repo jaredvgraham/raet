@@ -34,7 +34,7 @@ const UploadImageComponent = ({
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsMultipleSelection: true,
-      allowsEditing: true,
+
       quality: 1,
     });
 
@@ -135,7 +135,9 @@ const UploadImageComponent = ({
             className="bg-black w-full p-4 rounded-lg mb-3 "
             onPress={pickImage}
           >
-            <Text className="text-white text-lg">Upload Images</Text>
+            <Text className="text-white text-lg">
+              {!images?.length ? "Upload Images" : "More Images"}
+            </Text>
           </TouchableOpacity>
 
           {error && !onSubmit && <Text style={{ color: "red" }}>{error}</Text>}
@@ -159,6 +161,7 @@ const UploadImageComponent = ({
                   <Image
                     source={{ uri: image }}
                     style={{ width: "100%", height: 200 }}
+                    className="rounded-lg"
                   />
                   <TouchableOpacity
                     style={{

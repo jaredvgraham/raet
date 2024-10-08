@@ -147,8 +147,8 @@ const Onboarding = () => {
       component: (
         <View className="flex flex-row justify-around w-full  ">
           <TouchableOpacity
-            className={`p-4 rounded-lg w-4/12 m-2 ${
-              gender === "Male" ? "bg-blue-500" : "bg-gray-300"
+            className={`p-4 rounded-lg w-4/12 m-2 shadow-2xl ${
+              gender === "Male" ? "bg-blue-600" : "bg-gray-300"
             }`}
             onPress={() => setGender("Male")}
           >
@@ -171,7 +171,7 @@ const Onboarding = () => {
         <View className="flex flex-row justify-around w-full  ">
           <TouchableOpacity
             className={`p-4 rounded-lg w-3/12 m-2 ${
-              preferredGender === "Male" ? "bg-blue-500" : "bg-gray-300"
+              preferredGender === "Male" ? "bg-blue-600" : "bg-gray-300"
             }`}
             onPress={() => setpreferredGender("Male")}
           >
@@ -206,7 +206,7 @@ const Onboarding = () => {
               <TouchableOpacity
                 key={interest}
                 className={`px-4 py-2 mr-2 rounded-full ${
-                  interests.includes(interest) ? "bg-green-500" : "bg-gray-300"
+                  interests.includes(interest) ? "bg-violet-300" : "bg-gray-300"
                 }`}
                 onPress={() => handleAddInterest(interest)}
               >
@@ -220,10 +220,10 @@ const Onboarding = () => {
               onChangeText={setCustomInterest}
               placeholder="Add your own..."
               placeholderTextColor="#6B7280"
-              className="flex-1 p-4 text-lg border border-gray-300 rounded-lg bg-white mr-2"
+              className="flex-1 p-3 text-lg border border-gray-300 rounded-full bg-white mr-2"
             />
             <TouchableOpacity
-              className="p-4 bg-blue-500 rounded-lg"
+              className="p-4 bg-teal-400 rounded-lg"
               onPress={handleCustomInterest}
             >
               <Text className="text-white">Add</Text>
@@ -233,7 +233,7 @@ const Onboarding = () => {
             {interests.map((interest) => (
               <TouchableOpacity
                 key={interest}
-                className="px-4 py-2 mr-2 mb-2 rounded-full bg-blue-500"
+                className="px-4 py-2 mr-2 mb-2 rounded-full  bg-violet-300"
                 onPress={() => handleRemoveInterest(interest)}
               >
                 <Text className="text-white">{interest}</Text>
@@ -255,7 +255,7 @@ const Onboarding = () => {
   ];
 
   return (
-    <SafeAreaView className="flex h-full items-center justify-between bg-white">
+    <SafeAreaView className="flex h-full items-center justify-between bg-slate-100">
       {error && <Text className="text-red-500 text-lg">{error}</Text>}
       <Swiper
         ref={swiperRef}
@@ -267,9 +267,9 @@ const Onboarding = () => {
         {data.map((item, index) => (
           <View
             key={index}
-            className="flex flex-col items-center justify-center h-3/4 px-6"
+            className="flex flex-col items-center justify-center h-3/4 px-6 "
           >
-            <Text className="text-3xl font-bold mb-6 text-center">
+            <Text className="text-3xl font-light text-gray-700 mb-6 text-center">
               {item.title}
             </Text>
             {item.component}
@@ -278,7 +278,7 @@ const Onboarding = () => {
       </Swiper>
       {activeIndex !== data.length - 1 && (
         <TouchableOpacity
-          className="w-4/5 p-4 bg-green-500 rounded-lg justify-center items-center mb-6"
+          className="w-4/5 p-4 bg-black rounded-lg justify-center items-center mb-6"
           onPress={() => {
             swiperRef.current?.scrollBy(1);
           }}

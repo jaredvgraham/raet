@@ -12,6 +12,7 @@ const Home = () => {
   const { session } = useSession();
   const authFetch = useAuthFetch();
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,13 +37,15 @@ const Home = () => {
       } catch (error) {
         console.error("Error fetching profile:", error);
         setHasProfile(false);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, [isSignedIn, session]);
 
-  if (hasProfile === null) {
+  if (loading) {
     return (
       <View>
         <Text>Loading...</Text>

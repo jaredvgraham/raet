@@ -2,7 +2,6 @@ import {
   View,
   Text,
   ScrollView,
-  Image,
   TextInput,
   KeyboardAvoidingView,
   Platform,
@@ -13,11 +12,13 @@ import {
 import React, { useCallback, useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { router, useRouter } from "expo-router";
-import OAuth from "@/components/OAuth";
+import { Image } from "expo-image";
+
 import { useSignIn } from "@clerk/clerk-expo";
 
 const SignIn = () => {
   const { signIn, isLoaded, setActive } = useSignIn();
+
   const router = useRouter();
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -42,24 +43,19 @@ const SignIn = () => {
       } else {
         // See https://clerk.com/docs/custom-flows/error-handling
         // for more info on error handling
-        console.error(JSON.stringify(signInAttempt, null, 2));
       }
     } catch (err: any) {
-      console.error(JSON.stringify(err, null, 2));
       setError(err.errors[0].longMessage);
     }
   }, [isLoaded, formData.email, formData.password]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ScrollView
-        className="flex-1 bg-white pt-10"
-        keyboardShouldPersistTaps="handled"
-      >
+      <View className="flex-1 bg-white pt-10">
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-          className="flex-1 p-6 justify-around"
+          className="flex-1 p-6"
         >
           <View className="flex items-center mb-12">
             <Image
@@ -67,7 +63,7 @@ const SignIn = () => {
               className="w-24 h-24 mb-4"
             />
             <Text className="text-3xl font-light text-gray-900">
-              Welcome back!
+              Welcome Back!
             </Text>
           </View>
 
@@ -134,7 +130,7 @@ const SignIn = () => {
             {/* Verification Modal */}
           </View>
         </KeyboardAvoidingView>
-      </ScrollView>
+      </View>
     </TouchableWithoutFeedback>
   );
 };

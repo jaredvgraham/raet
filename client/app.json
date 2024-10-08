@@ -14,7 +14,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "io.raet"
+      "bundleIdentifier": "io.raet",
+      "buildProperties": {
+        "useHermes": true
+      }
     },
     "android": {
       "adaptiveIcon": {

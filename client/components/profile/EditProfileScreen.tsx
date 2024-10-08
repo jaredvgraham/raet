@@ -128,7 +128,7 @@ const EditProfileScreen = ({
                 key={gender}
                 onPress={() => setPreferredGender(gender)}
                 className={`py-2 px-4 rounded-full ${
-                  preferredGender === gender ? "bg-blue-500" : "bg-gray-300"
+                  preferredGender === gender ? "bg-black" : "bg-gray-300"
                 }`}
               >
                 <Text className="text-white">{gender}</Text>
@@ -150,7 +150,7 @@ const EditProfileScreen = ({
                 value={sliderValue}
                 onValueChange={setSliderValue}
                 step={1}
-                minimumTrackTintColor={colors.teal}
+                minimumTrackTintColor={colors.black}
               />
               <TouchableOpacity
                 onPress={() => setIsMaxDistance(true)}
@@ -183,7 +183,7 @@ const EditProfileScreen = ({
               <TouchableOpacity
                 key={interest}
                 className={`px-4 py-2 mr-2 rounded-full ${
-                  interests.includes(interest) ? "bg-green-500" : "bg-gray-300"
+                  interests.includes(interest) ? "bg-black" : "bg-gray-300"
                 }`}
                 onPress={() => handleAddInterest(interest)}
               >
@@ -196,10 +196,10 @@ const EditProfileScreen = ({
               value={customInterest}
               onChangeText={setCustomInterest}
               placeholder="Add your own..."
-              className="flex-1 p-4 text-lg border border-gray-300 rounded-lg bg-white mr-2"
+              className="flex-1 p-4 text-lg border border-gray-300 rounded-full bg-white mr-2"
             />
             <TouchableOpacity
-              className="p-4 bg-blue-500 rounded-lg"
+              className="p-4 bg-violet-400 rounded-lg"
               onPress={handleCustomInterest}
             >
               <Text className="text-white">Add</Text>
@@ -209,7 +209,7 @@ const EditProfileScreen = ({
             {interests.map((interest) => (
               <TouchableOpacity
                 key={interest}
-                className="px-4 py-2 mr-2 mb-2 rounded-full bg-blue-500"
+                className="px-4 py-2 mr-2 mb-2 rounded-full bg-black"
                 onPress={() => handleRemoveInterest(interest)}
               >
                 <Text className="text-white">{interest}</Text>
@@ -227,7 +227,7 @@ const EditProfileScreen = ({
             <Text className="text-white text-lg">Cancel</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="bg-teal-500 py-3 px-10 rounded-full"
+            className="bg-green-400 py-3 px-10 rounded-full"
             onPress={handleSave}
           >
             <Text className="text-white text-lg">Save</Text>

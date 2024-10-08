@@ -1,7 +1,7 @@
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
 import React, { useRef } from "react";
@@ -9,14 +9,7 @@ import React, { useRef } from "react";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 
 import { tokenCache } from "@/lib/auth";
-
-ErrorUtils.setGlobalHandler((error, isFatal) => {
-  if (isFatal) {
-    console.error("Fatal Error: ", error);
-  } else {
-    console.log("Non-fatal Error: ", error);
-  }
-});
+import { View, Text } from "react-native";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
@@ -26,6 +19,16 @@ const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [error, setError] = useState(null);
+
+  ErrorUtils.setGlobalHandler((error, isFatal) => {
+    setError(error);
+    if (isFatal) {
+      console.error("Fatal Error: ", error);
+    } else {
+      console.log("Non-fatal Error: ", error);
+    }
+  });
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -47,16 +50,18 @@ export default function RootLayout() {
   }
 
   return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <ClerkLoaded>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(root)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(setUp)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-      </ClerkLoaded>
-    </ClerkProvider>
+    <>
+      <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+        <ClerkLoaded>
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(root)" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(setUp)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </ClerkLoaded>
+      </ClerkProvider>
+    </>
   );
 }

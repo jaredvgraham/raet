@@ -2,7 +2,6 @@ import {
   View,
   Text,
   ScrollView,
-  Image,
   TextInput,
   KeyboardAvoidingView,
   Platform,
@@ -14,11 +13,10 @@ import {
 import React, { useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { router } from "expo-router";
-import OAuth from "@/components/OAuth";
+import { Image } from "expo-image";
+
 import { useSignUp } from "@clerk/clerk-expo";
 import ReactNativeModal from "react-native-modal";
-import axios from "axios";
-import { axiosPublic } from "@/lib/axios";
 
 const SignUp = () => {
   const { signUp, isLoaded, setActive } = useSignUp();
@@ -59,7 +57,6 @@ const SignUp = () => {
       Alert.alert("Error", err.errors[0].longMessage);
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
-      console.error(JSON.stringify(err, null, 2));
     }
   };
 
@@ -91,7 +88,6 @@ const SignUp = () => {
               }),
             }
           );
-          console.log(res);
 
           await setActive({ session: completeSignUp.createdSessionId });
           setPendingVerification({
@@ -112,8 +108,6 @@ const SignUp = () => {
           state: "faild",
           error: "Validation failed",
         });
-
-        console.error(JSON.stringify(completeSignUp, null, 2));
       }
     } catch (err: any) {
       setPendingVerification({
@@ -129,10 +123,7 @@ const SignUp = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ScrollView
-        className="flex-1 bg-white pt-10"
-        keyboardShouldPersistTaps="handled"
-      >
+      <View className="flex-1 bg-white pt-10">
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
@@ -303,7 +294,7 @@ const SignUp = () => {
             </ReactNativeModal>
           </View>
         </KeyboardAvoidingView>
-      </ScrollView>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
