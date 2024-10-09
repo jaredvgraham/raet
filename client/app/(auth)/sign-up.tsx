@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
+import CheckBox from "react-native-check-box";
 import React, { useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { router } from "expo-router";
@@ -17,9 +18,12 @@ import { Image } from "expo-image";
 
 import { useSignUp } from "@clerk/clerk-expo";
 import ReactNativeModal from "react-native-modal";
+import TermsModal from "@/components/TosModal";
 
 const SignUp = () => {
   const { signUp, isLoaded, setActive } = useSignUp();
+  const [acceptTOS, setAcceptTOS] = useState(false);
+  const [showTOSModal, setShowTOSModal] = useState(false);
 
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -38,6 +42,11 @@ const SignUp = () => {
 
   const onSignUp = async () => {
     if (!isLoaded) {
+      return;
+    }
+
+    if (!acceptTOS) {
+      setError("Please accept the terms of service");
       return;
     }
 
@@ -190,6 +199,33 @@ const SignUp = () => {
                 className="flex-1 text-start text-gray-800 py-2"
               />
             </View>
+
+            {/* Accept TOS Section */}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 20,
+              }}
+            >
+              <CheckBox
+                isChecked={acceptTOS}
+                onClick={() => setAcceptTOS(!acceptTOS)}
+              />
+              <Text style={{ marginLeft: 8 }}>I accept the</Text>
+              <TouchableOpacity onPress={() => setShowTOSModal(true)}>
+                <Text style={{ color: "teal", marginLeft: 5 }}>
+                  Terms of Service
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* TOS Modal */}
+
+            <TermsModal
+              visible={showTOSModal}
+              onClose={() => setShowTOSModal(false)}
+            />
 
             {/* Sign Up Button */}
 
