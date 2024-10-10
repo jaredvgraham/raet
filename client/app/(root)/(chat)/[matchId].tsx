@@ -80,6 +80,8 @@ const ChatScreen = () => {
 
   useEffect(() => {
     const readMsg = async () => {
+      console.log("reading message");
+
       try {
         if (messages.length === 0 || !gotMessages) {
           return;

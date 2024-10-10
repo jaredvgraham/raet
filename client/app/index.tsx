@@ -1,7 +1,7 @@
 import { View, Text } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Redirect } from "expo-router";
-import { useAuth, useSession } from "@clerk/clerk-expo";
+import { useAuth, useSession, useUser } from "@clerk/clerk-expo";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import "react-native-gesture-handler";
 
@@ -10,6 +10,7 @@ import "react-native-gesture-handler";
 const Home = () => {
   const { isSignedIn } = useAuth();
   const { session } = useSession();
+
   const authFetch = useAuthFetch();
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,7 +29,9 @@ const Home = () => {
             "Content-Type": "application/json",
           },
         });
+
         const data = await response?.json();
+
         if (data.hasProfile === true) {
           setHasProfile(true);
         } else {
@@ -37,6 +40,7 @@ const Home = () => {
       } catch (error) {
         console.error("Error fetching profile:", error);
         setHasProfile(false);
+        console.log("error msg", error, "ENDDDDDD");
       } finally {
         setLoading(false);
       }

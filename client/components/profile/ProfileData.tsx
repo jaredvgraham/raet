@@ -11,6 +11,7 @@ import { colors } from "@/constants";
 import EditProfileScreen from "./EditProfileScreen";
 import { getCityFromLocation } from "@/utils/contants";
 import Header from "../header";
+import DeleteAccount from "./DeleteAccount";
 
 type ProfileDataProps = {
   profile: Profile;
@@ -21,6 +22,7 @@ const ProfileData = ({ profile, setPreview }: ProfileDataProps) => {
   const [editing, setEditing] = useState(false);
   const authFetch = useAuthFetch();
   const [city, setCity] = useState<string>();
+  console.log(`profile`, profile);
 
   useEffect(() => {
     console.log("editing", editing);
@@ -197,6 +199,7 @@ const ProfileData = ({ profile, setPreview }: ProfileDataProps) => {
             </Text>
           </TouchableOpacity>
           <SignOutButton />
+          <DeleteAccount userId={profile.clerkId} />
         </>
       )}
     </ScrollView>

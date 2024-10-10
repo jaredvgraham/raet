@@ -2,6 +2,7 @@
 import { Router } from "express";
 import {
   createProfile,
+  deleteAccount,
   getProfile,
   getUserLikes,
   registerUser,
@@ -17,6 +18,8 @@ const upload = multer({ storage: storage });
 const router = Router();
 
 router.post("/sign-up", registerUser);
+
+router.delete("/", ClerkExpressRequireAuth(), deleteAccount);
 
 router.get("/profile", ClerkExpressRequireAuth(), getProfile);
 router.patch("/profile", ClerkExpressRequireAuth(), createProfile);

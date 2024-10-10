@@ -97,6 +97,7 @@ const SignUp = () => {
               }),
             }
           );
+          console.log("sign up res", res);
 
           await setActive({ session: completeSignUp.createdSessionId });
           setPendingVerification({
