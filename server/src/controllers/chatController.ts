@@ -6,6 +6,7 @@ import { db } from "../config/firebase";
 import Message from "../models/messageModel";
 import { v4 as uuidv4 } from "uuid";
 import Chat from "../models/chatModel";
+import Block from "../models/blockModel";
 
 export const getChat = async (
   req: Request,
@@ -14,6 +15,14 @@ export const getChat = async (
 ) => {
   const { matchId } = req.params;
   try {
+    const blockExists = await Block.findOne({
+      $or: [{ userId: req.auth.userId, blockedUserId: req.auth.userId }],
+    });
+
+    if (blockExists) {
+      return res.status(403).json({ message: "Blocked" });
+    }
+
     const chat = await Chat.findOne({ matchId }).populate("messages");
     if (!chat) {
       return res.status(404).json({ message: "Chat not found" });
@@ -35,8 +44,21 @@ export const getMatches = async (
   const { userId } = req.auth; // Assume userId is available in req.auth
   try {
     // Find matches related to the user
+
+    const blockList = await Block.find({
+      $or: [{ userId: userId }, { blockedUserId: userId }],
+    });
+
+    const blockedIds = blockList.map((block) =>
+      block.userId === userId ? block.blockedUserId : block.userId
+    );
+
     const matches = await Match.find({
       $or: [{ user1ClerkId: userId }, { user2ClerkId: userId }],
+      $and: [
+        { user1ClerkId: { $nin: blockedIds } },
+        { user2ClerkId: { $nin: blockedIds } },
+      ],
     });
 
     if (!matches || matches.length === 0) {
@@ -95,8 +117,20 @@ export const getLastMsgAndMatch = async (
   console.log("getLastMsgAndMatch");
 
   try {
+    const blockList = await Block.find({
+      $or: [{ userId: userId }, { blockedUserId: userId }],
+    });
+
+    const blockedIds = blockList.map((block) =>
+      block.userId === userId ? block.blockedUserId : block.userId
+    );
+
     const matches = await Match.find({
       $or: [{ user1ClerkId: userId }, { user2ClerkId: userId }],
+      $and: [
+        { user1ClerkId: { $nin: blockedIds } },
+        { user2ClerkId: { $nin: blockedIds } },
+      ],
     }).populate("chat"); // Populate the chat field to get the chat IDs
 
     if (!matches || matches.length === 0) {
@@ -172,6 +206,14 @@ export const sendMessage = async (
   console.log("at sendMessage", req.body);
 
   try {
+    const blockExists = await Block.findOne({
+      $or: [{ userId: userId, blockedUserId: userId }],
+    });
+
+    if (blockExists) {
+      return res.status(403).json({ message: "Blocked" });
+    }
+
     const match = await Match.findById(matchId);
     if (!match) {
       return res.status(404).json({ message: "Match not found" });

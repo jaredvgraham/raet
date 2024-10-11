@@ -15,6 +15,7 @@ import feedRoutes from "./routes/feedRoutes";
 
 import chatRoutes from "./routes/chatRoutes";
 import matchRoutes from "./routes/matchRoutes";
+import blockRoutes from "./routes/blockRoutes";
 
 dotenv.config();
 const app: Application = express();
@@ -35,6 +36,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/feed", feedRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/match", matchRoutes);
+app.use("/api/block", blockRoutes);
 
 app.use(errorHandler);
 

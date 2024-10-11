@@ -4,6 +4,7 @@ import { CustomError } from "../middlewares/customError";
 import User from "../models/userModel";
 import { createMatch } from "./matches";
 import Like from "../models/likeModel";
+import Block from "../models/blockModel";
 
 export const getUserFeed = async (userId: string): Promise<IUser[]> => {
   const user = await User.findOne({ clerkId: userId });
@@ -32,6 +33,14 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
       : 0;
 
   console.log("userAverageRating", userAverageRating);
+
+  const blockedUsers = await Block.find({
+    $or: [{ userId: user.clerkId }, { blockedUserId: user.clerkId }],
+  });
+
+  const blockedIds = blockedUsers.map((block) =>
+    block.userId === user.clerkId ? block.blockedUserId : block.userId
+  );
 
   const ratingMatch =
     userAverageRating === 0
@@ -84,6 +93,7 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
           { clerkId: { $ne: user.clerkId } }, // Exclude the current user
           { clerkId: { $nin: user.likedUsers || [] } }, // Exclude users already liked
           { clerkId: { $nin: user.matchedUsers || [] } }, // Exclude users already matched
+          { clerkId: { $nin: blockedIds } }, // Exclude users who have blocked the current user
           {
             viewedUsers: {
               $not: {
