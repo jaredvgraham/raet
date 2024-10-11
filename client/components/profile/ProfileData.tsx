@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import { SignOutButton } from "@/components/SignOut";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,6 +18,7 @@ import EditProfileScreen from "./EditProfileScreen";
 import { getCityFromLocation } from "@/utils/contants";
 import Header from "../header";
 import DeleteAccount from "./DeleteAccount";
+import BlockedUsers from "./BlockedUsers";
 
 type ProfileDataProps = {
   profile: Profile;
@@ -22,7 +29,26 @@ const ProfileData = ({ profile, setPreview }: ProfileDataProps) => {
   const [editing, setEditing] = useState(false);
   const authFetch = useAuthFetch();
   const [city, setCity] = useState<string>();
+  const [blockedUsers, setBlockedUsers] = useState<Profile[]>([]);
+  const [showBlockedUsers, setShowBlockedUsers] = useState(false);
   console.log(`profile`, profile);
+
+  const getBlockedUsers = async () => {
+    try {
+      const response = await authFetch("/api/block", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response?.json();
+      setBlockedUsers(data.blockedUsers);
+      console.log("Blocked users:", data);
+    } catch (error) {
+      console.error("Error fetching blocked users:", error);
+    }
+  };
 
   useEffect(() => {
     console.log("editing", editing);
@@ -37,6 +63,7 @@ const ProfileData = ({ profile, setPreview }: ProfileDataProps) => {
       }
     };
     getCity();
+    getBlockedUsers();
   }, [editing]);
 
   const sendData = async (updatedProfile: Profile) => {
@@ -75,6 +102,15 @@ const ProfileData = ({ profile, setPreview }: ProfileDataProps) => {
       console.error("Error updating profile:", error);
     }
   };
+
+  if (showBlockedUsers) {
+    return (
+      <BlockedUsers
+        initialBlockedUsers={blockedUsers}
+        setShowBlockedUsers={setShowBlockedUsers}
+      />
+    );
+  }
 
   return (
     <ScrollView>
@@ -183,6 +219,16 @@ const ProfileData = ({ profile, setPreview }: ProfileDataProps) => {
                 Matched Users: {profile.matchedUsers.length}
               </Text>
             </View>
+
+            {/* Blocked users */}
+            <TouchableOpacity onPress={() => setShowBlockedUsers(true)}>
+              <View className="flex-row items-center mb-4">
+                <Icon name="ban" size={20} color={colors.black} />
+                <Text className="ml-3 text-base text-gray-800">
+                  Blocked Users: {blockedUsers.length}
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
           <TouchableOpacity
             className={`mt-7 ${

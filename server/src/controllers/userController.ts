@@ -13,6 +13,7 @@ import User from "../models/userModel";
 import { uploadImagesBucket } from "../services/uploadImageService";
 import Like from "../models/likeModel";
 import { calculateDistance } from "../utils/calculateDistance";
+import Block from "../models/blockModel";
 
 export const registerUser = async (
   req: Request,
@@ -234,10 +235,19 @@ export const getUserLikes = async (
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Find likes where the current user was liked (i.e., `likedUserId` is the current user's clerkId)
-    const likes = await Like.find({ likedUserId: user.clerkId });
+    const blockList = await Block.find({
+      $or: [{ userId: user.clerkId }, { blockedUserId: user.clerkId }],
+    });
 
-    // Extract the profiles of users who liked the current user
+    const blockedUserIds = blockList.map((block) =>
+      block.userId === user.clerkId ? block.blockedUserId : block.userId
+    );
+
+    const likes = await Like.find({
+      likedUserId: user.clerkId,
+      userId: { $nin: blockedUserIds },
+    });
+
     const likedUsersProfiles = await Promise.all(
       likes.map(async (like) => {
         try {

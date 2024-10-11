@@ -4,20 +4,30 @@ import User from "../models/userModel";
 
 export const reportUser = async (req: Request, res: Response) => {
   const { userId } = req.auth;
-  const { reportedUserId, reason } = req.body;
+  try {
+    const { reportedUserId, reason } = req.body;
 
-  if (!userId || !reportedUserId || !reason) {
-    return res.status(400).json({ message: "Missing required fields" });
+    if (!userId || !reportedUserId || !reason) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const user = await User.findOne({ clerkId: reportedUserId });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    console.log("making report", userId, reportedUserId, reason);
+
+    const report = await Report.create({
+      reporterId: userId,
+      reportedUserId,
+      reason,
+    });
+
+    res.status(201).json({ message: "User reported successfully", report });
+  } catch (error) {
+    console.error("Error fetching reports:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  const user = await User.findById(reportedUserId);
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
-  }
-
-  const report = await Report.create({ userId, reportedUserId, reason });
-
-  res.status(201).json({ message: "User reported successfully", report });
 };
 
 export const getReports = async (req: Request, res: Response) => {

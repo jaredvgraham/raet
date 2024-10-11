@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Swiper from "react-native-swiper";
 import { Profile } from "@/types";
 import Icon from "react-native-vector-icons/FontAwesome";
+import UserActionsMenu from "../UserActionsMenu";
 
 type UserDetailScreenProps = {
   profile: Profile;
@@ -132,6 +133,11 @@ const UserDetailScreen = ({
         >
           <Icon name="times" size={24} color="#000" />
         </TouchableOpacity>
+
+        {/* Actions Menu */}
+        <View className="absolute top-5 left-5">
+          <UserActionsMenu reportedUserId={profile.clerkId} color="white" />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
