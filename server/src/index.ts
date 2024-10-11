@@ -16,7 +16,7 @@ import reportRoutes from "./routes/reportRoutes";
 dotenv.config();
 const app: Application = express();
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3000;
 
 declare global {
   namespace Express {
@@ -37,6 +37,6 @@ app.use("/api/report", reportRoutes);
 
 app.use(errorHandler);
 
-app.listen(3000, () => {
+app.listen(port, () => {
   console.log(`Server is running on ${port}`);
 });

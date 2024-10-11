@@ -27,6 +27,7 @@ export const useAuthFetch = () => {
         ...options,
         headers,
       });
+      console.log("response", response);
 
       if (!response.ok) {
         const errorData = await response.json(); // Parse error response body
