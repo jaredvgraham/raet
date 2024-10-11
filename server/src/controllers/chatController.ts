@@ -14,13 +14,28 @@ export const getChat = async (
   next: NextFunction
 ) => {
   const { matchId } = req.params;
+  const { userId } = req.auth; // Assuming userId is available in req.auth
+
   try {
+    // Fetch the match data to find the other user's Clerk ID
+    const match = await Match.findById(matchId);
+    if (!match) {
+      return res.status(404).json({ message: "Match not found" });
+    }
+
+    const matchedUserId =
+      match.user1ClerkId === userId ? match.user2ClerkId : match.user1ClerkId;
+
+    // Check if the current user or the matched user has blocked each other
     const blockExists = await Block.findOne({
-      $or: [{ userId: req.auth.userId, blockedUserId: req.auth.userId }],
+      $or: [
+        { userId: userId, blockedUserId: matchedUserId }, // Current user blocked the matched user
+        { userId: matchedUserId, blockedUserId: userId }, // Matched user blocked the current user
+      ],
     });
 
     if (blockExists) {
-      return res.status(403).json({ message: "Blocked" });
+      return res.status(403).json({ message: "Access to chat is blocked." });
     }
 
     const chat = await Chat.findOne({ matchId }).populate("messages");
@@ -206,17 +221,23 @@ export const sendMessage = async (
   console.log("at sendMessage", req.body);
 
   try {
-    const blockExists = await Block.findOne({
-      $or: [{ userId: userId, blockedUserId: userId }],
-    });
-
-    if (blockExists) {
-      return res.status(403).json({ message: "Blocked" });
-    }
-
     const match = await Match.findById(matchId);
     if (!match) {
       return res.status(404).json({ message: "Match not found" });
+    }
+
+    const matchedUserId =
+      match.user1ClerkId === userId ? match.user2ClerkId : match.user1ClerkId;
+
+    const blockExists = await Block.findOne({
+      $or: [
+        { userId: userId, blockedUserId: matchedUserId },
+        { userId: matchedUserId, blockedUserId: userId },
+      ],
+    });
+
+    if (blockExists) {
+      return res.status(403).json({ message: "Access to chat is blocked." });
     }
 
     let chat = await Chat.findOne({ matchId: matchId });
