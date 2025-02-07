@@ -83,6 +83,7 @@ const TermsModal = ({ visible, onClose }: TermsModalProps) => {
             please refer to our Privacy Policy.
           </Text>
 
+          {/* ADDITION: Expanded Community Guidelines */}
           <Text style={styles.sectionHeader}>6. Community Guidelines</Text>
           <Text style={styles.section}>
             To maintain a safe and respectful environment, users are expected to
@@ -91,12 +92,47 @@ const TermsModal = ({ visible, onClose }: TermsModalProps) => {
             personal or financial information from other users.{"\n"}• No
             impersonation or misrepresentation of your identity or affiliation.
             {"\n"}• No sexually explicit content or illegal activities.{"\n"}
-            Raet reserves the right to review and remove content that violates
-            these guidelines, and may terminate your account in case of
-            violations.
+            We have a **zero-tolerance policy** for objectionable content. Raet
+            reserves the right to **review, moderate, and remove** any content
+            that violates these guidelines and may **terminate** your account
+            for repeated violations.
           </Text>
 
-          <Text style={styles.sectionHeader}>7. In-App Purchases</Text>
+          {/* ADDITION: Content Moderation and Objectionable Content */}
+          <Text style={styles.sectionHeader}>
+            7. Content Moderation and Objectionable Content
+          </Text>
+          <Text style={styles.section}>
+            Raet is committed to ensuring a safe and enjoyable experience for
+            all users. We use **automated filtering systems** and **manual
+            review** to detect and remove any objectionable content. This
+            includes, but is not limited to:{"\n"}• Hate speech{"\n"}•
+            Harassment{"\n"}• Explicit or pornographic material{"\n"}• Content
+            promoting violence or illegal activities.
+          </Text>
+
+          {/* ADDITION: Reporting Mechanism */}
+          <Text style={styles.sectionHeader}>
+            8. Reporting Inappropriate Content
+          </Text>
+          <Text style={styles.section}>
+            If you encounter any content that violates our Community Guidelines,
+            you can report it by using the “Report” button available on profiles
+            and messages. We will review all reports within **24 hours** and
+            take appropriate action, which may include removing the content or
+            ejecting the user who posted the content.
+          </Text>
+
+          {/* ADDITION: Blocking Abusive Users */}
+          <Text style={styles.sectionHeader}>9. Blocking Abusive Users</Text>
+          <Text style={styles.section}>
+            If you experience harassment or inappropriate behavior from another
+            user, you can block them using the “Block” feature available in
+            their profile or chat. Once blocked, they will no longer be able to
+            contact you.
+          </Text>
+
+          <Text style={styles.sectionHeader}>10. In-App Purchases</Text>
           <Text style={styles.section}>
             Raet offers premium features through in-app purchases, which may
             include but are not limited to:{"\n"}• Boosting your profile
@@ -107,7 +143,7 @@ const TermsModal = ({ visible, onClose }: TermsModalProps) => {
             pricing and payment terms.
           </Text>
 
-          <Text style={styles.sectionHeader}>8. Licenses and Rights</Text>
+          <Text style={styles.sectionHeader}>11. Licenses and Rights</Text>
           <Text style={styles.section}>
             By using Raet, you grant us a non-exclusive, royalty-free,
             perpetual, and worldwide license to use, modify, reproduce, and
@@ -117,7 +153,7 @@ const TermsModal = ({ visible, onClose }: TermsModalProps) => {
             the app or enhance the user experience.
           </Text>
 
-          <Text style={styles.sectionHeader}>9. Limitation of Liability</Text>
+          <Text style={styles.sectionHeader}>12. Limitation of Liability</Text>
           <Text style={styles.section}>
             Raet provides a platform for users to connect, but we cannot
             guarantee the behavior or actions of any user. You acknowledge that
@@ -130,7 +166,7 @@ const TermsModal = ({ visible, onClose }: TermsModalProps) => {
             app.
           </Text>
 
-          <Text style={styles.sectionHeader}>10. Dispute Resolution</Text>
+          <Text style={styles.sectionHeader}>13. Dispute Resolution</Text>
           <Text style={styles.section}>
             In the event of a dispute arising from the use of Raet, both parties
             agree to resolve the issue through binding arbitration in [Insert
@@ -139,7 +175,7 @@ const TermsModal = ({ visible, onClose }: TermsModalProps) => {
           </Text>
 
           <Text style={styles.sectionHeader}>
-            11. Changes to the Terms of Service
+            14. Changes to the Terms of Service
           </Text>
           <Text style={styles.section}>
             Raet reserves the right to modify or update these Terms of Service
@@ -148,7 +184,7 @@ const TermsModal = ({ visible, onClose }: TermsModalProps) => {
             terms. It is your responsibility to review the Terms regularly.
           </Text>
 
-          <Text style={styles.sectionHeader}>12. Contact Us</Text>
+          <Text style={styles.sectionHeader}>15. Contact Us</Text>
           <Text style={styles.section}>
             If you have any questions or concerns about these Terms of Service,
             you can contact us at:{"\n"}• Email: support@raet.io{"\n"}• Address:
