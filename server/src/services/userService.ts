@@ -48,7 +48,11 @@ export const createUserProfile = async (
 };
 
 export const getUserProfile = async (userId: string): Promise<IUser> => {
+  console.log("getting user with Id", userId);
+
   const user = await User.findOne({ clerkId: userId });
+
+  console.log("user from mongo", user);
 
   if (!user) {
     throw new CustomError("User not found", 404); // 404 Not Found
