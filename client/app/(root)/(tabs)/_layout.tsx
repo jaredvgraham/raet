@@ -56,7 +56,7 @@ const Layout = () => {
           title: "Home",
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} icon="globe" />
+            <TabIcon focused={focused} icon="home" />
           ),
         }}
       />

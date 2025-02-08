@@ -27,6 +27,7 @@ const SCREEN_HEIGHT = Dimensions.get("window").height;
 export default function SwipeableCardDeck() {
   const authFetch = useAuthFetch();
   const renderedProfiles = new Set();
+  const [currentPage, setCurrentPage] = useState("Feed");
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [Loading, setLoading] = useState(true);
   const [moreDetails, setMoreDetails] = useState(false);
@@ -356,6 +357,9 @@ export default function SwipeableCardDeck() {
     return (
       <SafeAreaView className="flex-1 bg-gray-100 justify-center items-center">
         <Header />
+        <View>
+          <Text>hey</Text>
+        </View>
         {showNotification.visible && (
           <Notification
             {...showNotification}
@@ -434,6 +438,23 @@ export default function SwipeableCardDeck() {
       ) : (
         <SafeAreaView className="flex-1 bg-white items-center ">
           <Header />
+          <View className="flex flex-row gap-2 mb-2">
+            {["Feed", "Fyp"].map((page) => (
+              <View className={` p-1 rounded-full`}>
+                <Text
+                  key={page}
+                  onPress={() => setCurrentPage(page)}
+                  className={`${
+                    currentPage === page
+                      ? "text-red-400  underline"
+                      : "text-black"
+                  }`}
+                >
+                  {page}
+                </Text>
+              </View>
+            ))}
+          </View>
           {showNotification.visible && (
             <Notification
               {...showNotification}
@@ -450,7 +471,7 @@ export default function SwipeableCardDeck() {
             className="relative  rounded-lg shadow-2xl  items-center"
             style={{
               width: SCREEN_WIDTH - 0.4,
-              height: SCREEN_HEIGHT * 0.7,
+              height: SCREEN_HEIGHT * 0.65,
               // Center the container vertically
             }}
           >
