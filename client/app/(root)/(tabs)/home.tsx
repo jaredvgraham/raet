@@ -20,6 +20,8 @@ import { useFocusEffect } from "expo-router";
 import SwipeableCard from "@/components/feed/SwipeableCard";
 import UserDetailScreen from "@/components/feed/CloserLook";
 import { set } from "firebase/database";
+import { getUserLocation } from "@/utils/contants";
+import Links from "@/components/feed/Links";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -27,7 +29,6 @@ const SCREEN_HEIGHT = Dimensions.get("window").height;
 export default function SwipeableCardDeck() {
   const authFetch = useAuthFetch();
   const renderedProfiles = new Set();
-  const [currentPage, setCurrentPage] = useState("Feed");
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [Loading, setLoading] = useState(true);
   const [moreDetails, setMoreDetails] = useState(false);
@@ -438,23 +439,7 @@ export default function SwipeableCardDeck() {
       ) : (
         <SafeAreaView className="flex-1 bg-white items-center ">
           <Header />
-          <View className="flex flex-row gap-2 mb-2">
-            {["Feed", "Fyp"].map((page) => (
-              <View className={` p-1 rounded-full`}>
-                <Text
-                  key={page}
-                  onPress={() => setCurrentPage(page)}
-                  className={`${
-                    currentPage === page
-                      ? "text-red-400  underline"
-                      : "text-black"
-                  }`}
-                >
-                  {page}
-                </Text>
-              </View>
-            ))}
-          </View>
+          <Links />
           {showNotification.visible && (
             <Notification
               {...showNotification}

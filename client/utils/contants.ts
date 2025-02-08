@@ -7,6 +7,8 @@ export const SCREEN_WIDTH = Dimensions.get("window").width;
 export const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 export async function getUserLocation() {
+  console.log("Getting user's location...");
+
   let { status } = await Location.requestForegroundPermissionsAsync();
   if (status !== "granted") {
     console.log("Permission to access location was denied");

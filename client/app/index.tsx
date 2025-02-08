@@ -10,6 +10,7 @@ import "react-native-gesture-handler";
 const Home = () => {
   const { isSignedIn } = useAuth();
   const { session } = useSession();
+  const { user } = useUser();
 
   const authFetch = useAuthFetch();
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);

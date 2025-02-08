@@ -52,6 +52,7 @@ const SignUp = () => {
 
     try {
       await signUp.create({
+        username: formData.name,
         emailAddress: formData.email,
         password: formData.password,
       });
@@ -70,14 +71,21 @@ const SignUp = () => {
   };
 
   const onPressVerify = async () => {
+    console.log("onPressVerify");
+
     if (!isLoaded) {
+      console.log("not loaded");
+
       return;
     }
 
     try {
+      console.log("try");
+
       const completeSignUp = await signUp.attemptEmailAddressVerification({
         code: pendingVerification.code,
       });
+      console.log("completeSignUp", completeSignUp);
 
       if (completeSignUp.status === "complete") {
         // TODO handle add user to database
