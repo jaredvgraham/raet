@@ -46,7 +46,7 @@ const Onboarding = () => {
   useEffect(() => {
     console.log("location", location);
 
-    const sendLocation = async () => {
+     const sendLocation = async () => {
       if (location) return;
       const newLocation = await getUserLocation();
       if (!newLocation) {

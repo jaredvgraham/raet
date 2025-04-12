@@ -10,7 +10,7 @@ type TabIconProps = {
 const TabIcon = ({ focused, icon }: TabIconProps) => {
   return (
     <View>
-      <Icon name={icon} size={30} color={focused ? "black" : "gray"} />
+      <Icon name={icon} size={30} color={focused ? "black" : "lightgray"} />
     </View>
   );
 };
@@ -36,9 +36,6 @@ const Layout = () => {
         tabBarActiveTintColor: "black",
         tabBarShowLabel: false,
         tabBarStyle: {
-          backgroundColor: "white",
-
-          borderRadius: 50,
           paddingBottom: 20,
           overflow: "hidden",
 
@@ -47,6 +44,9 @@ const Layout = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          borderTopWidth: 0, // remove top border
+          elevation: 0, // remove Android shadow
+          shadowOpacity: 0, // remove iOS shadow
         },
       }}
     >

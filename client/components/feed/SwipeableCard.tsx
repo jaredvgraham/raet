@@ -1,141 +1,172 @@
-// components/SwipeableCard.tsx
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  Image,
-  Animated,
   ImageBackground,
   TouchableOpacity,
   Dimensions,
+  Pressable,
 } from "react-native";
+import { PanGestureHandler, ScrollView } from "react-native-gesture-handler";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  useAnimatedGestureHandler,
+  withSpring,
+  runOnJS,
+} from "react-native-reanimated";
+import { MotiView } from "moti";
 import { LinearGradient } from "expo-linear-gradient";
 import { Profile } from "@/types";
 import RatingButtons from "@/components/feed/RateButtons";
-import Icon from "react-native-vector-icons/FontAwesome";
+import { Image } from "expo-image";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const SCREEN_HEIGHT = Dimensions.get("window").height;
 
-type SwipeableCardProps = {
+type Props = {
   user: Profile;
-  isCurrentCard: boolean;
-  index: number;
-  swipingDirection: string;
-  position: Animated.ValueXY;
-  panHandlers: any;
   currentImageIndex: number;
-  onSwipeRight: () => void;
-  onSwipeLeft: () => void;
-  onRateChange: (number: number) => void;
+  onSwipe: (dir: "left" | "right") => void;
   rate: number | null;
-  RenderImageIndicators: React.FC;
-  onPressDetails: () => void;
+  onRateChange: (n: number) => void;
+  onImageTap?: (tapX: number) => void;
+  isBackCard?: boolean;
 };
 
-const SwipeableCard = ({
+export default function SwipeableCard({
   user,
-  isCurrentCard,
-  index,
-  swipingDirection,
-  position,
-  panHandlers,
   currentImageIndex,
-  onSwipeRight,
-  onSwipeLeft,
-  onRateChange,
+  onSwipe,
   rate,
-  RenderImageIndicators,
-  onPressDetails,
-}: SwipeableCardProps) => {
-  return (
-    <Animated.View
-      key={user._id}
-      {...(isCurrentCard ? panHandlers : {})}
-      style={[
-        {
-          position: "absolute",
-          width: "100%",
-          height: "100%",
-          zIndex: -index, // Or any other logic to determine zIndex
-        },
-        isCurrentCard && position.getLayout(),
-      ]}
-    >
-      {isCurrentCard && swipingDirection === "right" && (
-        <Text
-          className="absolute top-10 left-10 text-2xl z-10 text-white bg-green-400 p-1 font-bold"
-          style={{
-            transform: [{ rotate: "20deg" }],
-          }}
-        >
-          YES
-        </Text>
-      )}
-      {isCurrentCard && swipingDirection === "left" && (
-        <Text
-          className="absolute top-10 right-10 text-2xl z-10 text-white bg-red-400 p-1 font-bold"
-          style={{
-            transform: [{ rotate: "-20deg" }],
-          }}
-        >
-          NOPE
-        </Text>
-      )}
-      <ImageBackground
-        source={{ uri: user.images[currentImageIndex] }}
-        className="w-full h-full overflow-hidden rounded-t-2xl bg-white"
-        style={{ justifyContent: "flex-end" }}
-      >
-        {isCurrentCard && <RenderImageIndicators />}
-        <LinearGradient
-          colors={["rgba(0,0,0,0.01)", "rgba(0,0,0,0.8)"]}
-          style={{ padding: 10 }}
-        >
-          <View className="text-center ">
-            <Text className="text-2xl font-bold text-white text-center">
-              {user.name}, {user.age}
-            </Text>
-            <Text className="text-lg text-gray-300 text-center">
-              Distance: {Math.floor(user.distance)} Miles
-            </Text>
-          </View>
-        </LinearGradient>
-        <TouchableOpacity onPress={onSwipeRight}>
-          <Image
-            source={require("../../assets/images/like.png")}
-            className="w-10 h-10 absolute bottom-5 right-3"
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onSwipeLeft}>
-          <Image
-            source={require("../../assets/images/dislike.png")}
-            className="w-10 h-10 absolute bottom-5 left-3"
-          />
-        </TouchableOpacity>
-      </ImageBackground>
-      <RatingButtons
-        rate={rate}
-        onRateChange={onRateChange}
-        isCurrentCard={isCurrentCard}
-      />
-      <TouchableOpacity
-        style={{
-          position: "absolute",
-          top: 10,
-          right: 10,
-          zIndex: 10,
-          backgroundColor: "rgba(100,100,100,0.5)",
-          padding: 10,
-          borderRadius: 100,
-        }}
-        onPress={onPressDetails} // Use the provided onPressDetails function
-      >
-        <Icon name="arrow-up" size={20} color="white" />
-      </TouchableOpacity>
-    </Animated.View>
-  );
-};
+  onRateChange,
+  onImageTap,
+  isBackCard = false,
+}: Props) {
+  const translateX = useSharedValue(0);
+  const [swipingDirection, setSwipingDirection] = useState<
+    "left" | "right" | ""
+  >("");
 
-export default SwipeableCard;
+  const gestureHandler = useAnimatedGestureHandler({
+    onActive: (event) => {
+      translateX.value = event.translationX;
+
+      // Update swipe direction on the JS thread
+      if (event.translationX > 30) {
+        runOnJS(setSwipingDirection)("right");
+      } else if (event.translationX < -30) {
+        runOnJS(setSwipingDirection)("left");
+      } else {
+        runOnJS(setSwipingDirection)("");
+      }
+    },
+    onEnd: (event) => {
+      if (event.translationX > 100) {
+        translateX.value = withSpring(SCREEN_WIDTH + 100);
+        runOnJS(onSwipe)("right");
+      } else if (event.translationX < -100) {
+        translateX.value = withSpring(-SCREEN_WIDTH - 100);
+        runOnJS(onSwipe)("left");
+      } else {
+        translateX.value = withSpring(0);
+        runOnJS(setSwipingDirection)("");
+      }
+    },
+  });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }));
+
+  useEffect(() => {
+    translateX.value = 0;
+  }, [user._id]);
+
+  return (
+    <PanGestureHandler onGestureEvent={gestureHandler} key={user._id}>
+      <Animated.View
+        key={user._id}
+        style={[
+          {
+            position: "absolute",
+            width: "100%",
+            height: "85%",
+            borderRadius: 16,
+            overflow: "hidden",
+            zIndex: isBackCard ? 0 : 10,
+            transform: isBackCard ? [{ scale: 0.95 }] : [],
+            opacity: isBackCard ? 0.8 : 1,
+          },
+        ]}
+      >
+        <MotiView
+          from={{ opacity: 0.8, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", damping: 18, mass: 1 }}
+          style={[{ flex: 1 }, animatedStyle]}
+          key={user._id}
+        >
+          {/* YES / NOPE labels */}
+          {swipingDirection === "right" && !isBackCard && (
+            <Text
+              className="absolute top-10 left-10 text-2xl z-10 text-white bg-green-400 p-1 font-bold"
+              style={{ transform: [{ rotate: "20deg" }] }}
+            >
+              YES
+            </Text>
+          )}
+          {swipingDirection === "left" && !isBackCard && (
+            <Text
+              className="absolute top-10 right-10 text-2xl z-10 text-white bg-red-400 p-1 font-bold"
+              style={{ transform: [{ rotate: "-20deg" }] }}
+            >
+              NOPE
+            </Text>
+          )}
+
+          <Pressable
+            onPress={(e) => {
+              if (!onImageTap) return;
+              const tapX = e.nativeEvent.pageX;
+              onImageTap(tapX);
+            }}
+            style={{ flex: 1 }}
+          >
+            <ImageBackground
+              source={{ uri: user.images[currentImageIndex] }}
+              className="w-full h-full bg-white"
+              style={{ justifyContent: "flex-end" }}
+            >
+              {!isBackCard && (
+                <View
+                  style={{
+                    position: "absolute",
+                    bottom: 20,
+                    left: 0,
+                    right: 0,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    paddingHorizontal: 40,
+                    zIndex: 10,
+                  }}
+                ></View>
+              )}
+
+              <LinearGradient
+                colors={["rgba(0,0,0,0.01)", "rgba(0,0,0,0.8)"]}
+                style={{ padding: 16 }}
+              >
+                <Text className="text-2xl font-bold text-white text-center">
+                  {user.name}, {user.age}
+                </Text>
+                <Text className="text-lg text-gray-300 text-center">
+                  {Math.floor(user.distance)} Miles away
+                </Text>
+              </LinearGradient>
+            </ImageBackground>
+          </Pressable>
+        </MotiView>
+      </Animated.View>
+    </PanGestureHandler>
+  );
+}
