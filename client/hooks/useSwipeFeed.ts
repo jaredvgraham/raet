@@ -7,6 +7,7 @@ export function useSwipeFeed() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [noProfilesLeft, setNoProfilesLeft] = useState(false);
+  const [rate, setRate] = useState<number | null>(null);
 
   const fetchProfiles = useCallback(async () => {
     try {
@@ -35,6 +36,7 @@ export function useSwipeFeed() {
     console.log("swipe", user, direction, rate);
 
     setProfiles((prev) => prev.filter((p) => p._id !== user._id));
+
     try {
       const res = await authFetch("/api/feed/swipe", {
         method: "POST",
@@ -42,11 +44,20 @@ export function useSwipeFeed() {
         headers: { "Content-Type": "application/json" },
       });
       const data = await res?.json();
+      setRate(null);
       return data;
     } catch (err) {
       console.error("swipe error", err);
     }
   };
 
-  return { profiles, loading, noProfilesLeft, fetchProfiles, handleSwipe };
+  return {
+    profiles,
+    loading,
+    noProfilesLeft,
+    fetchProfiles,
+    handleSwipe,
+    setRate,
+    rate,
+  };
 }

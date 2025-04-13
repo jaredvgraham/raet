@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView, Text, View, TouchableOpacity } from "react-native";
 import { useSwipeFeed } from "@/hooks/useSwipeFeed";
 import { Profile } from "@/types";
 import { Image } from "expo-image";
 import RatingButtons from "./RateButtons";
-import ModernCard from "./ScrollableCard";
+import ModernCard, { ModernCardRef } from "./ScrollableCard";
+import Icon from "react-native-vector-icons/FontAwesome";
+import Links from "./Links";
 
 export default function FuturisticDeck() {
   const { profiles, loading, noProfilesLeft, fetchProfiles, handleSwipe } =
@@ -14,6 +16,8 @@ export default function FuturisticDeck() {
   const [current, setCurrent] = useState<Profile | null>(null);
   const [next, setNext] = useState<Profile | null>(null);
   const [cardKey, setCardKey] = useState(0);
+
+  const cardRef = useRef<ModernCardRef>(null);
 
   useEffect(() => {
     fetchProfiles();
@@ -30,6 +34,10 @@ export default function FuturisticDeck() {
     }
   }, [profiles]);
 
+  const triggerSwipe = (dir: "left" | "right") => {
+    cardRef.current?.swipe(dir);
+  };
+
   if (loading || !current) return null;
 
   const onSwipe = (dir: "left" | "right") => {
@@ -38,11 +46,9 @@ export default function FuturisticDeck() {
   };
 
   return (
-    <SafeAreaView className="flex-1 justify-center items-center bg-white">
-      <View>
-        <Text>Hey</Text>
-      </View>
-      <View className="flex-1 w-full items-center justify-center relative p-2">
+    <SafeAreaView className="flex-1 justify-center bg-white   ">
+      <Links />
+      <View className="flex-1 w-full items-center relative px-2 rounded-xl pb-1">
         {next && (
           <ModernCard
             key={`${next._id}-back`}
@@ -51,34 +57,45 @@ export default function FuturisticDeck() {
             isBackCard
           />
         )}
-        <ModernCard key={cardKey} user={current} onSwipe={onSwipe} />
+        <ModernCard
+          key={cardKey}
+          ref={cardRef}
+          user={current}
+          onSwipe={onSwipe}
+        />
       </View>
 
       {/* Like / Dislike Buttons */}
       <View className="absolute bottom-48 right-3 gap-3">
         <TouchableOpacity
-          onPress={() => onSwipe("right")}
-          className="bg-white rounded-full p-1"
+          onPress={() => triggerSwipe("right")}
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 1.5)",
+            borderColor: "rgb(82, 204, 43)", // ✅ green border with opacity
+            borderWidth: 2,
+            borderRadius: 999,
+            padding: 12,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
-          <Image
-            source={require("@/assets/images/like.png")}
-            className="w-14 h-14"
-          />
+          <Icon name="heart" size={40} color="rgb(82, 204, 43)" />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => onSwipe("left")}
-          className="bg-white rounded-full p-1"
-        >
-          <Image
-            source={require("@/assets/images/dislike.png")}
-            className="w-14 h-14"
-          />
-        </TouchableOpacity>
-      </View>
 
-      {/* Rating Buttons */}
-      <View className="absolute bottom-1 w-full items-center z-20">
-        <RatingButtons rate={rate} onRateChange={setRate} />
+        <TouchableOpacity
+          onPress={() => triggerSwipe("left")}
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 1.5)",
+            borderColor: "rgb(239, 68, 68)", // Tailwind red-500
+            borderWidth: 2,
+            borderRadius: 999,
+            padding: 12,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Icon name="times" size={40} color="rgb(239, 68, 68)" />
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
