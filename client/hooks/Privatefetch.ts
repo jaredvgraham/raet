@@ -8,8 +8,6 @@ export const useAuthFetch = () => {
     try {
       const url = `${process.env.EXPO_PUBLIC_API_URL}${endpoint}`;
       console.log("url", url);
-
-      // Get the token from Clerk session
       const token = await session?.getToken();
 
       if (!token) {
