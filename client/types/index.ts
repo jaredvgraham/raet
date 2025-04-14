@@ -53,6 +53,7 @@ export interface Profile {
     facebook?: string;
     tiktok?: string;
   };
+  matchScore: number;
 }
 
 export interface Message {

@@ -146,11 +146,11 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                     contentFit="cover"
                   />
                 </View>
-
-                <View className="absolute top-5 left-5 z-10">
-                  <RingProgress percentage={88} size={70} />
-                </View>
-
+                {!isBackCard && (
+                  <View className="absolute top-5 left-5 z-10">
+                    <RingProgress percentage={user.matchScore} size={70} />
+                  </View>
+                )}
                 <LinearGradient
                   colors={["transparent", "rgba(0,0,0,1)"]}
                   className="absolute bottom-0 px-6 pt-24 pb-1 w-full"
@@ -255,7 +255,7 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                 )}
                 {user.smokingHabits && (
                   <View className="flex-row items-center">
-                    <Icon name="smoking" size={16} color="#0f172a" />
+                    <Icon name="fire" size={16} color="#0f172a" />
                     <Text className="ml-3 text-sm text-gray-700">
                       <Text className="font-semibold">Smokes:</Text>{" "}
                       {user.smokingHabits}

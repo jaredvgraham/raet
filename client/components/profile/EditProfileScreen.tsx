@@ -289,7 +289,7 @@ const EditProfileScreen = ({
       )}
       {renderOptions(
         "Smoking Habits",
-        "smoke",
+        "fire",
         smokingHabits,
         setSmokingHabits,
         smokingOptions

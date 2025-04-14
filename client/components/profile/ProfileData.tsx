@@ -249,7 +249,7 @@ const ProfileData = ({ profile, setPreview }: ProfileDataProps) => {
                 label: `Drinking: ${profile.drinkingHabits || "N/A"}`,
               },
               {
-                icon: "smoking",
+                icon: "fire",
                 label: `Smoking: ${profile.smokingHabits || "N/A"}`,
               },
               {

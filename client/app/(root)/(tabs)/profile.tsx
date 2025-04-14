@@ -9,6 +9,7 @@ import { Animated } from "react-native";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "@/utils/contants";
 import Header from "@/components/header";
 import RenderImageIndicators from "@/components/feed/RenderImageIndicators"; // Import the component
+import ModernCard from "@/components/feed/ScrollableCard";
 
 const ProfilePage = () => {
   const authFetch = useAuthFetch();
@@ -59,45 +60,13 @@ const ProfilePage = () => {
   return (
     <>
       {preview ? (
-        <SafeAreaView className="flex-1 bg-white items-center ">
+        <SafeAreaView className="flex-1 bg-white   ">
           <Header />
-          <TouchableOpacity
-            className="absolute top-24 left-3 z-30 bg-black p-2 rounded-full"
-            onPress={() => setPreview(false)}
-          >
-            <Text className="text-lg text-gray-200">Done</Text>
-          </TouchableOpacity>
-
-          <View
-            className="relative  rounded-lg shadow-2xl  items-center"
-            style={{
-              width: SCREEN_WIDTH - 0.4,
-              height: SCREEN_HEIGHT * 0.7,
-            }}
-            onStartShouldSetResponder={(event) => true}
-            onResponderRelease={(event) => {
-              handleImageTap(event.nativeEvent.locationX);
-            }}
-          >
-            <SwipeableCard
+          <View className="flex-1 w-full items-center relative  rounded-xl pb-1">
+            <ModernCard
               user={profile}
-              isCurrentCard={true} // Since it's a preview, we want to treat it as the current card
-              index={0}
-              swipingDirection={""}
-              position={position}
-              panHandlers={{}} // No panHandlers needed in preview mode
-              currentImageIndex={currentImageIndex} // Pass the current image index
-              onSwipeRight={() => {}} // No swipe actions in preview mode
-              onSwipeLeft={() => {}} // No swipe actions in preview mode
-              onRateChange={() => {}} // No rating in preview mode
-              rate={null}
-              RenderImageIndicators={() => (
-                <RenderImageIndicators
-                  images={profile.images}
-                  currentImageIndex={currentImageIndex}
-                />
-              )}
-              onPressDetails={() => {}} // No details in preview mode
+              onSwipe={() => setPreview(false)}
+              isBackCard={false}
             />
           </View>
         </SafeAreaView>

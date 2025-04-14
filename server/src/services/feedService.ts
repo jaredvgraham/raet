@@ -5,6 +5,7 @@ import User from "../models/userModel";
 import { createMatch } from "./matches";
 import Like from "../models/likeModel";
 import Block from "../models/blockModel";
+import { generateMatchScores } from "../utils/matchScore";
 
 export const getUserFeed = async (userId: string): Promise<IUser[]> => {
   const user = await User.findOne({ clerkId: userId });
@@ -125,7 +126,9 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
     },
   ]);
 
-  return nearbyUsers;
+  const usersWithScores = generateMatchScores(user, nearbyUsers);
+
+  return usersWithScores as any;
 };
 
 export const likeUser = async (userId: string, likedUserId: string) => {

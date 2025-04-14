@@ -134,9 +134,17 @@
 import { View, Text } from "react-native";
 import React from "react";
 import FuturisticDeck from "@/components/feed/ScrollableDeck";
+import { useFeedPage } from "@/hooks/useFeedPage";
+import CreatePostScreen from "@/components/feed/posts/CreatePost";
 
 const Home = () => {
-  return <FuturisticDeck />;
+  const { currentPage } = useFeedPage();
+  return (
+    <>
+      {currentPage === "Rate" && <FuturisticDeck />}
+      {currentPage === "Posts" && <CreatePostScreen />}
+    </>
+  );
 };
 
 export default Home;
