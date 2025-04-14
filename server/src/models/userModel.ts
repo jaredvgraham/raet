@@ -24,6 +24,23 @@ export interface IUser extends Document {
     viewedAt: Date;
   }[];
   matchedUsers?: string[];
+  lookingFor?: "Short-term" | "Long-term" | "IDK";
+  isVerified?: boolean;
+  relationshipType?:
+    | "Monogamous"
+    | "Polyamorous"
+    | "Open"
+    | "Swinger"
+    | "Other";
+  jobTitle?: string;
+  pets?: string[];
+  drinkingHabits?: string;
+  smokingHabits?: string;
+  socialMedia?: {
+    instagram?: string;
+    facebook?: string;
+    tiktok?: string;
+  };
 }
 
 const userSchema = new Schema<IUser>({
@@ -55,6 +72,26 @@ const userSchema = new Schema<IUser>({
     },
   ],
   matchedUsers: [{ type: String, ref: "User" }],
+  lookingFor: {
+    type: String,
+    enum: ["Short-term", "Long-term", "IDK"],
+    required: false,
+  },
+  isVerified: { type: Boolean, default: false },
+  relationshipType: {
+    type: String,
+    enum: ["Monogamous", "Polyamorous", "Open", "Swinger", "Other"],
+    required: false,
+  },
+  jobTitle: { type: String, required: false },
+  pets: [{ type: String, required: false }],
+  drinkingHabits: { type: String, required: false },
+  smokingHabits: { type: String, required: false },
+  socialMedia: {
+    instagram: { type: String, required: false },
+    facebook: { type: String, required: false },
+    tiktok: { type: String, required: false },
+  },
 });
 
 userSchema.index({ location: "2dsphere" });

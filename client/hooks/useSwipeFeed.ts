@@ -18,6 +18,7 @@ export function useSwipeFeed() {
         setNoProfilesLeft(true);
         return;
       }
+      console.log("Fetched profiles:", data.feed);
 
       setProfiles((prev) => [...prev, ...data.feed]);
       setNoProfilesLeft(false);

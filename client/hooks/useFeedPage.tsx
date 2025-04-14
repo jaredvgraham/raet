@@ -6,7 +6,7 @@ interface FeedPageContextType {
 }
 
 const FeedPageContext = createContext<FeedPageContextType>({
-  currentPage: "Feed",
+  currentPage: "Rate",
   setCurrentPage: () => {},
 });
 
@@ -15,7 +15,7 @@ export const useFeedPage = () => {
 };
 
 export const FeedPageProvider = ({ children }: { children: ReactNode }) => {
-  const [currentPage, setCurrentPage] = useState("Feed");
+  const [currentPage, setCurrentPage] = useState("Rate");
 
   return (
     <FeedPageContext.Provider value={{ currentPage, setCurrentPage }}>

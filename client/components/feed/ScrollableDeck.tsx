@@ -48,7 +48,7 @@ export default function FuturisticDeck() {
   return (
     <SafeAreaView className="flex-1 justify-center bg-white   ">
       <Links />
-      <View className="flex-1 w-full items-center relative px-2 rounded-xl pb-1">
+      <View className="flex-1 w-full items-center relative  rounded-xl pb-1">
         {next && (
           <ModernCard
             key={`${next._id}-back`}

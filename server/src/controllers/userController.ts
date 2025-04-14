@@ -187,34 +187,82 @@ export const updateProfile = async (
       return res.status(404).json({ message: "User not found" });
     }
 
-    const { name, bio, preferredGender, maxDistance, interests } = req.body;
-    const images = req.files as Express.Multer.File[];
+    const {
+      name,
+      bio,
+      jobTitle,
+      relationshipType,
+      lookingFor,
+      drinkingHabits,
+      smokingHabits,
+      preferredGender,
+      maxDistance,
+      interests,
+      pets,
+      preferredAgeRange,
+      instagram,
+    } = req.body;
 
+    const images = req.files as Express.Multer.File[];
     const imageUrls = await uploadImagesBucket(images);
 
+    // Basic fields
     user.name = name || user.name;
     user.bio = bio || user.bio;
+    user.jobTitle = jobTitle || user.jobTitle;
+    user.relationshipType = relationshipType || user.relationshipType;
+    user.lookingFor = lookingFor || user.lookingFor;
+    user.drinkingHabits = drinkingHabits || user.drinkingHabits;
+    user.smokingHabits = smokingHabits || user.smokingHabits;
     user.preferredGender = preferredGender || user.preferredGender;
-    user.maxDistance = maxDistance
-      ? parseInt(maxDistance, 10)
-      : user.maxDistance;
-    user.interests = interests
-      ? interests.split(",").map((item: string) => item.trim())
-      : user.interests;
-    user.images = imageUrls.length > 0 ? imageUrls : user.images;
+
+    // Max distance
+    if (maxDistance) {
+      user.maxDistance = parseInt(maxDistance, 10);
+    }
+
+    // Array fields
+    if (interests) {
+      user.interests = interests
+        .split(",")
+        .map((item: string) => item.trim())
+        .filter((item: string) => item.length);
+    }
+
+    if (pets) {
+      user.pets = pets
+        .split(",")
+        .map((pet: string) => pet.trim())
+        .filter((pet: string) => pet.length);
+    }
+
+    if (preferredAgeRange) {
+      const [min, max] = preferredAgeRange
+        .split(",")
+        .map((num: string) => parseInt(num.trim(), 10));
+      if (!isNaN(min) && !isNaN(max)) {
+        user.preferredAgeRange = [min, max];
+      }
+    }
+
+    // Social media
+    if (instagram) {
+      user.socialMedia = {
+        ...user.socialMedia,
+        instagram,
+      };
+    }
+
+    // Images
+    if (imageUrls.length > 0) {
+      user.images = imageUrls;
+    }
 
     await user.save();
 
     return res.status(200).json({
       message: "Profile updated successfully",
-      user: {
-        name: user.name,
-        bio: user.bio,
-        preferredGender: user.preferredGender,
-        maxDistance: user.maxDistance,
-        interests: user.interests,
-        images: user.images,
-      },
+      user,
     });
   } catch (error) {
     next(error);

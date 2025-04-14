@@ -102,7 +102,7 @@ const ProfilePage = () => {
           </View>
         </SafeAreaView>
       ) : (
-        <SafeAreaView className="flex-1 bg-gray-100">
+        <SafeAreaView className="flex-1 bg-white">
           <ProfileData profile={profile} setPreview={setPreview} />
         </SafeAreaView>
       )}

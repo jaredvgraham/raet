@@ -116,16 +116,8 @@ export const getUserFeed = async (userId: string): Promise<IUser[]> => {
       },
     },
     {
-      $project: {
-        _id: 1,
-        name: 1,
-        age: 1,
-        bio: 1,
-        interests: 1,
-        images: 1,
-        clerkId: 1,
-        distance: { $round: [{ $divide: ["$distance", 1609.34] }, 2] }, // Convert distance to miles and round to 2 decimal places
-        averageRating: 1, // Include the calculated average rating
+      $addFields: {
+        distance: { $round: [{ $divide: ["$distance", 1609.34] }, 2] }, // Convert to miles
       },
     },
     {

@@ -16,6 +16,8 @@ export const getFeed = async (
   try {
     const { userId } = req.auth;
     const feed = await getUserFeed(userId);
+    console.log("feed", feed);
+
     res.status(200).json({ feed });
   } catch (error) {
     next(error);

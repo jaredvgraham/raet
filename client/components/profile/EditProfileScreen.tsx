@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,9 +8,36 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Slider from "@react-native-community/slider";
-import { Profile } from "@/types";
-import { colors } from "@/constants";
 import UploadImageComponent from "../UploadImage";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { Profile } from "@/types";
+
+const SLIDER_MAX_VALUE = 100;
+const MAX_DISTANCE_MILES = 10000;
+
+const relationshipOptions = [
+  "Monogamous",
+  "Polyamorous",
+  "Open",
+  "Swinger",
+  "Other",
+];
+const preferredGenderOptions = ["Male", "Female", "Both"];
+const lookingForOptions = ["Short-term", "Long-term", "IDK"];
+const drinkingOptions = ["Never", "Social", "Regular"];
+const smokingOptions = ["Never", "Social", "Often"];
+const interestsOptions = [
+  "Music",
+  "Sports",
+  "Movies",
+  "Books",
+  "Fitness",
+  "Travel",
+  "Food",
+  "Art",
+  "Tech",
+  "Tattoos",
+];
 
 type EditProfileScreenProps = {
   profile: Profile;
@@ -18,223 +45,298 @@ type EditProfileScreenProps = {
   onCancel: () => void;
 };
 
-const SLIDER_MAX_VALUE = 100;
-const MAX_DISTANCE_MILES = 10000;
-
-const predefinedInterests = [
-  "Sports",
-  "Music",
-  "Movies",
-  "Travel",
-  "Books",
-  "Art",
-];
-
 const EditProfileScreen = ({
   profile,
   onSave,
   onCancel,
 }: EditProfileScreenProps) => {
-  const [bio, setBio] = useState(profile.bio);
-  const [preferredGender, setPreferredGender] = useState(
-    profile.preferredGender
+  const [bio, setBio] = useState(profile.bio || "");
+  const [jobTitle, setJobTitle] = useState(profile.jobTitle || "");
+  const [relationshipType, setRelationshipType] = useState(
+    profile.relationshipType || ""
   );
-  const [sliderValue, setSliderValue] = useState(() => {
-    return profile.maxDistance === MAX_DISTANCE_MILES
+  const [lookingFor, setLookingFor] = useState(profile.lookingFor || "");
+  const [preferredAgeRange, setPreferredAgeRange] = useState(
+    profile.preferredAgeRange ? profile.preferredAgeRange.join(", ") : ""
+  );
+  const [interests, setInterests] = useState<string[]>(profile.interests || []);
+  const [drinkingHabits, setDrinkingHabits] = useState(
+    profile.drinkingHabits || ""
+  );
+  const [smokingHabits, setSmokingHabits] = useState(
+    profile.smokingHabits || ""
+  );
+  const [preferredGender, setPreferredGender] = useState(
+    profile.preferredGender || ""
+  );
+  const [sliderValue, setSliderValue] = useState(
+    profile.maxDistance === MAX_DISTANCE_MILES
       ? SLIDER_MAX_VALUE
-      : profile.maxDistance;
-  });
+      : profile.maxDistance || 10
+  );
   const [isMaxDistance, setIsMaxDistance] = useState(
     profile.maxDistance === MAX_DISTANCE_MILES
   );
-  const [interests, setInterests] = useState<string[]>(profile.interests);
-  const [customInterest, setCustomInterest] = useState<string>("");
-  const [images, setImages] = useState<string[]>(profile.images);
+  const [images, setImages] = useState<string[]>(profile.images || []);
+  const [instagram, setInstagram] = useState(
+    profile.socialMedia?.instagram || ""
+  );
+  const [pets, setPets] = useState(profile.pets?.join(", ") || "");
 
-  const handleSave = async () => {
+  const handleSave = () => {
     const maxDistance = isMaxDistance ? MAX_DISTANCE_MILES : sliderValue;
+    const formattedAgeRange = preferredAgeRange
+      .split(",")
+      .map((s) => parseInt(s.trim(), 10))
+      .filter((n) => !isNaN(n)) as [number, number];
 
-    const updatedProfile = {
+    onSave({
       ...profile,
       bio,
+      jobTitle,
+      relationshipType,
+      lookingFor,
+      preferredAgeRange: formattedAgeRange,
+      interests,
+      drinkingHabits,
+      smokingHabits,
       preferredGender,
       maxDistance,
-      interests,
       images,
-    };
-
-    onSave(updatedProfile);
+      pets: pets.split(",").map((p) => p.trim()),
+      socialMedia: { instagram },
+    });
   };
 
-  const handleAddInterest = (interest: string) => {
-    if (!interests.includes(interest)) {
-      setInterests([...interests, interest]);
-    }
-  };
+  const renderField = (
+    label: string,
+    value: string,
+    setValue: (val: string) => void,
+    icon: string,
+    placeholder: string
+  ) => (
+    <View className="mb-5">
+      <View className="flex-row items-center mb-1">
+        <Icon name={icon} size={16} color="#0f172a" />
+        <Text className="ml-2 text-gray-800 font-semibold">{label}</Text>
+      </View>
+      <TextInput
+        value={value}
+        onChangeText={setValue}
+        placeholder={placeholder}
+        className="border border-gray-300 rounded-xl px-4 py-2 text-gray-800 bg-white"
+      />
+    </View>
+  );
 
-  const handleRemoveInterest = (interest: string) => {
-    setInterests(interests.filter((item) => item !== interest));
-  };
+  const renderOptions = (
+    label: string,
+    icon: string,
+    value: string,
+    setValue: (val: string) => void,
+    options: string[]
+  ) => (
+    <View className="mb-5">
+      <View className="flex-row items-center mb-2">
+        <Icon name={icon} size={16} color="#0f172a" />
+        <Text className="ml-2 text-gray-800 font-semibold">{label}</Text>
+      </View>
+      <View className="flex-row flex-wrap gap-2 mt-1">
+        {options.map((opt) => (
+          <TouchableOpacity
+            key={opt}
+            className={`px-4 py-2 rounded-full ${
+              value === opt ? "bg-black" : "bg-gray-200"
+            }`}
+            onPress={() => setValue(opt)}
+          >
+            <Text
+              className={`font-medium ${
+                value === opt ? "text-white" : "text-gray-700"
+              }`}
+            >
+              {opt}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
 
-  const handleCustomInterest = () => {
-    if (customInterest.trim()) {
-      handleAddInterest(customInterest.trim());
-      setCustomInterest("");
-    }
-  };
-
-  const handleImageUpload = (uploadedImages: string[]) => {
-    setImages(uploadedImages);
-  };
-
-  useEffect(() => {
-    console.log("images", images);
-  }, [images]);
-
-  return (
-    <SafeAreaView className="flex-1 bg-gray-100">
-      <ScrollView className="p-5">
-        <Text className="text-2xl font-bold text-gray-800 mb-5">
-          Edit Profile
-        </Text>
-
-        {/* Profile Images */}
-        <UploadImageComponent
-          onSubmit={() => handleImageUpload(images)}
-          buttonTitle="Save Images"
-          parentImgs={images}
-          setParentImgs={setImages}
-          showButton={false}
-        />
-
-        {/* Bio */}
-        <View className="mb-4">
-          <Text className="text-base text-gray-800">Bio</Text>
-          <TextInput
-            value={bio}
-            onChangeText={setBio}
-            multiline
-            className="border-b border-gray-400 p-2 text-lg"
-            placeholder="Tell something about yourself"
-          />
-        </View>
-
-        {/* Preferred Gender */}
-        <View className="mb-4">
-          <Text className="text-base text-gray-800">Preferred Gender</Text>
-          <View className="flex-row justify-around mt-2">
-            {["Male", "Female", "Other"].map((gender) => (
-              <TouchableOpacity
-                key={gender}
-                onPress={() => setPreferredGender(gender)}
-                className={`py-2 px-4 rounded-full ${
-                  preferredGender === gender ? "bg-black" : "bg-gray-300"
+  const renderMultiSelect = (
+    label: string,
+    icon: string,
+    values: string[],
+    setValues: (val: string[]) => void,
+    options: string[]
+  ) => (
+    <View className="mb-5">
+      <View className="flex-row items-center mb-2">
+        <Icon name={icon} size={16} color="#0f172a" />
+        <Text className="ml-2 text-gray-800 font-semibold">{label}</Text>
+      </View>
+      <View className="flex-row flex-wrap gap-2 mt-1">
+        {options.map((opt) => {
+          const isSelected = values.includes(opt);
+          return (
+            <TouchableOpacity
+              key={opt}
+              className={`px-4 py-2 rounded-full ${
+                isSelected ? "bg-black" : "bg-gray-200"
+              }`}
+              onPress={() =>
+                isSelected
+                  ? setValues(values.filter((v) => v !== opt))
+                  : setValues([...values, opt])
+              }
+            >
+              <Text
+                className={`font-medium ${
+                  isSelected ? "text-white" : "text-gray-700"
                 }`}
               >
-                <Text className="text-white">{gender}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        {/* Max Distance */}
-        <View className="mb-4">
-          <Text className="text-base text-gray-800">
-            Max Distance: {isMaxDistance ? "Max" : sliderValue} miles
-          </Text>
-          {!isMaxDistance && (
-            <>
-              <Slider
-                minimumValue={1}
-                maximumValue={SLIDER_MAX_VALUE} // Slider only goes to 100
-                value={sliderValue}
-                onValueChange={setSliderValue}
-                step={1}
-                minimumTrackTintColor={colors.black}
-              />
-              <TouchableOpacity
-                onPress={() => setIsMaxDistance(true)}
-                className={`mt-2 py-2 px-4 rounded-full bg-gray-300`}
-              >
-                <Text className="text-center text-blue-500">
-                  Set Max Distance
-                </Text>
-              </TouchableOpacity>
-            </>
-          )}
-
-          {isMaxDistance && (
-            <TouchableOpacity
-              onPress={() => setIsMaxDistance(false)}
-              className={`mt-2 py-2 px-4 rounded-full bg-gray-300`}
-            >
-              <Text className="text-center text-blue-500">
-                Set Specific Distance
+                {opt}
               </Text>
             </TouchableOpacity>
-          )}
-        </View>
+          );
+        })}
+      </View>
+    </View>
+  );
 
-        {/* Interests */}
-        <View className="mb-4">
-          <Text className="text-base text-gray-800">Interests</Text>
-          <ScrollView horizontal className="flex flex-row mb-4">
-            {predefinedInterests.map((interest) => (
-              <TouchableOpacity
-                key={interest}
-                className={`px-4 py-2 mr-2 rounded-full ${
-                  interests.includes(interest) ? "bg-black" : "bg-gray-300"
-                }`}
-                onPress={() => handleAddInterest(interest)}
-              >
-                <Text className="text-white">{interest}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-          <View className="flex flex-row items-center">
-            <TextInput
-              value={customInterest}
-              onChangeText={setCustomInterest}
-              placeholder="Add your own..."
-              className="flex-1 p-4 text-lg border border-gray-300 rounded-full bg-white mr-2"
-            />
-            <TouchableOpacity
-              className="p-4 bg-violet-400 rounded-lg"
-              onPress={handleCustomInterest}
-            >
-              <Text className="text-white">Add</Text>
-            </TouchableOpacity>
-          </View>
-          <ScrollView className="mt-4">
-            {interests.map((interest) => (
-              <TouchableOpacity
-                key={interest}
-                className="px-4 py-2 mr-2 mb-2 rounded-full bg-black"
-                onPress={() => handleRemoveInterest(interest)}
-              >
-                <Text className="text-white">{interest}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
+  return (
+    <ScrollView className="p-5 ">
+      <Text className="text-3xl font-bold text-black mb-6">Edit Profile</Text>
 
-        {/* Save & Cancel Buttons */}
-        <View className="flex-row justify-between mt-10">
-          <TouchableOpacity
-            className="bg-red-500 py-3 px-10 rounded-full"
-            onPress={onCancel}
-          >
-            <Text className="text-white text-lg">Cancel</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="bg-green-400 py-3 px-10 rounded-full"
-            onPress={handleSave}
-          >
-            <Text className="text-white text-lg">Save</Text>
-          </TouchableOpacity>
+      <UploadImageComponent
+        onSubmit={() => {}}
+        buttonTitle="Save Images"
+        parentImgs={images}
+        setParentImgs={setImages}
+        showButton={false}
+      />
+
+      {renderField(
+        "Job Title",
+        jobTitle,
+        setJobTitle,
+        "briefcase",
+        "What do you do?"
+      )}
+      {renderField(
+        "Bio",
+        bio,
+        setBio,
+        "info-circle",
+        "Tell us something about you..."
+      )}
+      {renderField(
+        "Pets",
+        pets,
+        setPets,
+        "paw",
+        "List your pets separated by commas"
+      )}
+      {renderField(
+        "Instagram",
+        instagram,
+        setInstagram,
+        "instagram",
+        "@yourhandle"
+      )}
+      {renderField(
+        "Preferred Age Range",
+        preferredAgeRange,
+        setPreferredAgeRange,
+        "calendar",
+        "e.g. 18, 25"
+      )}
+
+      {renderMultiSelect(
+        "Interests",
+        "star",
+        interests,
+        setInterests,
+        interestsOptions
+      )}
+      {renderOptions(
+        "Preferred Gender",
+        "genderless",
+        preferredGender,
+        setPreferredGender,
+        preferredGenderOptions
+      )}
+      {renderOptions(
+        "Looking For",
+        "heart",
+        lookingFor,
+        setLookingFor,
+        lookingForOptions
+      )}
+      {renderOptions(
+        "Relationship Type",
+        "users",
+        relationshipType,
+        setRelationshipType,
+        relationshipOptions
+      )}
+      {renderOptions(
+        "Drinking Habits",
+        "glass",
+        drinkingHabits,
+        setDrinkingHabits,
+        drinkingOptions
+      )}
+      {renderOptions(
+        "Smoking Habits",
+        "smoke",
+        smokingHabits,
+        setSmokingHabits,
+        smokingOptions
+      )}
+
+      {/* Distance */}
+      <View className="mb-6">
+        <View className="flex-row items-center mb-1">
+          <Icon name="map" size={16} color="#0f172a" />
+          <Text className="ml-2 text-gray-800 font-semibold">
+            Max Distance: {isMaxDistance ? "Max" : sliderValue} miles
+          </Text>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+        <Slider
+          minimumValue={1}
+          maximumValue={SLIDER_MAX_VALUE}
+          value={sliderValue}
+          onValueChange={setSliderValue}
+          step={1}
+          minimumTrackTintColor="#14b8a6"
+        />
+        <TouchableOpacity
+          className="mt-2"
+          onPress={() => setIsMaxDistance((prev) => !prev)}
+        >
+          <Text className="text-teal-600 text-sm">
+            {isMaxDistance ? "Set Specific Distance" : "Set Max Distance"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Buttons */}
+      <View className="flex-row justify-between mt-10">
+        <TouchableOpacity
+          className="bg-red-800 py-3 px-8 rounded-full"
+          onPress={onCancel}
+        >
+          <Text className="text-white text-lg">Cancel</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="bg-black py-3 px-8 rounded-full"
+          onPress={handleSave}
+        >
+          <Text className="text-white text-lg">Save</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 };
 

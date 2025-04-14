@@ -24,6 +24,7 @@ import RingProgress from "./RingProgress";
 import { SCREEN_HEIGHT } from "@/utils/contants";
 import RatingButtons from "./RateButtons";
 import { useSwipeFeed } from "@/hooks/useSwipeFeed";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -106,7 +107,8 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
             from={{ opacity: 0.8, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: "spring", damping: 18, mass: 1 }}
-            style={{ flex: 1, backgroundColor: "black", overflow: "hidden" }}
+            style={{ flex: 1, overflow: "hidden" }}
+            className="bg-gray-200  border-black border-4 rounded-xl"
           >
             {swipingDirection === "left" && (
               <>
@@ -135,7 +137,7 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
               <View className="relative">
                 <View
                   className="w-full "
-                  style={{ height: SCREEN_HEIGHT * 0.63 }}
+                  style={{ height: SCREEN_HEIGHT * 0.6 }}
                 >
                   <Image
                     source={{ uri: user.images[0] }}
@@ -156,25 +158,29 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                   <Text className="text-white text-3xl font-bold text-center">
                     {user.name.split(" ")[0]}, {user.age}
                   </Text>
-                  <Text className="text-gray-300 text-base mt-1 text-center">
-                    {Math.floor(user.distance)} miles away
-                  </Text>
                 </LinearGradient>
               </View>
 
               {/* Interests */}
-              <View className="px-6 mt-6 flex flex-row">
-                <Text className="text-lg text-gray-300 font-semibold mb-2 mr-2">
-                  Interests
-                </Text>
-                <View className="flex-row flex-wrap gap-2">
+              <View className=" bg-black">
+                <View className="flex-row items-center justify-center space-x-2 p-1">
+                  <Icon name="map-marker" size={18} color="white" />
+                  <Text className="text-base text-gray-300 font-medium">
+                    {Math.floor(user.distance)} miles away
+                  </Text>
+                </View>
+
+                <View className="w-full flex-row flex-wrap justify-center gap-2 mb-2 pb-7">
                   {user.interests?.length ? (
                     user.interests.map((interest) => (
                       <View
                         key={interest}
-                        className="bg-teal-200/50 px-2 py-1 rounded-full"
+                        className="bg-gray-600 px-2 py-1 rounded-full"
                       >
-                        <Text key={interest} className=" text-sm text-gray-300">
+                        <Text
+                          key={interest}
+                          className=" text-sm text-teal-400 font-bold"
+                        >
                           {interest}
                         </Text>
                       </View>
@@ -185,35 +191,117 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                 </View>
               </View>
 
-              {/* Extra Images */}
+              {/* Second Hero Image */}
               {user.images.length > 1 && (
-                <ScrollView
-                  horizontal
-                  className="mt-5 px-5"
-                  showsHorizontalScrollIndicator={false}
-                >
-                  {user.images.slice(1).map((img, idx) => (
-                    <Image
-                      key={idx}
-                      source={{ uri: img }}
-                      className="w-32 h-48 rounded-xl mr-4"
-                      contentFit="cover"
-                    />
-                  ))}
-                </ScrollView>
+                <View className="px-6 mt-6">
+                  <Image
+                    source={{ uri: user.images[1] }}
+                    className="w-full h-52 rounded-xl"
+                    contentFit="cover"
+                  />
+                </View>
               )}
 
-              {/* Bio */}
+              {/* Bio Section */}
               <View className="px-6 mt-6">
-                <Text className="text-lg text-gray-300 font-semibold mb-2">
-                  About Me
-                </Text>
-                <Text className="text-gray-300">
+                <View className="flex-row items-center mb-1">
+                  <Icon name="info-circle" size={16} color="#0f172a" />
+                  <Text className="ml-2 text-gray-800 font-semibold text-base">
+                    About Me
+                  </Text>
+                </View>
+                <Text className="text-gray-700 text-sm">
                   {user.bio || "No bio yet."}
                 </Text>
               </View>
-            </ScrollView>
 
+              {/* Profile Fields */}
+              <View className="px-6 mt-6 space-y-3">
+                {user.jobTitle && (
+                  <View className="flex-row items-center">
+                    <Icon name="briefcase" size={16} color="#0f172a" />
+                    <Text className="ml-3 text-sm text-gray-700">
+                      <Text className="font-semibold">Job:</Text>{" "}
+                      {user.jobTitle}
+                    </Text>
+                  </View>
+                )}
+                {user.relationshipType && (
+                  <View className="flex-row items-center">
+                    <Icon name="users" size={16} color="#0f172a" />
+                    <Text className="ml-3 text-sm text-gray-700">
+                      <Text className="font-semibold">Relationship Type:</Text>{" "}
+                      {user.relationshipType}
+                    </Text>
+                  </View>
+                )}
+                {user.lookingFor && (
+                  <View className="flex-row items-center">
+                    <Icon name="heart" size={16} color="#0f172a" />
+                    <Text className="ml-3 text-sm text-gray-700">
+                      <Text className="font-semibold">Looking For:</Text>{" "}
+                      {user.lookingFor}
+                    </Text>
+                  </View>
+                )}
+                {user.drinkingHabits && (
+                  <View className="flex-row items-center">
+                    <Icon name="glass" size={16} color="#0f172a" />
+                    <Text className="ml-3 text-sm text-gray-700">
+                      <Text className="font-semibold">Drinks:</Text>{" "}
+                      {user.drinkingHabits}
+                    </Text>
+                  </View>
+                )}
+                {user.smokingHabits && (
+                  <View className="flex-row items-center">
+                    <Icon name="smoking" size={16} color="#0f172a" />
+                    <Text className="ml-3 text-sm text-gray-700">
+                      <Text className="font-semibold">Smokes:</Text>{" "}
+                      {user.smokingHabits}
+                    </Text>
+                  </View>
+                )}
+                {user.pets?.length > 0 && (
+                  <View className="flex-row items-center">
+                    <Icon name="paw" size={16} color="#0f172a" />
+                    <Text className="ml-3 text-sm text-gray-700">
+                      <Text className="font-semibold">Pets:</Text>{" "}
+                      {user.pets.join(", ")}
+                    </Text>
+                  </View>
+                )}
+                {user.socialMedia?.instagram && (
+                  <View className="flex-row items-center">
+                    <Icon name="instagram" size={16} color="#0f172a" />
+                    <Text className="ml-3 text-sm text-gray-700">
+                      <Text className="font-semibold">Instagram:</Text> @
+                      {user.socialMedia.instagram.split("@")[1]}
+                    </Text>
+                  </View>
+                )}
+              </View>
+
+              {/* Additional Images Grid */}
+              {user.images.length > 2 && (
+                <View className="px-6 mt-8">
+                  <Text className="text-base font-semibold text-gray-800 mb-3">
+                    More Photos
+                  </Text>
+                  <View className="flex-row flex-wrap justify-between gap-3">
+                    {user.images.slice(2).map((img, idx) => (
+                      <Image
+                        key={idx}
+                        source={{ uri: img }}
+                        className="w-[47%] h-44 rounded-xl"
+                        contentFit="cover"
+                      />
+                    ))}
+                  </View>
+                </View>
+              )}
+            </ScrollView>
+            {/* Rating Buttons */}
             <View className="bg-black w-full items-center  px-1 absolute bottom-0 z-50 ">
               <RatingButtons
                 rate={rate}

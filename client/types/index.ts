@@ -40,6 +40,19 @@ export interface Profile {
   images: string[];
   distance: number;
   interests: string[];
+  preferredAgeRange: [number, number];
+  likedUsers: string[];
+  lookingFor: string;
+  relationshipType: string;
+  jobTitle: string;
+  pets: string[];
+  drinkingHabits: string;
+  smokingHabits: string;
+  socialMedia: {
+    instagram?: string;
+    facebook?: string;
+    tiktok?: string;
+  };
 }
 
 export interface Message {
