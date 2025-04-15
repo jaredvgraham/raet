@@ -5,27 +5,19 @@ import {
   FlatList,
   ActivityIndicator,
   RefreshControl,
+  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import PostCard from "./PostCard";
 import Links from "../Links";
 import CreatePostScreen from "./CreatePost";
-
-type Post = {
-  _id: string;
-  userId: string;
-  userName: string;
-  userAvatar: string;
-  caption: string;
-  imageUrl: string;
-  createdAt: string;
-  likeCount: number;
-  commentCount: number;
-  likedByCurrentUser: boolean;
-};
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { Post } from "@/types";
 
 const PostFeedScreen = () => {
+  const insets = useSafeAreaInsets();
   const authFetch = useAuthFetch();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
@@ -39,12 +31,11 @@ const PostFeedScreen = () => {
       try {
         setLoading(true);
         const endpoint = beforeDate
-          ? `/api/post/feed/${beforeDate}`
+          ? `/api/post/feed?before=${encodeURIComponent(beforeDate)}`
           : `/api/post/feed`;
 
         const response = await authFetch(endpoint);
         const data = await response.json();
-        console.log("Fetched posts:", data);
 
         if (!data.posts || !Array.isArray(data.posts)) return;
 
@@ -87,20 +78,29 @@ const PostFeedScreen = () => {
     fetchPosts(lastPostDate);
   };
 
+  const handleCommentPost = async (postId: string, comment: string) => {
+    try {
+      const response = await authFetch(`/api/post/comment`, {
+        method: "POST",
+        body: JSON.stringify({ postId, comment }),
+      });
+      const data = await response.json();
+      console.log("Comment post response:", data);
+      fetchPosts();
+    } catch (error) {
+      console.error("Error commenting on post:", error);
+    }
+  };
+
   return creatingPost ? (
     <CreatePostScreen setCreatingPost={setCreatingPost} />
   ) : (
-    <SafeAreaView className="flex-1">
+    <View
+      className="flex-1 bg-white relative"
+      style={{ paddingTop: insets.top }}
+    >
       <Links />
 
-      <View className="px-4 py-2">
-        <Text
-          className="text-lg font-semibold text-blue-500 text-right"
-          onPress={() => setCreatingPost(true)}
-        >
-          Create Post
-        </Text>
-      </View>
       <View className="flex-1 ">
         <FlatList
           className=""
@@ -109,8 +109,7 @@ const PostFeedScreen = () => {
           renderItem={({ item }) => (
             <PostCard
               post={item}
-              onLike={() => {}}
-              onComment={() => {}}
+              onComment={handleCommentPost}
               key={item._id}
             />
           )}
@@ -127,8 +126,16 @@ const PostFeedScreen = () => {
             ) : null
           }
         />
+        {/* Floating Create Button */}
+        <TouchableOpacity
+          onPress={() => setCreatingPost(true)}
+          className="absolute bottom-6 right-4 bg-black/60 p-4 rounded-full shadow-md active:scale-95 border border-white/10"
+          style={{ elevation: 8 }}
+        >
+          <Icon name="plus" size={20} color="white" />
+        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

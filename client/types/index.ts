@@ -76,3 +76,26 @@ export interface Conversation {
   matchedUser: MatchedUser;
   lastMessage: Message;
 }
+
+export interface Post {
+  _id: string;
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  caption: string;
+  imageUrl: string;
+  createdAt: string;
+  likeCount: number;
+  commentCount: number;
+  likedByCurrentUser: boolean;
+}
+
+export interface Comment {
+  _id: string;
+  postId: string;
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  text: string;
+  createdAt: string;
+}

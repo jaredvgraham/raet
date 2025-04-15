@@ -35,7 +35,7 @@ export const getNearbyPosts = async (userId: string, beforeDate?: string) => {
     // Join comments
     {
       $lookup: {
-        from: "postcomments",
+        from: "comments",
         localField: "_id",
         foreignField: "postId",
         as: "comments",
@@ -47,7 +47,13 @@ export const getNearbyPosts = async (userId: string, beforeDate?: string) => {
       $match: {
         createdAt: { $lt: before },
         $or: [
-          ...(beforeDate ? [] : [{ userId: currentUser.clerkId }]), // Include user's own posts
+          ...(beforeDate
+            ? []
+            : [
+                {
+                  "userDetails.clerkId": currentUser.clerkId,
+                },
+              ]), // Include user's own posts
           {
             $and: [
               {
@@ -74,6 +80,12 @@ export const getNearbyPosts = async (userId: string, beforeDate?: string) => {
       $addFields: {
         likeCount: { $size: "$likes" },
         commentCount: { $size: "$comments" },
+        likedByCurrentUser: {
+          $in: [
+            userId,
+            { $map: { input: "$likes", as: "like", in: "$$like.userId" } },
+          ],
+        },
       },
     },
 
@@ -86,6 +98,7 @@ export const getNearbyPosts = async (userId: string, beforeDate?: string) => {
         createdAt: 1,
         likeCount: 1,
         commentCount: 1,
+        likedByCurrentUser: 1,
         userId: "$userDetails.clerkId",
         userName: "$userDetails.name",
         userAvatar: { $arrayElemAt: ["$userDetails.images", 0] },

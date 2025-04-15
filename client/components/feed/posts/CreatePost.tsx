@@ -97,6 +97,7 @@ const CreatePostScreen = ({ setCreatingPost }: CreatePostScreenProps) => {
       });
       const data = await response.json();
       console.log("data", data);
+
       setCreatingPost(false);
     } catch (error) {
       console.log("error", error);
