@@ -12,6 +12,7 @@ import matchRoutes from "./routes/matchRoutes";
 import blockRoutes from "./routes/blockRoutes";
 
 import reportRoutes from "./routes/reportRoutes";
+import postRoutes from "./routes/postRoutes";
 
 dotenv.config();
 const app: Application = express();
@@ -34,6 +35,7 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/match", matchRoutes);
 app.use("/api/block", blockRoutes);
 app.use("/api/report", reportRoutes);
+app.use("/api/post", postRoutes);
 
 app.use(errorHandler);
 

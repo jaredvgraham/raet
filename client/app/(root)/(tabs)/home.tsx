@@ -136,13 +136,14 @@ import React from "react";
 import FuturisticDeck from "@/components/feed/ScrollableDeck";
 import { useFeedPage } from "@/hooks/useFeedPage";
 import CreatePostScreen from "@/components/feed/posts/CreatePost";
+import PostFeed from "@/components/feed/posts/PostFeed";
 
 const Home = () => {
   const { currentPage } = useFeedPage();
   return (
     <>
       {currentPage === "Rate" && <FuturisticDeck />}
-      {currentPage === "Posts" && <CreatePostScreen />}
+      {currentPage === "Posts" && <PostFeed />}
     </>
   );
 };
