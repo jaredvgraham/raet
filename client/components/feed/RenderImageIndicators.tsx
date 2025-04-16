@@ -21,6 +21,7 @@ const RenderImageIndicators = ({
         right: 0,
         flexDirection: "row",
         justifyContent: "center",
+        zIndex: 1000,
       }}
     >
       {images.map((_, index) => (

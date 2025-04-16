@@ -142,8 +142,7 @@ const Home = () => {
   const { currentPage } = useFeedPage();
   return (
     <>
-      {currentPage === "Rate" && <FuturisticDeck />}
-      {currentPage === "Posts" && <PostFeed />}
+      <FuturisticDeck />
     </>
   );
 };

@@ -4,6 +4,7 @@ import {
   createProfile,
   deleteAccount,
   getProfile,
+  getProfileById,
   getUserLikes,
   registerUser,
   updateLocation,
@@ -22,6 +23,7 @@ router.post("/sign-up", registerUser);
 router.delete("/", ClerkExpressRequireAuth(), deleteAccount);
 
 router.get("/profile", ClerkExpressRequireAuth(), getProfile);
+router.get("/profile/:userId", ClerkExpressRequireAuth(), getProfileById);
 router.patch("/profile", ClerkExpressRequireAuth(), createProfile);
 
 router.patch("/location", ClerkExpressRequireAuth(), updateLocation);

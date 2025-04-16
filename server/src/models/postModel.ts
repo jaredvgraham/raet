@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface IPost extends Document {
   userId: string;
-  caption: string;
+  caption?: string;
   imageUrl: string;
   shares: number;
   location: {
@@ -15,7 +15,7 @@ export interface IPost extends Document {
 
 const postSchema = new Schema<IPost>({
   userId: { type: String, required: true },
-  caption: { type: String, required: true },
+  caption: { type: String, required: false },
   imageUrl: { type: String, required: true },
   shares: { type: Number, default: 0 },
   location: {

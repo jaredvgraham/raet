@@ -23,7 +23,7 @@ export const createPost = async (
     }
     console.log("req.body", req.body);
 
-    if (!caption && !req.files) {
+    if (!req.files) {
       return res
         .status(400)
         .json({ message: "Content or images are required" });

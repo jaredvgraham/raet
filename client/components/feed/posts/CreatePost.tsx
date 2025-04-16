@@ -76,9 +76,12 @@ const CreatePostScreen = ({ setCreatingPost }: CreatePostScreenProps) => {
     try {
       if (sharing) return;
       setSharing(true);
-      if (!image || !caption.trim()) {
+      if (!image) {
         Alert.alert("Missing info", "Please add an image and caption.");
         return;
+      }
+      if (!caption.trim()) {
+        setCaption("");
       }
       const formData = new FormData();
       formData.append("images", {

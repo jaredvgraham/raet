@@ -14,6 +14,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { formatDistanceToNow } from "date-fns";
 import { Comment, Post } from "@/types";
 import { useAuthFetch } from "@/hooks/Privatefetch";
+import { useRouter } from "expo-router";
 
 type PostProps = {
   post: Post;
@@ -28,6 +29,7 @@ const PostCard = ({ post, commentsDisabled }: PostProps) => {
   const [liked, setLiked] = React.useState(post.likedByCurrentUser);
   const [likeCount, setLikeCount] = React.useState(post.likeCount);
   const authFetch = useAuthFetch();
+  const Router = useRouter();
 
   const fetchComments = async (postId: string) => {
     try {
@@ -83,7 +85,12 @@ const PostCard = ({ post, commentsDisabled }: PostProps) => {
   return (
     <View className="bg-white rounded-xl mb-6 overflow-hidden ">
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3">
+      <TouchableOpacity
+        className="flex-row items-center px-4 py-3"
+        onPress={() => {
+          Router.push(`/profile/${post.userId}`);
+        }}
+      >
         <Image
           source={{ uri: post.userAvatar }}
           className="w-10 h-10 rounded-full mr-3"
@@ -99,7 +106,7 @@ const PostCard = ({ post, commentsDisabled }: PostProps) => {
             ago
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
 
       {/* Image */}
       <Image

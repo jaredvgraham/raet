@@ -4,7 +4,13 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import { View, Text, ScrollView, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Dimensions,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Image } from "expo-image";
 import {
@@ -26,6 +32,7 @@ import RatingButtons from "./RateButtons";
 import { useSwipeFeed } from "@/hooks/useSwipeFeed";
 import Icon from "react-native-vector-icons/FontAwesome";
 import PostCard from "./posts/PostCard";
+import RenderImageIndicators from "./RenderImageIndicators";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -47,6 +54,7 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
     >("");
     const { rate, setRate } = useSwipeFeed();
     const [isSwiping, setIsSwiping] = useState(false);
+    const [imgIndex, setImgIndex] = useState(0);
 
     useImperativeHandle(ref, () => ({
       swipe: (dir: "left" | "right") => {
@@ -98,6 +106,24 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
       translateX.value = 0;
     }, [user._id]);
 
+    const handleImgClick = (event: any) => {
+      const x = event.nativeEvent.locationX;
+      if (x < SCREEN_WIDTH / 2) {
+        // Tapped left
+
+        setImgIndex((prev) => (prev > 0 ? prev - 1 : prev));
+      } else {
+        // Tapped right
+        if (imgIndex >= user.images.length - 1) {
+          setImgIndex(0);
+        } else {
+          setImgIndex((prev) =>
+            prev < user.images.length - 1 ? prev + 1 : prev
+          );
+        }
+      }
+    };
+
     return (
       <PanGestureHandler onGestureEvent={gestureHandler}>
         <Animated.View
@@ -136,17 +162,23 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
             >
               {/* Hero Image */}
               <View className="relative">
+                <RenderImageIndicators
+                  images={user.images}
+                  currentImageIndex={imgIndex}
+                />
                 <View
-                  className="w-full "
                   style={{ height: SCREEN_HEIGHT * 0.6 }}
+                  className="w-full"
                 >
-                  <Image
-                    source={{ uri: user.images[0] }}
-                    className="w-full "
-                    style={{ objectFit: "cover", height: "100%" }}
-                    contentFit="cover"
-                  />
+                  <TouchableWithoutFeedback onPressIn={handleImgClick}>
+                    <Image
+                      source={{ uri: user.images[imgIndex] }}
+                      style={{ width: "100%", height: "100%" }}
+                      contentFit="cover"
+                    />
+                  </TouchableWithoutFeedback>
                 </View>
+
                 {!isBackCard && (
                   <View className="absolute top-5 left-5 z-10">
                     <RingProgress percentage={user.matchScore} size={70} />
@@ -162,7 +194,6 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                 </LinearGradient>
               </View>
 
-              {/* Interests */}
               <View className=" bg-black">
                 <View className="flex-row items-center justify-center space-x-2 p-1">
                   <Icon name="map-marker" size={18} color="white" />
@@ -176,12 +207,9 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                     user.interests.map((interest) => (
                       <View
                         key={interest}
-                        className="bg-gray-600 px-2 py-1 rounded-full"
+                        className="bg-teal-100 px-3 py-1 rounded-full"
                       >
-                        <Text
-                          key={interest}
-                          className=" text-sm text-teal-400 font-bold"
-                        >
+                        <Text className="text-sm font-medium text-teal-600">
                           {interest}
                         </Text>
                       </View>
@@ -302,12 +330,20 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                 </View>
               )}
               {/* Recent Posts */}
-              {user.recentPosts?.length > 0 &&
-                user.recentPosts.map((post) => (
-                  <View className="mt-2 " key={post._id}>
-                    <PostCard post={post} commentsDisabled={true} />
+              {user.recentPosts?.length > 0 && (
+                <>
+                  <View className="px-6 mt-8">
+                    <Text className="text-base font-semibold text-gray-800 mb-3">
+                      Recent Posts
+                    </Text>
                   </View>
-                ))}
+                  {user.recentPosts.map((post) => (
+                    <View className="mt-2" key={post._id}>
+                      <PostCard post={post} commentsDisabled={true} />
+                    </View>
+                  ))}
+                </>
+              )}
             </ScrollView>
             {/* Rating Buttons */}
             <View className="bg-black w-full items-center  px-1 absolute bottom-0 z-50 ">

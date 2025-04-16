@@ -14,6 +14,7 @@ import { uploadImagesBucket } from "../services/uploadImageService";
 import Like from "../models/likeModel";
 import { calculateDistance } from "../utils/calculateDistance";
 import Block from "../models/blockModel";
+import { getUserPosts } from "../services/postService";
 
 export const registerUser = async (
   req: Request,
@@ -108,6 +109,66 @@ export const getProfile = async (
     res.status(200).json({ updatedProfile, hasProfile });
   } catch (error) {
     next(error); // Pass any unexpected errors to the error handler
+  }
+};
+
+export const getProfileById = async (
+  req: RequireAuthProp<Request>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { userId } = req.auth;
+    const { userId: id } = req.params;
+    console.log("userId", userId);
+    console.log("id", id);
+
+    const user = await User.findOne({ clerkId: userId });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!id) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    const isUser = id === userId;
+
+    const profile = await User.findOne({ clerkId: id });
+    if (!profile) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const age = calculateAge(profile.dob);
+
+    const [lon, lat] = user.location?.coordinates || [0, 0];
+
+    const profilePosts = await getUserPosts(id, userId);
+
+    let distance = null;
+
+    if (!isUser) {
+      distance =
+        lon && lat && profile.location
+          ? await calculateDistance(profile.location.coordinates, [lon, lat])
+          : null;
+    }
+    const ProfileAverageRating =
+      profile.ratings && profile.ratings.length > 0
+        ? profile.ratings.reduce((acc, curr) => acc + curr, 0) /
+          profile.ratings.length
+        : 0;
+    const updatedProfile = {
+      ...profile.toJSON(),
+      age,
+      distance,
+      averageRating: ProfileAverageRating,
+      posts: profilePosts,
+    };
+    console.log("updatedProfile", updatedProfile);
+    res.status(200).json({ updatedProfile });
+  } catch (error) {
+    console.log("error", error);
+    next(error);
   }
 };
 

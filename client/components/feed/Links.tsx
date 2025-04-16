@@ -2,11 +2,18 @@ import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import { Image } from "expo-image";
 import { useFeedPage } from "@/hooks/useFeedPage";
+import { useRouter } from "expo-router";
 
 const Links = () => {
   const { currentPage, setCurrentPage } = useFeedPage();
+  const Router = useRouter();
 
   const pages = ["Rate", "Explore", "Posts"];
+  const routes = {
+    Rate: "/(root)/(tabs)/home",
+    Explore: "/(root)/(tabs)/home/explore",
+    Posts: "/(root)/(tabs)/home/posts",
+  };
 
   return (
     <View className="p-2 px-4 flex-row items-center justify-between  ">
@@ -23,7 +30,10 @@ const Links = () => {
           return (
             <TouchableOpacity
               key={page}
-              onPress={() => setCurrentPage(page)}
+              onPress={() => {
+                Router.push(routes[page]);
+                setCurrentPage(page);
+              }}
               className={`pb-1 ${
                 isActive
                   ? "border-b-2 border-black"
