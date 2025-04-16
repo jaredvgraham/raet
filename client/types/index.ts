@@ -30,6 +30,7 @@ export interface Profile {
   preferredGender: string;
   maxDistance: number;
   matchedUsers: string[];
+  recentPosts: Post[];
 
   bio?: string;
   age: number;

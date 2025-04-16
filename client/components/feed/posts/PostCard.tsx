@@ -93,7 +93,8 @@ const PostCard = ({ post, onComment }: PostProps) => {
             {post.userName}
           </Text>
           <Text className="text-xs text-gray-500">
-            {formatDistanceToNow(new Date(post.createdAt))} ago
+            {formatDistanceToNow(new Date(post.createdAt)).split("about")[1]}{" "}
+            ago
           </Text>
         </View>
       </View>
@@ -117,7 +118,7 @@ const PostCard = ({ post, onComment }: PostProps) => {
               />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={handleToggleComments}>
+            <TouchableOpacity onPress={handleToggleComments} className="mb-1">
               <Icon name="comment-o" size={22} color="#4B5563" />
             </TouchableOpacity>
           </View>
@@ -165,7 +166,12 @@ const PostCard = ({ post, onComment }: PostProps) => {
                           {item.userName}
                         </Text>
                         <Text className="text-xs text-gray-400 text-right">
-                          {formatDistanceToNow(new Date(item.createdAt))} ago
+                          {
+                            formatDistanceToNow(new Date(item.createdAt)).split(
+                              "about"
+                            )[1]
+                          }{" "}
+                          ago
                         </Text>
                       </View>
 

@@ -300,6 +300,24 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                   </View>
                 </View>
               )}
+              {/* Recent Posts */}
+              {user.recentPosts?.length > 0 && (
+                <View className="px-6 mt-8">
+                  <Text className="text-base font-semibold text-gray-800 mb-3">
+                    Recent Posts
+                  </Text>
+                  <View className="flex-row flex-wrap justify-between gap-3">
+                    {user.recentPosts.map((post, idx) => (
+                      <Image
+                        key={idx}
+                        source={{ uri: post.imageUrl }}
+                        className="w-[47%] h-44 rounded-xl"
+                        contentFit="cover"
+                      />
+                    ))}
+                  </View>
+                </View>
+              )}
             </ScrollView>
             {/* Rating Buttons */}
             <View className="bg-black w-full items-center  px-1 absolute bottom-0 z-50 ">
