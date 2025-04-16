@@ -78,20 +78,6 @@ const PostFeedScreen = () => {
     fetchPosts(lastPostDate);
   };
 
-  const handleCommentPost = async (postId: string, comment: string) => {
-    try {
-      const response = await authFetch(`/api/post/comment`, {
-        method: "POST",
-        body: JSON.stringify({ postId, comment }),
-      });
-      const data = await response.json();
-      console.log("Comment post response:", data);
-      fetchPosts();
-    } catch (error) {
-      console.error("Error commenting on post:", error);
-    }
-  };
-
   return creatingPost ? (
     <CreatePostScreen setCreatingPost={setCreatingPost} />
   ) : (
@@ -106,13 +92,7 @@ const PostFeedScreen = () => {
           className=""
           data={posts}
           keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <PostCard
-              post={item}
-              onComment={handleCommentPost}
-              key={item._id}
-            />
-          )}
+          renderItem={({ item }) => <PostCard post={item} key={item._id} />}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
           }

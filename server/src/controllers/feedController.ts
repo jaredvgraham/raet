@@ -7,6 +7,9 @@ import {
   viewUser,
 } from "../services/feedService";
 import { RequireAuthProp } from "@clerk/clerk-sdk-node";
+import Post from "../models/postModel";
+import PostLike from "../models/postLikeModel";
+import Comment from "../models/commentModel";
 
 export const getFeed = async (
   req: RequireAuthProp<Request>,
@@ -16,9 +19,47 @@ export const getFeed = async (
   try {
     const { userId } = req.auth;
     const feed = await getUserFeed(userId);
+
     console.log("feed", feed);
 
-    res.status(200).json({ feed });
+    const usersWithRecentPosts = await Promise.all(
+      feed.map(async (user) => {
+        const recentPostsRaw = await Post.find({ userId: user.clerkId })
+          .sort({ createdAt: -1 })
+          .limit(2);
+
+        const recentPosts = await Promise.all(
+          recentPostsRaw.map(async (post) => {
+            // Fetch like & comment count
+            const [likeCount, commentCount, liked] = await Promise.all([
+              PostLike.countDocuments({ postId: post._id }),
+              Comment.countDocuments({ postId: post._id }),
+              PostLike.exists({ postId: post._id, userId }),
+            ]);
+
+            return {
+              _id: post._id,
+              caption: post.caption,
+              imageUrl: post.imageUrl,
+              createdAt: post.createdAt,
+              userId: user.clerkId,
+              userName: user.name,
+              userAvatar: user.images?.[0] || null,
+              likeCount,
+              commentCount,
+              likedByCurrentUser: !!liked, // optional: set this if needed
+            };
+          })
+        );
+
+        return {
+          ...user,
+          recentPosts,
+        };
+      })
+    );
+
+    res.status(200).json({ feed: usersWithRecentPosts });
   } catch (error) {
     next(error);
   }

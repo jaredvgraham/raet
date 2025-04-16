@@ -25,6 +25,7 @@ import { SCREEN_HEIGHT } from "@/utils/contants";
 import RatingButtons from "./RateButtons";
 import { useSwipeFeed } from "@/hooks/useSwipeFeed";
 import Icon from "react-native-vector-icons/FontAwesome";
+import PostCard from "./posts/PostCard";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -301,23 +302,12 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                 </View>
               )}
               {/* Recent Posts */}
-              {user.recentPosts?.length > 0 && (
-                <View className="px-6 mt-8">
-                  <Text className="text-base font-semibold text-gray-800 mb-3">
-                    Recent Posts
-                  </Text>
-                  <View className="flex-row flex-wrap justify-between gap-3">
-                    {user.recentPosts.map((post, idx) => (
-                      <Image
-                        key={idx}
-                        source={{ uri: post.imageUrl }}
-                        className="w-[47%] h-44 rounded-xl"
-                        contentFit="cover"
-                      />
-                    ))}
+              {user.recentPosts?.length > 0 &&
+                user.recentPosts.map((post) => (
+                  <View className="mt-2 " key={post._id}>
+                    <PostCard post={post} commentsDisabled={true} />
                   </View>
-                </View>
-              )}
+                ))}
             </ScrollView>
             {/* Rating Buttons */}
             <View className="bg-black w-full items-center  px-1 absolute bottom-0 z-50 ">

@@ -17,10 +17,10 @@ import { useAuthFetch } from "@/hooks/Privatefetch";
 
 type PostProps = {
   post: Post;
-  onComment: (postId: string, comment: string) => void;
+  commentsDisabled?: boolean;
 };
 
-const PostCard = ({ post, onComment }: PostProps) => {
+const PostCard = ({ post, commentsDisabled }: PostProps) => {
   const [comment, setComment] = React.useState("");
   const [comments, setComments] = React.useState<Comment[]>([]);
   const [commentCount, setCommentCount] = React.useState(post.commentCount);
@@ -93,7 +93,9 @@ const PostCard = ({ post, onComment }: PostProps) => {
             {post.userName}
           </Text>
           <Text className="text-xs text-gray-500">
-            {formatDistanceToNow(new Date(post.createdAt)).split("about")[1]}{" "}
+            {formatDistanceToNow(new Date(post.createdAt), {
+              addSuffix: false,
+            })}{" "}
             ago
           </Text>
         </View>
@@ -117,14 +119,16 @@ const PostCard = ({ post, onComment }: PostProps) => {
                 color={liked ? "red" : "#4B5563"}
               />
             </TouchableOpacity>
-
-            <TouchableOpacity onPress={handleToggleComments} className="mb-1">
-              <Icon name="comment-o" size={22} color="#4B5563" />
-            </TouchableOpacity>
+            {!commentsDisabled && (
+              <TouchableOpacity onPress={handleToggleComments} className="mb-1">
+                <Icon name="comment-o" size={22} color="#4B5563" />
+              </TouchableOpacity>
+            )}
           </View>
 
           <Text className="text-sm text-gray-500">
-            {likeCount} likes · {commentCount} comments
+            {likeCount} likes
+            {!commentsDisabled && ` · ${commentCount} comments`}
           </Text>
         </View>
 
@@ -145,45 +149,41 @@ const PostCard = ({ post, onComment }: PostProps) => {
             keyboardVerticalOffset={80} // adjust depending on your layout
             className="max-h-64"
           >
-            <ScrollView className="mt-4">
-              <FlatList
-                data={comments}
-                keyExtractor={(item: Comment) => item._id}
-                className="mt-4"
-                renderItem={({ item }) => (
-                  <View className="flex-row items-start gap-3 mb-4 px-1">
-                    {/* Profile Image */}
-                    <Image
-                      source={{ uri: item.userAvatar }}
-                      className="w-9 h-9 rounded-full"
-                    />
+            <FlatList
+              data={comments}
+              keyExtractor={(item: Comment) => item._id}
+              className="mt-4"
+              renderItem={({ item }) => (
+                <View className="flex-row items-start gap-3 mb-4 px-1">
+                  {/* Profile Image */}
+                  <Image
+                    source={{ uri: item.userAvatar }}
+                    className="w-9 h-9 rounded-full"
+                  />
 
-                    {/* Comment Content */}
-                    <View className="flex-1 border-b border-gray-200 pb-2">
-                      {/* Name & Timestamp */}
-                      <View className="flex-row items-center justify-between gap-2">
-                        <Text className="text-sm font-semibold text-gray-500">
-                          {item.userName}
-                        </Text>
-                        <Text className="text-xs text-gray-400 text-right">
-                          {
-                            formatDistanceToNow(new Date(item.createdAt)).split(
-                              "about"
-                            )[1]
-                          }{" "}
-                          ago
-                        </Text>
-                      </View>
-
-                      {/* Comment Text */}
-                      <Text className="text-sm text-gray-800 mt-0.5">
-                        {item.text}
+                  {/* Comment Content */}
+                  <View className="flex-1 border-b border-gray-200 pb-2">
+                    {/* Name & Timestamp */}
+                    <View className="flex-row items-center justify-between gap-2">
+                      <Text className="text-sm font-semibold text-gray-500">
+                        {item.userName}
+                      </Text>
+                      <Text className="text-xs text-gray-400 text-right">
+                        {formatDistanceToNow(new Date(post.createdAt), {
+                          addSuffix: false,
+                        })}{" "}
+                        ago
                       </Text>
                     </View>
+
+                    {/* Comment Text */}
+                    <Text className="text-sm text-gray-800 mt-0.5">
+                      {item.text}
+                    </Text>
                   </View>
-                )}
-              />
-            </ScrollView>
+                </View>
+              )}
+            />
 
             <View className="flex-row items-center mt-4 border-t border-gray-200 pt-2">
               <TextInput
