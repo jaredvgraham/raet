@@ -1,4 +1,5 @@
 import express, { Application, Request, Response } from "express";
+import serverless from "serverless-http";
 import dotenv from "dotenv";
 import connectDB from "./config/db";
 import userRoutes from "./routes/userRoutes";
@@ -39,6 +40,11 @@ app.use("/api/post", postRoutes);
 
 app.use(errorHandler);
 
-app.listen(port, () => {
-  console.log(`Server is running on ${port}`);
-});
+if (process.env.NODE_ENV !== "production") {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`Server running locally on port ${port}`);
+  });
+}
+
+export const handler = serverless(app);
