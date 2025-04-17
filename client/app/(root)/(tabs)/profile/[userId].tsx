@@ -80,17 +80,16 @@ export default function UserProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {!isUser && (
-        <View className="flex-row items-center justify-between px-4 py-3 bg-white shadow-sm">
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            className="flex-row items-center"
-          >
-            <Icon name="chevron-left" size={20} color="#0f172a" />
-            <Text className="text-lg font-semibold text-gray-800">Back</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      <View className="flex-row items-center justify-between px-4 py-3 bg-white shadow-sm">
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          className="flex-row items-center"
+        >
+          <Icon name="chevron-left" size={20} color="#0f172a" />
+          <Text className="text-lg font-semibold text-gray-800">Back</Text>
+        </TouchableOpacity>
+      </View>
+
       <ScrollView className="bg-white">
         {/* Hero Image */}
         <View className="relative" style={{ width, height: 400 }}>

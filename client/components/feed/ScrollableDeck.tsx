@@ -9,8 +9,14 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import Links from "./Links";
 
 export default function FuturisticDeck() {
-  const { profiles, loading, noProfilesLeft, fetchProfiles, handleSwipe } =
-    useSwipeFeed();
+  const {
+    profiles,
+    loading,
+    noProfilesLeft,
+    fetchProfiles,
+    handleSwipe,
+    setNoProfilesLeft,
+  } = useSwipeFeed();
 
   const [rate, setRate] = useState<number | null>(null);
   const [current, setCurrent] = useState<Profile | null>(null);
@@ -31,6 +37,7 @@ export default function FuturisticDeck() {
     } else {
       setCurrent(null);
       setNext(null);
+      setNoProfilesLeft(true);
     }
   }, [profiles]);
 
@@ -38,10 +45,21 @@ export default function FuturisticDeck() {
     cardRef.current?.swipe(dir);
   };
 
-  if (loading || !current) return null;
+  if (loading) return null;
+
+  if (noProfilesLeft) {
+    return (
+      <SafeAreaView className="flex-1  bg-white">
+        <Links />
+        <View className="flex-1 justify-center items-center bg-white border-2 border-gray-700 rounded-xl">
+          <Text className="text-xl text-gray-500">No more profiles</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const onSwipe = (dir: "left" | "right") => {
-    handleSwipe(current, dir, rate ?? undefined);
+    handleSwipe(current as Profile, dir, rate ?? undefined);
     setRate(null);
   };
 
@@ -60,7 +78,7 @@ export default function FuturisticDeck() {
         <ModernCard
           key={cardKey}
           ref={cardRef}
-          user={current}
+          user={current as Profile}
           onSwipe={onSwipe}
         />
       </View>

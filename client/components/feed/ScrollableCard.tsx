@@ -163,38 +163,39 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
               className="w-full h-full"
             >
               {/* Hero Image */}
-              <View className="relative">
-                <RenderImageIndicators
-                  images={user.images}
-                  currentImageIndex={imgIndex}
-                />
-                <View
-                  style={{ height: SCREEN_HEIGHT * 0.6 }}
-                  className="w-full"
-                >
-                  <TouchableWithoutFeedback onPressIn={handleImgClick}>
+              <TouchableWithoutFeedback onPressIn={handleImgClick}>
+                <View className="relative">
+                  <RenderImageIndicators
+                    images={user.images}
+                    currentImageIndex={imgIndex}
+                  />
+
+                  <View
+                    style={{ height: SCREEN_HEIGHT * 0.6 }}
+                    className="w-full"
+                  >
                     <Image
                       source={{ uri: user.images[imgIndex] }}
                       style={{ width: "100%", height: "100%" }}
                       contentFit="cover"
                     />
-                  </TouchableWithoutFeedback>
-                </View>
-
-                {!isBackCard && (
-                  <View className="absolute top-5 left-5 z-10">
-                    <RingProgress percentage={user.matchScore} size={70} />
                   </View>
-                )}
-                <LinearGradient
-                  colors={["transparent", "rgba(0,0,0,1)"]}
-                  className="absolute bottom-0 px-6 pt-24 pb-1 w-full"
-                >
-                  <Text className="text-white text-3xl font-bold text-center">
-                    {user.name.split(" ")[0]}, {user.age}
-                  </Text>
-                </LinearGradient>
-              </View>
+
+                  {!isBackCard && (
+                    <View className="absolute top-5 left-5 z-10">
+                      <RingProgress percentage={user.matchScore} size={70} />
+                    </View>
+                  )}
+                  <LinearGradient
+                    colors={["transparent", "rgba(0,0,0,1)"]}
+                    className="absolute bottom-0 px-6 pt-24 pb-1 w-full"
+                  >
+                    <Text className="text-white text-3xl font-bold text-center">
+                      {user.name.split(" ")[0]}, {user.age}
+                    </Text>
+                  </LinearGradient>
+                </View>
+              </TouchableWithoutFeedback>
 
               <View className=" bg-black">
                 <View className="flex-row items-center justify-center space-x-2 p-1">
@@ -319,18 +320,19 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                   <Text className="text-base font-semibold text-gray-800 mb-3">
                     More Photos
                   </Text>
-                  <View className="flex-row flex-wrap justify-between gap-3">
+                  <View className="flex-row flex-wrap justify-between">
                     {user.images.slice(2).map((img, idx) => (
                       <Image
                         key={idx}
                         source={{ uri: img }}
-                        className="w-[47%] h-44 rounded-xl"
+                        className="w-[48%] h-44 rounded-xl mb-3"
                         contentFit="cover"
                       />
                     ))}
                   </View>
                 </View>
               )}
+
               {/* Recent Posts */}
               {user.recentPosts?.length > 0 && (
                 <>

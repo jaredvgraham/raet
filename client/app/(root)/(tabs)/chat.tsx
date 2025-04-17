@@ -39,6 +39,10 @@ const Chat = () => {
       });
       const data = await response?.json();
       const matches = data.matches;
+      console.log("matches length is", matches.length);
+      console.log("matches length is", matches.length);
+      console.log("matches length is", matches.length);
+      console.log("matches length is", matches.length);
 
       setMatches(matches);
       setNoMatches(matches.length === 0);
@@ -67,6 +71,11 @@ const Chat = () => {
 
         // Listen for the latest message in each conversation
         initialConversations.forEach((conversation: any) => {
+          console.log(conversation.receiverViewed);
+          console.log(conversation.receiverViewed);
+          console.log(conversation.receiverViewed);
+          console.log(conversation.receiverViewed);
+
           const chatRef = query(
             ref(db, `chats/${conversation.matchId}`),
             limitToLast(1)

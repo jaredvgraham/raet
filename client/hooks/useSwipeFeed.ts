@@ -23,6 +23,8 @@ export function useSwipeFeed() {
       setProfiles((prev) => [...prev, ...data.feed]);
       setNoProfilesLeft(false);
     } catch (err) {
+      console.log("Error fetching profiles:", err);
+
       setNoProfilesLeft(true);
     } finally {
       setLoading(false);
@@ -60,5 +62,6 @@ export function useSwipeFeed() {
     handleSwipe,
     setRate,
     rate,
+    setNoProfilesLeft,
   };
 }
