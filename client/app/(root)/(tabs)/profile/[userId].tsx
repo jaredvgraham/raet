@@ -17,6 +17,7 @@ import PostCard from "@/components/feed/posts/PostCard";
 import { Post, Profile } from "@/types";
 import RenderImageIndicators from "@/components/feed/RenderImageIndicators";
 import { Image } from "expo-image";
+import { useUser } from "@clerk/clerk-expo";
 
 const { width } = Dimensions.get("window");
 
@@ -25,11 +26,13 @@ interface ProfileWithPosts extends Profile {
 }
 
 export default function UserProfileScreen() {
+  const { user } = useUser();
   const { userId } = useLocalSearchParams();
   const authFetch = useAuthFetch();
   const navigation = useNavigation();
   const [profile, setProfile] = useState<ProfileWithPosts | null>(null);
   const [imgIndex, setImgIndex] = useState(0);
+  const [isUser, setIsUser] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({ headerShown: false });
@@ -48,6 +51,12 @@ export default function UserProfileScreen() {
 
     if (userId) fetchUserProfile();
   }, [userId]);
+
+  useEffect(() => {
+    if (user && profile) {
+      setIsUser(userId === user.id);
+    }
+  }, [user, profile]);
 
   if (!profile) return null;
 
@@ -71,6 +80,17 @@ export default function UserProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+      {!isUser && (
+        <View className="flex-row items-center justify-between px-4 py-3 bg-white shadow-sm">
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            className="flex-row items-center"
+          >
+            <Icon name="chevron-left" size={20} color="#0f172a" />
+            <Text className="text-lg font-semibold text-gray-800">Back</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       <ScrollView className="bg-white">
         {/* Hero Image */}
         <View className="relative" style={{ width, height: 400 }}>

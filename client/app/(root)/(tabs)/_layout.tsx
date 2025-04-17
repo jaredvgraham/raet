@@ -1,6 +1,7 @@
 import { Stack, Tabs } from "expo-router";
 import { View, Image } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { useNavigationContainerRef } from "@react-navigation/native";
 
 type TabIconProps = {
   focused: boolean;
@@ -29,6 +30,7 @@ const CustomHeader = () => {
 };
 
 const Layout = () => {
+  const navigationRef = useNavigationContainerRef();
   return (
     <Tabs
       initialRouteName="index"
@@ -90,6 +92,16 @@ const Layout = () => {
             <TabIcon focused={focused} icon="user" />
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault(); // Prevent default tab press behavior
+
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "profile" }],
+            });
+          },
+        })}
       />
     </Tabs>
   );

@@ -33,6 +33,7 @@ import { useSwipeFeed } from "@/hooks/useSwipeFeed";
 import Icon from "react-native-vector-icons/FontAwesome";
 import PostCard from "./posts/PostCard";
 import RenderImageIndicators from "./RenderImageIndicators";
+import * as Haptics from "expo-haptics";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -108,6 +109,7 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
 
     const handleImgClick = (event: any) => {
       const x = event.nativeEvent.locationX;
+      Haptics.selectionAsync();
       if (x < SCREEN_WIDTH / 2) {
         // Tapped left
 
