@@ -1,5 +1,4 @@
 import express, { Application, Request, Response } from "express";
-import serverless from "serverless-http";
 import dotenv from "dotenv";
 import connectDB from "./config/db";
 import userRoutes from "./routes/userRoutes";
@@ -30,13 +29,6 @@ app.use(express.json());
 
 connectDB();
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("API is running...");
-});
-app.get("/health", (req: Request, res: Response) => {
-  res.status(200).json({ status: "ok" });
-});
-
 app.use("/api/user", userRoutes);
 app.use("/api/feed", feedRoutes);
 app.use("/api/chat", chatRoutes);
@@ -47,11 +39,6 @@ app.use("/api/post", postRoutes);
 
 app.use(errorHandler);
 
-if (process.env.NODE_ENV !== "production") {
-  const port = process.env.PORT || 3000;
-  app.listen(port, () => {
-    console.log(`Server running locally on port ${port}`);
-  });
-}
-//
-export default serverless(app);
+app.listen(port, () => {
+  console.log(`Server is running on ${port}`);
+});
