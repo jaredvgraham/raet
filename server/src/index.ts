@@ -30,6 +30,13 @@ app.use(express.json());
 
 connectDB();
 
+app.get("/", (req: Request, res: Response) => {
+  res.send("API is running...");
+});
+app.get("/health", (req: Request, res: Response) => {
+  res.status(200).json({ status: "ok" });
+});
+
 app.use("/api/user", userRoutes);
 app.use("/api/feed", feedRoutes);
 app.use("/api/chat", chatRoutes);
