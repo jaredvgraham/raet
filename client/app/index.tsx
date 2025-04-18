@@ -8,6 +8,9 @@ import "react-native-gesture-handler";
 //has profile logic soon
 
 const Home = () => {
+  console.log("App is running");
+  console.log("Home screen");
+
   const { isSignedIn } = useAuth();
   const { session } = useSession();
   const { user } = useUser();
@@ -18,8 +21,12 @@ const Home = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log("fetching profile");
+      console.log("isSignedIn", isSignedIn);
+
       try {
         if (!isSignedIn || !session) {
+          console.log("User is not signed in or session is not available");
           setHasProfile(false);
           return;
         }
@@ -59,10 +66,13 @@ const Home = () => {
   }
 
   if (isSignedIn && hasProfile) {
+    console.log("User is signed in and has a profile");
     return <Redirect href={"/(root)/(tabs)/home"} />;
   } else if (isSignedIn && !hasProfile) {
+    console.log("User is signed in but has no profile");
     return <Redirect href={"/(setUp)/onboarding"} />;
   }
+  console.log("User is not signed in");
 
   return <Redirect href="/(auth)/welcome" />;
 };

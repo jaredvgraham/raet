@@ -17,6 +17,9 @@
       "bundleIdentifier": "io.raet",
       "buildProperties": {
         "useHermes": true
+      },
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {

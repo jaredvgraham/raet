@@ -15,14 +15,26 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { NotificationProvider } from "@/hooks/useNotifications";
 import Toast from "@/components/Toast";
 
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
-
 //nice
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  console.log("RootLayout rendered");
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  console.log("Publishable Key: ", publishableKey);
+
+  if (!publishableKey) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ color: "red", fontSize: 16 }}>
+          Missing Clerk publishable key!
+        </Text>
+      </View>
+    );
+  }
+
   const [error, setError] = useState(null);
 
   ErrorUtils.setGlobalHandler((error, isFatal) => {
