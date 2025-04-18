@@ -435,3 +435,31 @@ export const deleteAccount = async (
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const addPushToken = async (
+  req: RequireAuthProp<Request>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { userId } = req.auth;
+    const { pushToken } = req.body;
+
+    if (!pushToken) {
+      return res.status(400).json({ message: "Push token is required" });
+    }
+
+    const user = await User.findOne({ clerkId: userId });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.pushToken = pushToken;
+    await user.save();
+
+    res.status(200).json({ message: "Push token added successfully" });
+  } catch (error) {
+    next(error);
+  }
+};

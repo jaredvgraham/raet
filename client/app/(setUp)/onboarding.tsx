@@ -14,6 +14,7 @@ import { useAuthFetch } from "@/hooks/Privatefetch";
 import { formatError } from "@/utils";
 import UploadImageComponent from "@/components/UploadImage";
 import { getUserLocation } from "@/utils/contants";
+import { registerForPushNotificationsAsync } from "@/utils/notifications";
 
 const Onboarding = () => {
   const authFetch = useAuthFetch();
@@ -44,9 +45,19 @@ const Onboarding = () => {
   ];
 
   useEffect(() => {
+    const getPushToken = async () => {
+      const token = await registerForPushNotificationsAsync();
+      await authFetch("/api/user/push-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pushToken: token }),
+      });
+    };
+    getPushToken();
+
     console.log("location", location);
 
-     const sendLocation = async () => {
+    const sendLocation = async () => {
       if (location) return;
       const newLocation = await getUserLocation();
       if (!newLocation) {

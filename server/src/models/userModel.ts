@@ -41,6 +41,7 @@ export interface IUser extends Document {
     facebook?: string;
     tiktok?: string;
   };
+  pushToken?: string;
 }
 
 const userSchema = new Schema<IUser>({
@@ -92,6 +93,7 @@ const userSchema = new Schema<IUser>({
     facebook: { type: String, required: false },
     tiktok: { type: String, required: false },
   },
+  pushToken: { type: String, required: false },
 });
 
 userSchema.index({ location: "2dsphere" });

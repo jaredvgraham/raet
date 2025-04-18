@@ -31,7 +31,7 @@ const Links = () => {
             <TouchableOpacity
               key={page}
               onPress={() => {
-                Router.push(routes[page]);
+                Router.push((routes as any)[page] as any);
                 setCurrentPage(page);
               }}
               className={`pb-1 ${

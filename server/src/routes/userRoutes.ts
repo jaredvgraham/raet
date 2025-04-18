@@ -1,6 +1,7 @@
 // src/routes/userRoutes.ts
 import { Router } from "express";
 import {
+  addPushToken,
   createProfile,
   deleteAccount,
   getProfile,
@@ -43,5 +44,7 @@ router.patch(
 );
 
 router.get("/likes", ClerkExpressRequireAuth(), getUserLikes);
+
+router.post("/push-token", ClerkExpressRequireAuth(), addPushToken);
 
 export default router;

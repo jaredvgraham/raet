@@ -7,17 +7,12 @@ import { TouchableOpacity } from "react-native";
 import UserDetailScreen from "@/components/feed/CloserLook";
 import Header from "@/components/header";
 import { set } from "firebase/database";
-import Notification from "@/components/Notification";
 
 const LikesPage = () => {
   const [likes, setLikes] = useState<Profile[]>([]);
   const [moreDetails, setMoreDetails] = useState<boolean>(false);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
-  const [showNotification, setShowNotification] = useState({
-    visible: false,
-    message: "",
-    type: "",
-  });
+
   const authFetch = useAuthFetch();
 
   useEffect(() => {
@@ -64,14 +59,6 @@ const LikesPage = () => {
       const data = await res?.json();
       console.log("res", data);
 
-      if (data.message && data.message.includes("Match")) {
-        // Display a toast notification for a match
-        setShowNotification({
-          visible: true,
-          message: `${data.message} 🎉`,
-          type: "success",
-        });
-      }
       setSelectedProfile(null);
     } catch (error) {
       console.log("error", error);
@@ -95,18 +82,6 @@ const LikesPage = () => {
       console.log("error", error);
     }
   };
-
-  if (showNotification.visible) {
-    return (
-      <SafeAreaView className="flex-1 bg-white">
-        <Notification
-          message={showNotification.message}
-          type={showNotification.type}
-          visible={showNotification.visible}
-        />
-      </SafeAreaView>
-    );
-  }
 
   return (
     <>

@@ -12,6 +12,8 @@ import { tokenCache } from "@/lib/auth";
 import { View, Text } from "react-native";
 import { FeedPageProvider } from "@/hooks/useFeedPage";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { NotificationProvider } from "@/hooks/useNotifications";
+import Toast from "@/components/Toast";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
@@ -55,17 +57,29 @@ export default function RootLayout() {
     <>
       <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
         <ClerkLoaded>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <FeedPageProvider>
-              <Stack>
-                <Stack.Screen name="index" options={{ headerShown: false }} />
-                <Stack.Screen name="(root)" options={{ headerShown: false }} />
-                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                <Stack.Screen name="(setUp)" options={{ headerShown: false }} />
-                <Stack.Screen name="+not-found" />
-              </Stack>
-            </FeedPageProvider>
-          </GestureHandlerRootView>
+          <NotificationProvider>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <Toast />
+              <FeedPageProvider>
+                <Stack>
+                  <Stack.Screen name="index" options={{ headerShown: false }} />
+                  <Stack.Screen
+                    name="(root)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(auth)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(setUp)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+              </FeedPageProvider>
+            </GestureHandlerRootView>
+          </NotificationProvider>
         </ClerkLoaded>
       </ClerkProvider>
     </>

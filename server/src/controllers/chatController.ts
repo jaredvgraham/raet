@@ -7,6 +7,7 @@ import Message from "../models/messageModel";
 import { v4 as uuidv4 } from "uuid";
 import Chat from "../models/chatModel";
 import Block from "../models/blockModel";
+import { sendPushNotification } from "../utils/push";
 
 export const getChat = async (
   req: Request,
@@ -282,6 +283,35 @@ export const sendMessage = async (
     // Update Chat with the new message
     chat.messages.push((message as any)._id);
     await chat.save();
+
+    const matchedUser = await User.findOne({ clerkId: matchedUserId });
+
+    if (matchedUser?.pushToken) {
+      console.log("Sending push to:", matchedUser.pushToken);
+      console.log("Payload:", {
+        to: matchedUser.pushToken,
+        title: "New message",
+        body: messageText.slice(0, 80),
+        data: {
+          type: "new-message",
+          matchId,
+          senderId: userId,
+        },
+      });
+
+      await sendPushNotification({
+        to: matchedUser.pushToken,
+        title: "New message",
+        body: messageText.slice(0, 80), // Optional preview
+        data: {
+          type: "new-message",
+          matchId,
+          senderId: userId,
+        },
+      });
+    } else {
+      console.warn("No push token for matched user:", matchedUserId);
+    }
 
     return res.status(200).json({ message: "Message sent" });
   } catch (error) {
