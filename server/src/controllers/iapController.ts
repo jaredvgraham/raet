@@ -10,6 +10,8 @@ export const verifyPurchase = async (
   res: Response,
   next: NextFunction
 ) => {
+  console.log("Verifying purchase...");
+
   const { userId } = req.auth;
   const user = await User.findOne({ clerkId: userId });
 
@@ -18,6 +20,7 @@ export const verifyPurchase = async (
   }
 
   const { platform, receipt } = req.body;
+  console.log("Received data:", { platform, receipt });
 
   if (!platform || !receipt) {
     return res.status(400).json({ success: false, message: "Missing data" });
@@ -26,6 +29,7 @@ export const verifyPurchase = async (
   try {
     if (platform === "ios") {
       const result = await verifyAppleReceipt(receipt);
+      console.log("Apple receipt verification result:", result);
 
       if (result.status === 0 && result.latest_receipt_info?.length) {
         const latest =
@@ -81,6 +85,8 @@ export const handleAppStoreNotification = async (
   res: Response
 ) => {
   try {
+    console.log("Handling App Store notification...");
+
     const notification = req.body;
     console.log(
       "📬 Apple Notification Received:",
