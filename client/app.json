@@ -39,7 +39,8 @@
         {
           "origin": "https://raet.io/"
         }
-      ]
+      ],
+      "react-native-iap"
     ],
     "experiments": {
       "typedRoutes": true

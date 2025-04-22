@@ -6,7 +6,8 @@ export const useAuthFetch = () => {
 
   const authFetch = async (endpoint: string, options: RequestInit = {}) => {
     try {
-      const url = `${process.env.EXPO_PUBLIC_API_URL}${endpoint}`;
+      // const url = `${process.env.EXPO_PUBLIC_API_URL}${endpoint}`;
+      const url = `http://localhost:3000${endpoint}`;
       console.log("url", url);
       const token = await session?.getToken();
 

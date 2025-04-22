@@ -42,6 +42,18 @@ export interface IUser extends Document {
     tiktok?: string;
   };
   pushToken?: string;
+  subscription?: {
+    productId:
+      | "none"
+      | "basic_monthly"
+      | "standard_monthly"
+      | "premium_monthly";
+    expiresAt?: Date;
+    platform?: string;
+    originalTransactionId?: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const userSchema = new Schema<IUser>({
@@ -94,9 +106,23 @@ const userSchema = new Schema<IUser>({
     tiktok: { type: String, required: false },
   },
   pushToken: { type: String, required: false },
+
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+  subscription: {
+    productId: {
+      type: String,
+      enum: ["none", "basic_monthly", "standard_monthly", "premium_monthly"],
+      default: "none",
+    },
+    expiresAt: { type: Date },
+    platform: { type: String },
+    originalTransactionId: { type: String },
+  },
 });
 
 userSchema.index({ location: "2dsphere" });
+userSchema.index({ clerkId: 1, email: 1 }, { unique: true });
 
 const User = mongoose.model<IUser>("User", userSchema);
 

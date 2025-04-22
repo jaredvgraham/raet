@@ -11,12 +11,14 @@ import Header from "@/components/header";
 import RenderImageIndicators from "@/components/feed/RenderImageIndicators"; // Import the component
 import ModernCard from "@/components/feed/ScrollableCard";
 import Toast from "@/components/Toast";
+import { useUser } from "@clerk/clerk-expo";
 
 const ProfilePage = () => {
   const authFetch = useAuthFetch();
   const [profile, setProfile] = useState<Profile>();
   const [preview, setPreview] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const { user } = useUser();
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const position = new Animated.ValueXY();
   useEffect(() => {
@@ -34,6 +36,10 @@ const ProfilePage = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    console.log("User data:", user?.publicMetadata.plan);
+  }, [user]);
 
   const handleImageTap = (tapX: number) => {
     const isRightTap = tapX > SCREEN_WIDTH / 2;
@@ -74,19 +80,6 @@ const ProfilePage = () => {
         </SafeAreaView>
       ) : (
         <SafeAreaView className="flex-1 bg-white">
-          <View className="flex-1 items-center justify-center bg-white">
-            <Button
-              title="Show Notification"
-              onPress={() => setVisible(true)}
-              color="#0f172a"
-            />
-          </View>
-          <Toast
-            visible={visible}
-            message="This is a custom toast!"
-            type="success"
-            onHide={() => setVisible(false)}
-          />
           <ProfileData profile={profile} setPreview={setPreview} />
         </SafeAreaView>
       )}

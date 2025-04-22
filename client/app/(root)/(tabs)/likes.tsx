@@ -7,13 +7,17 @@ import { TouchableOpacity } from "react-native";
 import UserDetailScreen from "@/components/feed/CloserLook";
 import Header from "@/components/header";
 import { set } from "firebase/database";
+import { useUser } from "@clerk/clerk-expo";
+import { useRouter } from "expo-router";
 
 const LikesPage = () => {
   const [likes, setLikes] = useState<Profile[]>([]);
   const [moreDetails, setMoreDetails] = useState<boolean>(false);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
+  const { user } = useUser();
 
   const authFetch = useAuthFetch();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -83,6 +87,12 @@ const LikesPage = () => {
     }
   };
 
+  useEffect(() => {
+    if (user?.publicMetadata.plan === "none") {
+      router.push("/(root)/(pay)/plans");
+    }
+  }, [user]);
+
   return (
     <>
       {moreDetails && selectedProfile ? (
@@ -108,7 +118,11 @@ const LikesPage = () => {
             {likes.length > 0 ? (
               likes.map((like, index) => (
                 <TouchableOpacity
-                  onPress={() => handleDetailsClick(like)}
+                  onPress={() => {
+                    user?.publicMetadata.plan !== "none"
+                      ? handleDetailsClick(like)
+                      : router.push("/(root)/(pay)/plans");
+                  }}
                   key={like._id}
                   className="w-[48%] mb-4"
                   style={{
