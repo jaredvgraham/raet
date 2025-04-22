@@ -35,7 +35,9 @@ export const registerUser = async (
     const mongoStringId = (user as any)._id.toString();
 
     await clerkClient.users.updateUser(clerkId, {
-      externalId: mongoStringId,
+      publicMetadata: {
+        plan: "none",
+      },
     });
 
     await clerkClient.users

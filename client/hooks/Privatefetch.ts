@@ -6,8 +6,8 @@ export const useAuthFetch = () => {
 
   const authFetch = async (endpoint: string, options: RequestInit = {}) => {
     try {
-      // const url = `${process.env.EXPO_PUBLIC_API_URL}${endpoint}`;
-      const url = `http://localhost:3000${endpoint}`;
+      const url = `${process.env.EXPO_PUBLIC_API_URL}${endpoint}`;
+
       console.log("url", url);
       const token = await session?.getToken();
 
@@ -39,7 +39,10 @@ export const useAuthFetch = () => {
 
       return response;
     } catch (error: any) {
-      console.error(`Error during protected fetch at: ${endpoint}`, error);
+      console.error(
+        `Error during protected fetch at: $${process.env.EXPO_PUBLIC_API_URL}${endpoint}`,
+        error
+      );
       console.log("error msg", error.message, "ENDDDDDD");
 
       throw error;
