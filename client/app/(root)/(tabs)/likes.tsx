@@ -9,6 +9,9 @@ import Header from "@/components/header";
 import { set } from "firebase/database";
 import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
+import { BlurView } from "expo-blur";
+import { Ionicons } from "@expo/vector-icons"; // Optional for lock icon
+import { StyleSheet } from "react-native";
 
 const LikesPage = () => {
   const [likes, setLikes] = useState<Profile[]>([]);
@@ -129,6 +132,26 @@ const LikesPage = () => {
                     style={{ width: "100%", height: 150 }}
                     className="rounded-lg"
                   />
+                  {user?.publicMetadata.plan === "none" && (
+                    <BlurView
+                      intensity={50}
+                      tint="light"
+                      style={{
+                        ...StyleSheet.absoluteFillObject,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Ionicons
+                        name="lock-closed-outline"
+                        size={30}
+                        color="white"
+                      />
+                      <Text className="text-xs text-white mt-1">
+                        Upgrade to unlock
+                      </Text>
+                    </BlurView>
+                  )}
                   <Text className="absolute z-10 bottom-0 p-2 bg-black mt-2 text-white">
                     {like.name.split(" ")[0]}
                   </Text>

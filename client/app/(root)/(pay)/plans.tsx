@@ -67,7 +67,7 @@ export default function SubscriptionPreview() {
         <Feather name="arrow-left" size={24} color="black" />
       </TouchableOpacity>
 
-      <View className="flex-row justify-between items-center px-6 pt-6">
+      <View className="flex-row justify-between items-center px-6 ">
         {plans.map((plan, index) => (
           <TouchableOpacity
             key={index}
@@ -128,7 +128,7 @@ export default function SubscriptionPreview() {
               ))}
 
               {/* Continue Button */}
-              <TouchableOpacity className="mt-8 bg-teal-500 py-3 rounded-full">
+              <TouchableOpacity className="mt-2 bg-teal-500 py-3 rounded-full">
                 <Text className="text-white font-bold text-center text-lg">
                   Continue
                 </Text>
