@@ -8,7 +8,7 @@ const Links = () => {
   const { currentPage, setCurrentPage } = useFeedPage();
   const Router = useRouter();
 
-  const pages = ["Rate", "Explore", "Posts"];
+  const pages = ["Rate", "Posts"];
   const routes = {
     Rate: "/(root)/(tabs)/home",
     Explore: "/(root)/(tabs)/home/explore",

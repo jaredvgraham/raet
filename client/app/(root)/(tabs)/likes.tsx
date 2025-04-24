@@ -87,12 +87,6 @@ const LikesPage = () => {
     }
   };
 
-  useEffect(() => {
-    if (user?.publicMetadata.plan === "none") {
-      router.push("/(root)/(pay)/plans");
-    }
-  }, [user]);
-
   return (
     <>
       {moreDetails && selectedProfile ? (
@@ -141,7 +135,12 @@ const LikesPage = () => {
                 </TouchableOpacity>
               ))
             ) : (
-              <Text>No likes yet</Text>
+              <View className="flex-1 items-center justify-center">
+                <Text>No likes yet</Text>
+                <Text className="text-gray-500">
+                  Start swiping to get likes!
+                </Text>
+              </View>
             )}
           </View>
         </SafeAreaView>

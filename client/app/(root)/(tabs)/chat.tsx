@@ -130,19 +130,6 @@ const Chat = () => {
     router.push(`/(root)/(chat)/${matchId}`);
   };
 
-  if (noMatches && noConversations) {
-    return (
-      <SafeAreaView className="flex-1">
-        <Header style="w-full flex items-center justify-center" />
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-center text-2xl text-gray-500">
-            Nothing to see yet. Keep swiping!
-          </Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView className="flex-1 ">
       <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
