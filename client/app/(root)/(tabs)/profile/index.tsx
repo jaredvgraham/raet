@@ -12,11 +12,14 @@ import RenderImageIndicators from "@/components/feed/RenderImageIndicators"; // 
 import ModernCard from "@/components/feed/ScrollableCard";
 import Toast from "@/components/Toast";
 import { useUser } from "@clerk/clerk-expo";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Settings from "@/components/profile/Settings";
 
 const ProfilePage = () => {
   const authFetch = useAuthFetch();
   const [profile, setProfile] = useState<Profile>();
   const [preview, setPreview] = useState(false);
+  const [settings, setSettings] = useState(false);
   const { user } = useUser();
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -65,24 +68,19 @@ const ProfilePage = () => {
     );
   }
 
+  if (settings) {
+    return (
+      <Settings profile={profile} setSettings={() => setSettings(!settings)} />
+    );
+  }
+
   return (
     <>
-      {preview ? (
-        <SafeAreaView className="flex-1 bg-white   ">
-          <Header />
-          <View className="flex-1 w-full items-center relative  rounded-xl pb-1">
-            <ModernCard
-              user={profile}
-              onSwipe={() => setPreview(false)}
-              isBackCard={false}
-            />
-          </View>
-        </SafeAreaView>
-      ) : (
-        <SafeAreaView className="flex-1 bg-white">
-          <ProfileData profile={profile} setPreview={setPreview} />
-        </SafeAreaView>
-      )}
+      <ProfileData
+        profile={profile}
+        setPreview={setPreview}
+        setSettings={() => setSettings(!settings)}
+      />
     </>
   );
 };

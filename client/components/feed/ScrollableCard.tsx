@@ -49,6 +49,10 @@ type Props = {
 
 const ModernCard = forwardRef<ModernCardRef, Props>(
   ({ user, onSwipe, isBackCard = false }, ref) => {
+    console.log(`user`, user);
+    console.log(`user`, user);
+    console.log(`user`, user);
+
     const translateX = useSharedValue(0);
     const [swipingDirection, setSwipingDirection] = useState<
       "left" | "right" | ""
@@ -183,7 +187,10 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
 
                   {!isBackCard && (
                     <View className="absolute top-5 left-5 z-10">
-                      <RingProgress percentage={user.matchScore} size={70} />
+                      <RingProgress
+                        percentage={user.matchScore || 98}
+                        size={70}
+                      />
                     </View>
                   )}
                   <LinearGradient

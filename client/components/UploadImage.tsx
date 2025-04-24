@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   Button,
-  Image,
   TouchableOpacity,
   View,
   Text,
@@ -10,6 +9,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import { formatError } from "@/utils";
+import { Image } from "expo-image";
 
 type UploadImageComponentProps = {
   onSubmit?: () => void | undefined;

@@ -1,110 +1,149 @@
-import { useAuthFetch } from "@/hooks/Privatefetch";
-import * as React from "react";
-import { useEffect, useState } from "react";
+import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useRef, useState } from "react";
 import {
-  Alert,
-  Button,
-  FlatList,
-  Platform,
+  View,
   Text,
   TouchableOpacity,
-  View,
+  FlatList,
+  Dimensions,
+  SafeAreaView,
 } from "react-native";
-import * as RNIap from "react-native-iap";
 
-// Your product IDs as listed in App Store Connect / Google Play Console
-const productIds = ["basic_monthly", "standard_monthly", "premium_monthly"];
+const { width } = Dimensions.get("window");
 
-type Product = RNIap.Product;
+const plans = [
+  {
+    title: "Basic Monthly",
+    price: "$4.99 / month",
+    features: ["See who likes you", "Unlimited swipes"],
+  },
+  {
+    title: "Standard Monthly",
+    price: "$9.99 / month",
+    features: [
+      "See who likes you",
+      "Unlimited swipes",
+      "See your rating",
+      "Priority boost",
+      "Profile insights",
+    ],
+  },
+  {
+    title: "Premium Monthly",
+    price: "$14.99 / month",
+    features: [
+      "See who likes you",
+      "Unlimited swipes",
+      "See your rating",
+      "Priority boost",
 
-export default function PurchaseScreen() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
-  const authFetch = useAuthFetch();
+      "Profile insights",
+      "Be shown more",
+      "Ad-free experience",
+      "Explore outside your rating",
+      "1 rate reset per 6 months",
+    ],
+  },
+];
 
-  useEffect(() => {
-    const connectAndGetProducts = async () => {
-      try {
-        const connected = await RNIap.initConnection();
-        if (connected) {
-          const fetchedProducts = await RNIap.getProducts({ skus: productIds });
-          setProducts(fetchedProducts);
-        }
-      } catch (error) {
-        console.error("IAP connection error", error);
-      }
-    };
+export default function SubscriptionPreview() {
+  const flatListRef = useRef<FlatList>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [currentPlan, setCurrentPlan] = useState("Basic Monthly");
+  const router = useRouter();
 
-    connectAndGetProducts();
-
-    return () => {
-      RNIap.endConnection();
-    };
-  }, []);
-
-  const handlePurchase = async (productId: string) => {
-    try {
-      setLoading(true);
-      const purchase = await RNIap.requestPurchase({ sku: productId });
-
-      const receipt =
-        Platform.OS === "ios"
-          ? Array.isArray(purchase)
-            ? purchase[0]?.transactionReceipt
-            : purchase?.transactionReceipt
-          : (purchase as any).purchaseToken;
-
-      const res = await authFetch(`/iap/verify`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          platform: Platform.OS,
-          receipt,
-          productId,
-        }),
-      });
-
-      const result = await res.json();
-      if (result.success) {
-        Alert.alert("✅ Success", "Purchase verified and features unlocked!");
-      } else {
-        Alert.alert("❌ Failed", "Could not verify purchase.");
-      }
-    } catch (error) {
-      console.error("Purchase error", error);
-      Alert.alert("Error", "Something went wrong with the purchase.");
-    } finally {
-      setLoading(false);
+  const handleNext = () => {
+    if (activeIndex < plans.length - 1) {
+      flatListRef.current?.scrollToIndex({ index: activeIndex + 1 });
+      setActiveIndex((prev) => prev + 1);
     }
   };
 
   return (
-    <View className="flex-1 px-4 py-6 bg-white">
-      <Text className="text-2xl font-bold mb-4">Upgrade Your Experience</Text>
+    <SafeAreaView className="flex-1 bg-white relative">
+      {/* back button */}
+      <TouchableOpacity className="ml-5" onPress={() => router.back()}>
+        <Feather name="arrow-left" size={24} color="black" />
+      </TouchableOpacity>
+
+      <View className="flex-row justify-between items-center px-6 pt-6">
+        {plans.map((plan, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => {
+              flatListRef.current?.scrollToIndex({ index });
+              setActiveIndex(index);
+              setCurrentPlan(plan.title);
+            }}
+            className={`flex-1 items-center ${
+              activeIndex === index
+                ? "border-b-2 border-teal-500"
+                : "border-b-2 border-transparent"
+            }`}
+          >
+            <Text className="font-bold mt-6 mb-4 text-center">
+              {plan.title.split(" ")[0]}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
       <FlatList
-        data={products}
-        keyExtractor={(item) => item.productId}
+        ref={flatListRef}
+        data={plans}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item.title}
+        onMomentumScrollEnd={(e) => {
+          const newIndex = Math.round(e.nativeEvent.contentOffset.x / width);
+          setActiveIndex(newIndex);
+        }}
         renderItem={({ item }) => (
-          <View className="bg-gray-100 p-4 mb-4 rounded-lg">
-            <Text className="text-lg font-semibold">{item.title}</Text>
-            <Text className="text-sm text-gray-600 mt-1">
-              {item.description}
-            </Text>
-            <Text className="text-md font-bold mt-2">
-              {item.localizedPrice}
-            </Text>
-            <TouchableOpacity
-              disabled={loading}
-              onPress={() => handlePurchase(item.productId)}
-              className="mt-3 bg-blue-500 px-4 py-2 rounded-full"
-            >
-              <Text className="text-white text-center">
-                {loading ? "Processing..." : "Subscribe"}
+          <View style={{ width }} className="px-6 py-8 justify-center">
+            <View className="bg-black rounded-2xl p-6 shadow-md">
+              <Text className="text-white text-2xl font-bold text-center mb-1">
+                {item.title}
               </Text>
-            </TouchableOpacity>
+              <Text className="text-teal-400 text-center font-semibold mb-6">
+                {item.price}
+              </Text>
+
+              {/* Features */}
+              {plans[2].features.map((feature, idx) => (
+                <View
+                  key={idx}
+                  className="flex-row items-center space-x-2 mb-2"
+                >
+                  <Feather
+                    name="check-circle"
+                    size={18}
+                    color={`${
+                      item.features.includes(feature) ? "#14b8a6" : "gray"
+                    }`}
+                  />
+                  <Text className="text-white text-base">{feature}</Text>
+                </View>
+              ))}
+
+              {/* Continue Button */}
+              <TouchableOpacity className="mt-8 bg-teal-500 py-3 rounded-full">
+                <Text className="text-white font-bold text-center text-lg">
+                  Continue
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       />
-    </View>
+      <View className="px-6 pb-6">
+        <Text className="text-xs text-gray-500 text-center">
+          Subscription automatically renews unless canceled at least 24 hours
+          before the end of the current period. You can manage it in App Store
+          settings.
+        </Text>
+      </View>
+    </SafeAreaView>
   );
 }

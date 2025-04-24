@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import Icon from "react-native-vector-icons/FontAwesome";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Image } from "expo-image";
+import { set } from "firebase/database";
 
 type HeaderProps = {
   backArrow?: boolean;
@@ -12,6 +13,7 @@ type HeaderProps = {
   userName?: string;
   style?: string;
   imageOnpress?: () => void;
+  setSettings?: () => void;
 };
 
 const Header = ({
@@ -20,6 +22,7 @@ const Header = ({
   image,
   style,
   imageOnpress,
+  setSettings,
 }: HeaderProps) => {
   const router = useRouter();
 
@@ -50,6 +53,15 @@ const Header = ({
         source={require("../assets/r-logo.png")} // Update this path to your logo
         style={{ width: 40, height: 40 }}
       />
+
+      {setSettings && (
+        <TouchableOpacity
+          onPress={setSettings}
+          className="w-10 h-10 rounded-full bg-white shadow-md items-center justify-center active:opacity-70"
+        >
+          <MaterialIcons name="settings" size={40} color="black" />
+        </TouchableOpacity>
+      )}
 
       {image && (
         <TouchableOpacity onPress={imageOnpress}>
