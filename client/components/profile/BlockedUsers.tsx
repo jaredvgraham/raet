@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Modal,
   Alert,
+  SafeAreaView,
 } from "react-native";
 import { Profile } from "@/types";
 import Header from "../header";
@@ -66,7 +67,7 @@ const BlockedUsers = ({
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <Header style="w-full flex items-center justify-center" />
       <Text className="text-xl font-bold text-center my-4">Blocked Users</Text>
 
@@ -136,7 +137,7 @@ const BlockedUsers = ({
           </View>
         </Modal>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

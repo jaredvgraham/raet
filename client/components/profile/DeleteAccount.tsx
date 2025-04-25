@@ -53,7 +53,7 @@ const DeleteAccount = ({ userId }: DeleteAccountProps) => {
   return (
     <TouchableOpacity
       onPress={confirmDeletion}
-      className="flex-row items-center justify-center gap-2 border border-red-500  pb-2 rounded-xl mt-3 active:opacity-80"
+      className="flex-row items-center justify-center gap-2 border border-red-500   pb-2 rounded-xl mt-3 active:opacity-80"
     >
       <Icon name="trash-outline" size={18} color="#ef4444" />
       <Text className="text-red-500 font-semibold text-base">

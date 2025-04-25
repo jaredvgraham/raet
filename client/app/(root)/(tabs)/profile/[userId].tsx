@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useAuthFetch } from "@/hooks/Privatefetch";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { formatDistanceToNow } from "date-fns";
 import PostCard from "@/components/feed/posts/PostCard";
 import { Post, Profile } from "@/types";
@@ -33,6 +33,7 @@ export default function UserProfileScreen() {
   const [profile, setProfile] = useState<ProfileWithPosts | null>(null);
   const [imgIndex, setImgIndex] = useState(0);
   const [isUser, setIsUser] = useState(false);
+  const router = useRouter();
 
   useLayoutEffect(() => {
     navigation.setOptions({ headerShown: false });
@@ -82,7 +83,7 @@ export default function UserProfileScreen() {
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-row items-center justify-between px-4 py-3 bg-white shadow-sm">
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => router.push("/(root)/(tabs)/home/posts")}
           className="flex-row items-center"
         >
           <Icon name="chevron-left" size={20} color="#0f172a" />

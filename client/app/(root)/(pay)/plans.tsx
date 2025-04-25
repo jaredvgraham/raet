@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -8,9 +8,16 @@ import {
   FlatList,
   Dimensions,
   SafeAreaView,
+  Platform,
 } from "react-native";
+import * as IAP from "react-native-iap";
 
 const { width } = Dimensions.get("window");
+
+const items = Platform.select({
+  ios: ["basic_monthly", "standard_monthly", "premium_monthly"],
+  android: [""],
+});
 
 const plans = [
   {
@@ -51,7 +58,26 @@ export default function SubscriptionPreview() {
   const flatListRef = useRef<FlatList>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [currentPlan, setCurrentPlan] = useState("Basic Monthly");
+  const [purchased, setPurchased] = useState(false);
+  const [products, setProducts] = useState<any[]>([]);
   const router = useRouter();
+
+  useEffect(() => {
+    IAP.initConnection()
+      .then(() => {
+        console.log("IAP connection initialized");
+        IAP.getSubscriptions(items as any)
+          .then((subscriptions) => {
+            console.log("Subscriptions:", subscriptions);
+          })
+          .catch((error) => {
+            console.error("Error fetching subscriptions:", error);
+          });
+      })
+      .catch((error) => {
+        console.error("Error initializing IAP connection:", error);
+      });
+  }, []);
 
   const handleNext = () => {
     if (activeIndex < plans.length - 1) {
