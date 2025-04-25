@@ -36,6 +36,8 @@ export const verifyPurchase = async (
           result.latest_receipt_info[result.latest_receipt_info.length - 1];
 
         const actualProductId = latest.product_id;
+        console.log("Actual Product ID:", actualProductId);
+
         const expiresDateMs = parseInt(latest.expires_date_ms || "0", 10);
         const isExpired = Date.now() > expiresDateMs;
 
@@ -51,6 +53,7 @@ export const verifyPurchase = async (
           await user.save();
 
           // Update Clerk user metadata
+          console.log("Updating Clerk user metadata...");
 
           await clerkClient.users.updateUser(userId, {
             publicMetadata: {
@@ -94,9 +97,15 @@ export const handleAppStoreNotification = async (
     );
 
     const { notificationType, data } = notification;
+    console.log("Notification Type:", notificationType);
+    console.log("Notification Data:", JSON.stringify(data, null, 2));
+    console.log("Notification Data:", data);
 
     const originalTransactionId = data?.originalTransactionId;
+    console.log("Original Transaction ID:", originalTransactionId);
+
     const productId = data?.autoRenewProductId || data?.productId;
+    console.log("Product ID:", productId);
     const isAutoRenew = data?.autoRenewStatus === 1;
     const expiresDateMs = Number(data?.expiresDate);
     const expiresAt = isNaN(expiresDateMs)

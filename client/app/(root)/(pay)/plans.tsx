@@ -1,3 +1,5 @@
+import { useAuthFetch } from "@/hooks/Privatefetch";
+import { formatError } from "@/utils";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
@@ -9,15 +11,14 @@ import {
   Dimensions,
   SafeAreaView,
   Platform,
+  Alert,
 } from "react-native";
 import * as IAP from "react-native-iap";
+import * as RNIap from "react-native-iap";
 
+const productIds = ["basic_monthly", "standard_monthly", "premium_monthly"];
+type Product = RNIap.Product;
 const { width } = Dimensions.get("window");
-
-const items = Platform.select({
-  ios: ["basic_monthly", "standard_monthly", "premium_monthly"],
-  android: [""],
-});
 
 const plans = [
   {
@@ -55,29 +56,100 @@ const plans = [
 ];
 
 export default function SubscriptionPreview() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
   const flatListRef = useRef<FlatList>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [currentPlan, setCurrentPlan] = useState("Basic Monthly");
   const [purchased, setPurchased] = useState(false);
-  const [products, setProducts] = useState<any[]>([]);
+  const authFetch = useAuthFetch();
+
   const router = useRouter();
 
   useEffect(() => {
-    IAP.initConnection()
-      .then(() => {
-        console.log("IAP connection initialized");
-        IAP.getSubscriptions(items as any)
-          .then((subscriptions) => {
-            console.log("Subscriptions:", subscriptions);
-          })
-          .catch((error) => {
-            console.error("Error fetching subscriptions:", error);
-          });
-      })
-      .catch((error) => {
-        console.error("Error initializing IAP connection:", error);
-      });
+    const connectAndGetProducts = async () => {
+      try {
+        console.log("Connecting to IAP...");
+
+        const connected = await RNIap.initConnection();
+        if (connected) {
+          console.log("IAP connected");
+          const fetchedProducts = await RNIap.getProducts({ skus: productIds });
+          console.log("Fetched products", fetchedProducts);
+          if (fetchedProducts.length === 0) {
+            Alert.alert(
+              "Length of products is 0",
+              "Please check your product IDs and try again."
+            );
+            return;
+          }
+          setProducts(fetchedProducts);
+        }
+      } catch (error) {
+        console.error("IAP connection error", error);
+        Alert.alert(
+          formatError(error),
+          "Something went wrong while connecting to the store."
+        );
+      }
+    };
+
+    connectAndGetProducts();
+
+    return () => {
+      RNIap.endConnection();
+    };
   }, []);
+
+  const handlePurchase = async (productId: string) => {
+    try {
+      setLoading(true);
+      const purchase = await RNIap.requestPurchase({ sku: productId });
+
+      const receipt =
+        Platform.OS === "ios"
+          ? purchase && !Array.isArray(purchase) && purchase.transactionReceipt
+          : purchase &&
+            !Array.isArray(purchase) &&
+            (purchase as any).purchaseToken;
+
+      if (!receipt) {
+        throw new Error("Invalid purchase receipt");
+      }
+
+      const res = await authFetch("/api/iap/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          platform: Platform.OS,
+          receipt,
+          productId,
+        }),
+      });
+
+      const result = await res.json();
+      console.log("Purchase verification result", result);
+      console.log("Purchase verification result.data", result.data);
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+      if (result.success) {
+        Alert.alert(
+          "Purchase Successful",
+          `You have successfully purchased the ${currentPlan} plan.`
+        );
+        router.push("/(root)/home");
+      }
+    } catch (error) {
+      console.error("Purchase error", error);
+      Alert.alert(
+        formatError(error),
+        "Something went wrong with the purchase."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleNext = () => {
     if (activeIndex < plans.length - 1) {
@@ -154,7 +226,14 @@ export default function SubscriptionPreview() {
               ))}
 
               {/* Continue Button */}
-              <TouchableOpacity className="mt-2 bg-teal-500 py-3 rounded-full">
+              <TouchableOpacity
+                className="mt-2 bg-teal-500 py-3 rounded-full"
+                onPress={() => {
+                  handlePurchase(productIds[activeIndex]);
+                  setPurchased(true);
+                }}
+                disabled={loading}
+              >
                 <Text className="text-white font-bold text-center text-lg">
                   Continue
                 </Text>
