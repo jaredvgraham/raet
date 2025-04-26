@@ -1,4 +1,3 @@
-// app/create-post.tsx
 import React, { useState } from "react";
 import {
   View,
@@ -7,6 +6,10 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
   ScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
@@ -14,7 +17,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useRouter } from "expo-router";
 import { useAuthFetch } from "@/hooks/Privatefetch";
-import PostCard from "./PostCard";
 import { useFeedPage } from "@/hooks/useFeedPage";
 
 type CreatePostScreenProps = {
@@ -24,9 +26,10 @@ type CreatePostScreenProps = {
 const CreatePostScreen = ({ setCreatingPost }: CreatePostScreenProps) => {
   const [image, setImage] = useState<string | null>(null);
   const [caption, setCaption] = useState("");
+  const [sharing, setSharing] = useState(false);
+
   const router = useRouter();
   const authFetch = useAuthFetch();
-  const [sharing, setSharing] = useState(false);
   const { setCurrentPage } = useFeedPage();
 
   const pickImage = async () => {
@@ -76,13 +79,16 @@ const CreatePostScreen = ({ setCreatingPost }: CreatePostScreenProps) => {
     try {
       if (sharing) return;
       setSharing(true);
+
       if (!image) {
         Alert.alert("Missing info", "Please add an image and caption.");
         return;
       }
+
       if (!caption.trim()) {
         setCaption("");
       }
+
       const formData = new FormData();
       formData.append("images", {
         uri: image,
@@ -98,12 +104,13 @@ const CreatePostScreen = ({ setCreatingPost }: CreatePostScreenProps) => {
           "Content-Type": "multipart/form-data",
         },
       });
+
       const data = await response.json();
-      console.log("data", data);
+      console.log("Posted data:", data);
 
       setCreatingPost(false);
     } catch (error) {
-      console.log("error", error);
+      console.log("Error posting:", error);
       Alert.alert("Error", (error as any).message || "Something went wrong");
     } finally {
       setSharing(false);
@@ -111,76 +118,86 @@ const CreatePostScreen = ({ setCreatingPost }: CreatePostScreenProps) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="">
-        <View className="px-6 pt-6 relative">
-          {/* Close Button */}
-          <TouchableOpacity className="" onPress={() => setCreatingPost(false)}>
-            <Icon name="close" size={24} color="red" />
-          </TouchableOpacity>
-          {/* Header */}
-          <Text className="text-4xl font-bold text-black mb-6 text-center">
-            New Post
-          </Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <SafeAreaView className="flex-1 bg-white">
+          <View className="flex-1 justify-between px-4 pb-6">
+            {/* Top Section */}
+            <View>
+              <TouchableOpacity
+                onPress={() => setCreatingPost(false)}
+                className="self-end mb-4"
+              >
+                <Icon name="close" size={24} color="red" />
+              </TouchableOpacity>
 
-          {/* Image Upload Section */}
-          <TouchableOpacity
-            onPress={pickImage}
-            activeOpacity={0.8}
-            className="h-80 bg-gray-100 rounded-3xl overflow-hidden relative justify-center items-center mb-6 shadow-md"
-          >
-            {image ? (
-              <Image
-                source={{ uri: image }}
-                className="w-full h-full"
-                resizeMode="cover"
-              />
-            ) : (
-              <>
-                <Icon name="camera" size={34} color="#a3a3a3" />
-                <Text className="text-gray-400 mt-2 text-sm font-medium">
-                  Tap to add photo
-                </Text>
-              </>
-            )}
-          </TouchableOpacity>
-
-          {/* Caption Input */}
-          <View className="mb-8">
-            <Text className="text-gray-600 text-base mb-2 font-semibold">
-              Caption
-            </Text>
-            <TextInput
-              value={caption}
-              onChangeText={setCaption}
-              placeholder="What's on your mind?"
-              placeholderTextColor="#9ca3af"
-              multiline
-              numberOfLines={5}
-              className="text-base text-gray-800 bg-gray-50 border border-gray-300 rounded-2xl p-4"
-            />
-          </View>
-
-          {/* Post Button */}
-          {!sharing ? (
-            <TouchableOpacity
-              onPress={handlePost}
-              className="bg-black rounded-3xl py-4 mb-6"
-            >
-              <Text className="text-white text-center text-lg font-semibold">
-                Share
+              <Text className="text-3xl font-bold text-center mb-6">
+                Create Post
               </Text>
-            </TouchableOpacity>
-          ) : (
-            <View className="bg-gray-300 rounded-3xl py-4 mb-6">
-              <Text className="text-gray-600 text-center text-lg font-semibold">
-                Sharing...
-              </Text>
+
+              {/* Image Picker */}
+              <TouchableOpacity
+                onPress={pickImage}
+                activeOpacity={0.8}
+                className="h-64 bg-gray-200 rounded-2xl justify-center items-center overflow-hidden mb-6"
+              >
+                {image ? (
+                  <Image
+                    source={{ uri: image }}
+                    className="w-full h-full"
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <>
+                    <Icon name="camera" size={36} color="gray" />
+                    <Text className="text-gray-400 mt-2">Add a Photo</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+
+              {/* Caption */}
+              <View className="mb-4">
+                <Text className="text-base font-semibold mb-2">Caption</Text>
+                <TextInput
+                  value={caption}
+                  onChangeText={setCaption}
+                  placeholder="Write something..."
+                  placeholderTextColor="#9ca3af"
+                  multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                  className="bg-gray-100 border border-gray-300 rounded-2xl p-4 text-base text-gray-800"
+                />
+              </View>
             </View>
-          )}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+
+            {/* Bottom Section */}
+            <View>
+              {!sharing ? (
+                <TouchableOpacity
+                  onPress={handlePost}
+                  className="bg-black py-4 rounded-3xl"
+                >
+                  <Text className="text-white text-center text-lg font-bold">
+                    Share
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <View className="bg-gray-300 py-4 rounded-3xl">
+                  <Text className="text-gray-500 text-center text-lg font-bold">
+                    Sharing...
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
