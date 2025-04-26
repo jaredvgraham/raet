@@ -106,7 +106,9 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
     }));
 
     useEffect(() => {
-      translateX.value = 0;
+      if (user) {
+        translateX.value = 0;
+      }
     }, [user._id]);
 
     const handleImgClick = (event: any) => {

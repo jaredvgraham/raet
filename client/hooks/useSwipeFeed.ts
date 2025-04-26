@@ -76,5 +76,6 @@ export function useSwipeFeed() {
     setRate,
     rate,
     setNoProfilesLeft,
+    noneLeft,
   };
 }

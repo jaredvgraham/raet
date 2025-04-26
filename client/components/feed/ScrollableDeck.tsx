@@ -17,6 +17,7 @@ export default function FuturisticDeck() {
     fetchProfiles,
     handleSwipe,
     setNoProfilesLeft,
+    noneLeft,
   } = useSwipeFeed();
 
   const [rate, setRate] = useState<number | null>(null);
@@ -31,18 +32,17 @@ export default function FuturisticDeck() {
   }, []);
 
   useEffect(() => {
+    if (loading) return;
     if (profiles.length > 0) {
       setCurrent(profiles[0]);
       setNext(profiles[1] || null);
       setCardKey((prev) => prev + 1);
     } else {
-      if (!loading) {
-        setNoProfilesLeft(true);
-      }
+      setNoProfilesLeft(true);
       setCurrent(null);
       setNext(null);
     }
-  }, [profiles]);
+  }, [profiles, loading]);
 
   const triggerSwipe = (dir: "left" | "right") => {
     cardRef.current?.swipe(dir);
