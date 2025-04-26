@@ -29,7 +29,8 @@ export const createUserProfile = async (
   dateOfBirth: Date,
   gender: "Male" | "Female",
   interests: string[],
-  preferredGender: "Male" | "Female" | "Both"
+  preferredGender: "Male" | "Female" | "Both",
+  images: string[]
 ): Promise<IUser> => {
   const user = await User.findOne({ clerkId: userId });
 
@@ -41,6 +42,7 @@ export const createUserProfile = async (
   user.gender = gender;
   user.interests = interests;
   user.preferredGender = preferredGender;
+  user.images = images;
 
   await user.save();
 

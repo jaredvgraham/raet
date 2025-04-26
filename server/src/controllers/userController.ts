@@ -60,7 +60,8 @@ export const createProfile = async (
 ) => {
   try {
     const { userId } = req.auth;
-    const { dateOfBirth, gender, interests, preferredGender } = req.body;
+    const { dateOfBirth, gender, interests, preferredGender, images } =
+      req.body;
 
     console.log("req.body", req.body);
 
@@ -69,6 +70,9 @@ export const createProfile = async (
     }
 
     const age = calculateAge(dateOfBirth);
+
+    const imageUrls = await uploadImagesBucket(images as Express.Multer.File[]);
+    console.log("imageUrls", imageUrls);
 
     if (age < 18) {
       return res.status(400).json({ message: "You must be 18 or older" });
@@ -79,7 +83,8 @@ export const createProfile = async (
       dateOfBirth,
       gender,
       interests,
-      preferredGender
+      preferredGender,
+      imageUrls
     );
     console.log("profile", profile);
 

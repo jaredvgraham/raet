@@ -25,7 +25,12 @@ router.delete("/", ClerkExpressRequireAuth(), deleteAccount);
 
 router.get("/profile", ClerkExpressRequireAuth(), getProfile);
 router.get("/profile/:userId", ClerkExpressRequireAuth(), getProfileById);
-router.patch("/profile", ClerkExpressRequireAuth(), createProfile);
+router.patch(
+  "/profile",
+  ClerkExpressRequireAuth(),
+  upload.array("images", 10),
+  createProfile
+);
 
 router.patch("/location", ClerkExpressRequireAuth(), updateLocation);
 

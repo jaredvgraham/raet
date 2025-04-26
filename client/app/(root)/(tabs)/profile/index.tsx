@@ -4,7 +4,7 @@ import { useAuthFetch } from "@/hooks/Privatefetch";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Profile } from "@/types";
 import ProfileData from "@/components/profile/ProfileData";
-import SwipeableCard from "@/components/feed/SwipeableCard";
+
 import { Animated } from "react-native";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "@/utils/contants";
 import Header from "@/components/header";
