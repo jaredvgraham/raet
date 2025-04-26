@@ -40,10 +40,6 @@ const ProfilePage = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log("User data:", user?.publicMetadata.plan);
-  }, [user]);
-
   const handleImageTap = (tapX: number) => {
     const isRightTap = tapX > SCREEN_WIDTH / 2;
 

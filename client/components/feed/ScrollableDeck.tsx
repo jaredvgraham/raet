@@ -7,6 +7,7 @@ import RatingButtons from "./RateButtons";
 import ModernCard, { ModernCardRef } from "./ScrollableCard";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Links from "./Links";
+import Loading from "../Loading";
 
 export default function FuturisticDeck() {
   const {
@@ -35,17 +36,17 @@ export default function FuturisticDeck() {
       setNext(profiles[1] || null);
       setCardKey((prev) => prev + 1);
     } else {
+      if (!loading) {
+        setNoProfilesLeft(true);
+      }
       setCurrent(null);
       setNext(null);
-      setNoProfilesLeft(true);
     }
   }, [profiles]);
 
   const triggerSwipe = (dir: "left" | "right") => {
     cardRef.current?.swipe(dir);
   };
-
-  if (loading) return null;
 
   if (noProfilesLeft) {
     return (
@@ -66,55 +67,64 @@ export default function FuturisticDeck() {
   return (
     <SafeAreaView className="flex-1 justify-center bg-white   ">
       <Links />
-      <View className="flex-1 w-full items-center relative  rounded-xl pb-1">
-        {next && (
-          <ModernCard
-            key={`${next._id}-back`}
-            user={next}
-            onSwipe={() => {}}
-            isBackCard
-          />
-        )}
-        <ModernCard
-          key={cardKey}
-          ref={cardRef}
-          user={current as Profile}
-          onSwipe={onSwipe}
-        />
-      </View>
 
-      {/* Like / Dislike Buttons */}
-      <View className="absolute bottom-48 right-3 gap-3">
-        <TouchableOpacity
-          onPress={() => triggerSwipe("right")}
-          style={{
-            backgroundColor: "rgba(0, 0, 0, 1.5)",
-            borderColor: "rgb(82, 204, 43)", // ✅ green border with opacity
-            borderWidth: 2,
-            borderRadius: 999,
-            padding: 12,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Icon name="heart" size={40} color="rgb(82, 204, 43)" />
-        </TouchableOpacity>
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          <View className="flex-1 w-full items-center relative  rounded-xl pb-1">
+            {next && (
+              <ModernCard
+                key={`${next._id}-back`}
+                user={next}
+                onSwipe={() => {}}
+                isBackCard
+              />
+            )}
+            {current && (
+              <ModernCard
+                key={cardKey}
+                ref={cardRef}
+                user={current as Profile}
+                onSwipe={onSwipe}
+              />
+            )}
+          </View>
 
-        <TouchableOpacity
-          onPress={() => triggerSwipe("left")}
-          style={{
-            backgroundColor: "rgba(0, 0, 0, 1.5)",
-            borderColor: "rgb(239, 68, 68)", // Tailwind red-500
-            borderWidth: 2,
-            borderRadius: 999,
-            padding: 12,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Icon name="times" size={40} color="rgb(239, 68, 68)" />
-        </TouchableOpacity>
-      </View>
+          {/* Like / Dislike Buttons */}
+          <View className="absolute bottom-48 right-3 gap-3">
+            <TouchableOpacity
+              onPress={() => triggerSwipe("right")}
+              style={{
+                backgroundColor: "rgba(0, 0, 0, 1.5)",
+                borderColor: "rgb(82, 204, 43)", // ✅ green border with opacity
+                borderWidth: 2,
+                borderRadius: 999,
+                padding: 12,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Icon name="heart" size={40} color="rgb(82, 204, 43)" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => triggerSwipe("left")}
+              style={{
+                backgroundColor: "rgba(0, 0, 0, 1.5)",
+                borderColor: "rgb(239, 68, 68)", // Tailwind red-500
+                borderWidth: 2,
+                borderRadius: 999,
+                padding: 12,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Icon name="times" size={40} color="rgb(239, 68, 68)" />
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
     </SafeAreaView>
   );
 }

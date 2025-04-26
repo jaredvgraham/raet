@@ -6,7 +6,9 @@ export function useSwipeFeed() {
   const authFetch = useAuthFetch();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [noneLeft, setNoneLeft] = useState(false);
   const [noProfilesLeft, setNoProfilesLeft] = useState(false);
+
   const [rate, setRate] = useState<number | null>(null);
 
   const fetchProfiles = useCallback(async () => {
@@ -15,12 +17,19 @@ export function useSwipeFeed() {
       const data = await res?.json();
 
       if (data.feed.length === 0) {
-        setNoProfilesLeft(true);
+        setNoneLeft(true);
         return;
       }
       console.log("Fetched profiles:", data.feed);
 
-      setProfiles((prev) => [...prev, ...data.feed]);
+      setProfiles((prev) => {
+        const existingIds = new Set(prev.map((p) => p._id));
+        const newProfiles = data.feed.filter(
+          (profile: Profile) => !existingIds.has(profile._id)
+        );
+        return [...prev, ...newProfiles];
+      });
+
       setNoProfilesLeft(false);
     } catch (err) {
       console.log("Error fetching profiles:", err);
@@ -37,6 +46,7 @@ export function useSwipeFeed() {
     rate?: number
   ) => {
     console.log("swipe", user, direction, rate);
+    const profilesLength = profiles.length;
 
     setProfiles((prev) => prev.filter((p) => p._id !== user._id));
 
@@ -48,6 +58,9 @@ export function useSwipeFeed() {
       });
       const data = await res?.json();
       setRate(null);
+      if (profilesLength <= 2 && !noneLeft) {
+        fetchProfiles();
+      }
       return data;
     } catch (err) {
       console.error("swipe error", err);

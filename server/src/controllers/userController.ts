@@ -102,11 +102,14 @@ export const getProfile = async (
     const hasProfile = profile.gender ? true : false;
 
     const age = calculateAge(profile.dob);
+    const posts = await getUserPosts(userId, userId);
 
     const updatedProfile = {
       ...profile.toJSON(),
       age,
+      posts,
     };
+    console.log("updatedProfile", updatedProfile);
 
     res.status(200).json({ updatedProfile, hasProfile });
   } catch (error) {

@@ -49,9 +49,7 @@ type Props = {
 
 const ModernCard = forwardRef<ModernCardRef, Props>(
   ({ user, onSwipe, isBackCard = false }, ref) => {
-    console.log(`user`, user);
-    console.log(`user`, user);
-    console.log(`user`, user);
+    console.log(`user on card`, user);
 
     const translateX = useSharedValue(0);
     const [swipingDirection, setSwipingDirection] = useState<

@@ -9,7 +9,10 @@ import {
 } from "react-native";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import { SignOutButton } from "@/components/SignOut";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { LinearGradient } from "expo-linear-gradient";
 import { Profile } from "@/types";
@@ -40,6 +43,7 @@ const ProfileData = ({
   const [blockedUsers, setBlockedUsers] = useState<Profile[]>([]);
   const [showBlockedUsers, setShowBlockedUsers] = useState(false);
   console.log(`profile`, profile);
+  const insets = useSafeAreaInsets();
 
   const getBlockedUsers = async () => {
     try {
@@ -153,7 +157,10 @@ const ProfileData = ({
   }
 
   return (
-    <SafeAreaView className="flex-1 relative  bg-white">
+    <View
+      className="flex-1 relative  bg-white"
+      style={{ paddingTop: insets.top }}
+    >
       <Header style="w-full flex items-center justify-center" />
 
       {editing ? (
@@ -177,7 +184,7 @@ const ProfileData = ({
           setSettings={setSettings || (() => {})}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 

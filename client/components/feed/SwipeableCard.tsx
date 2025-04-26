@@ -79,7 +79,9 @@ export default function SwipeableCard({
   }));
 
   useEffect(() => {
-    translateX.value = 0;
+    if (user) {
+      translateX.value = 0;
+    }
   }, [user._id]);
 
   return (

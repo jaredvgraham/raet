@@ -1,9 +1,10 @@
-import { View, Text } from "react-native";
+import { View, Text, SafeAreaView } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Redirect } from "expo-router";
 import { useAuth, useSession, useUser } from "@clerk/clerk-expo";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import "react-native-gesture-handler";
+import Loading from "@/components/Loading";
 
 //has profile logic soon
 
@@ -59,9 +60,11 @@ const Home = () => {
 
   if (loading) {
     return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
+      <SafeAreaView
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <Loading />
+      </SafeAreaView>
     );
   }
 

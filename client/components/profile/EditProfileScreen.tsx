@@ -8,11 +8,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Slider from "@react-native-community/slider";
-import UploadImageComponent from "../UploadImage";
+
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Profile } from "@/types";
 import Header from "../header";
 import ModernCard from "../feed/ScrollableCard";
+import UploadImageComponentTwo from "../UploadImageTwo";
 
 const SLIDER_MAX_VALUE = 100;
 const MAX_DISTANCE_MILES = 10000;
@@ -226,6 +227,7 @@ const EditProfileScreen = ({
               user={
                 {
                   ...profile,
+                  recentPosts: (profile as any).posts || [],
                   images: images.length ? images : profile.images,
                   bio,
                   jobTitle,
@@ -253,11 +255,7 @@ const EditProfileScreen = ({
           className="p-5 flex-1 bg-white"
           contentContainerStyle={{ paddingBottom: 20 }}
         >
-          <Text className="text-3xl font-bold text-black mb-6">
-            Edit Profile
-          </Text>
-
-          <UploadImageComponent
+          <UploadImageComponentTwo
             onSubmit={() => {}}
             buttonTitle="Save Images"
             parentImgs={images}

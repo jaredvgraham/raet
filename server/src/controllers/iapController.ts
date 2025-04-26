@@ -153,7 +153,7 @@ export const handleAppStoreNotification = async (
           platform: "ios",
           originalTransactionId,
         };
-        clerkClient.users.updateUser(user.clerkId, {
+        await clerkClient.users.updateUser(user.clerkId, {
           publicMetadata: {
             plan: "none",
           },

@@ -5,12 +5,13 @@ import {
   View,
   Text,
   SafeAreaView,
-  Alert,
+  ScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import { formatError } from "@/utils";
 import { Image } from "expo-image";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 type UploadImageComponentProps = {
   onSubmit?: () => void | undefined;
@@ -20,7 +21,7 @@ type UploadImageComponentProps = {
   showButton?: boolean;
 };
 
-const UploadImageComponent = ({
+const UploadImageComponentTwo = ({
   onSubmit,
   buttonTitle,
   parentImgs,
@@ -130,66 +131,81 @@ const UploadImageComponent = ({
 
   return (
     <>
-      <SafeAreaView className="w-full flex flex-col justify-between   ">
+      <View className="w-full flex flex-col justify-between   ">
+        <Text className="text-2xl font-normal mb-4">Images:</Text>
+
         <View className="flex">
-          <TouchableOpacity
-            className="bg-black w-full p-4 rounded-lg mb-3 "
-            onPress={() => {
-              if ((images || []).length < 2) {
-                pickImage();
-              } else {
-                Alert.alert("Max 2 images for now");
-              }
+          {error && !onSubmit && <Text style={{ color: "red" }}>{error}</Text>}
+
+          <View
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
             }}
           >
-            <Text className="text-white text-lg">
-              {!images?.length ? "Upload Images" : "More Images"}
-            </Text>
-          </TouchableOpacity>
+            {Array.from({ length: 6 }).map((_, index) => {
+              const image = images ? images[index] : null;
 
-          {error && !onSubmit && <Text style={{ color: "red" }}>{error}</Text>}
-          {images && images.length > 0 && (
-            <View
-              style={{
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent: "space-between",
-              }}
-            >
-              {images.map((image, index) => (
+              return (
                 <View
                   key={index}
                   style={{
                     width: "48%",
                     marginBottom: 10,
                     position: "relative",
+                    backgroundColor: "#f0f0f0", // Light gray background for empty slots
+                    borderRadius: 10,
+                    height: 200,
+                    overflow: "hidden",
                   }}
                 >
-                  <Image
-                    source={{ uri: image }}
-                    style={{ width: "100%", height: 200 }}
-                    className="rounded-lg"
-                  />
-                  <TouchableOpacity
-                    style={{
-                      position: "absolute",
-                      top: 5,
-                      right: 5,
-                      backgroundColor: "black",
-                      borderRadius: 15,
-                      padding: 5,
-                    }}
-                    onPress={() => removeImage(index)}
-                  >
-                    <Text style={{ color: "white", fontWeight: "bold" }}>
-                      X
-                    </Text>
-                  </TouchableOpacity>
+                  {image ? (
+                    <>
+                      <Image
+                        source={{ uri: image }}
+                        style={{ width: "100%", height: "100%" }}
+                      />
+                      <TouchableOpacity
+                        style={{
+                          position: "absolute",
+                          top: 5,
+                          right: 5,
+                          backgroundColor: "black",
+                          borderRadius: 15,
+                          padding: 5,
+                        }}
+                        onPress={() => removeImage(index)}
+                      >
+                        <Text style={{ color: "white", fontWeight: "bold" }}>
+                          X
+                        </Text>
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <>
+                      {/* + icon */}
+                      <TouchableOpacity
+                        className="flex-1 items-center justify-center"
+                        onPress={pickImage}
+                      >
+                        <Icon
+                          name="plus" // Replace with a valid icon name
+                          size={30}
+                          color="gray"
+                          style={{ marginBottom: 5 }}
+                        />
+                        <Text className="text-gray-400">Add Image</Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
                 </View>
-              ))}
-            </View>
-          )}
+              );
+            })}
+          </View>
         </View>
+
+        {/* Upload Button */}
         {showButton && (
           <TouchableOpacity
             className="bg-violet-400 w-full p-4 rounded-lg "
@@ -200,9 +216,9 @@ const UploadImageComponent = ({
             </Text>
           </TouchableOpacity>
         )}
-      </SafeAreaView>
+      </View>
     </>
   );
 };
 
-export default UploadImageComponent;
+export default UploadImageComponentTwo;

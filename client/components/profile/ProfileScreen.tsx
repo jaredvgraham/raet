@@ -15,6 +15,7 @@ import { MotiView } from "moti";
 import { Easing } from "react-native-reanimated";
 import { colors } from "@/constants";
 import { Profile } from "@/types";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -37,8 +38,9 @@ export default function ProfileScreen({
   blockedUsers,
   setShowBlockedUsers,
 }: ProfileScreenProps) {
+  const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <View className="flex-1 bg-white">
       <ScrollView className="flex-1">
         {/* Hero Section */}
         <LinearGradient
@@ -58,9 +60,9 @@ export default function ProfileScreen({
               <View className="absolute top-2 left-2 z-10">
                 <TouchableOpacity
                   onPress={setEditing}
-                  className="bg-white/80 rounded-full p-2 shadow-md"
+                  className="bg-black/60 rounded-full p-2 shadow-md"
                 >
-                  <Icon name="edit-2" size={18} color="#10b5b1" />
+                  <Icon name="edit-3" size={18} color="#10b5b1" />
                 </TouchableOpacity>
               </View>
               <TouchableOpacity onPress={setEditing}>
@@ -129,7 +131,7 @@ export default function ProfileScreen({
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

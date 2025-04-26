@@ -14,6 +14,9 @@
       "channel": "preview"
     },
     "production": {
+      "ios": {
+        "image": "macos-sequoia-15.3-xcode-16.2"
+      },
       "autoIncrement": true,
       "channel": "production",
       "environment": "production"
