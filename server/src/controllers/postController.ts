@@ -23,6 +23,11 @@ export const createPost = async (
     }
     console.log("req.body", req.body);
 
+    const postExists = await Post.findOne({ userId, caption });
+    if (postExists) {
+      return res.status(400).json({ message: "Post already exists" });
+    }
+
     if (!req.files) {
       return res
         .status(400)
@@ -83,15 +88,8 @@ export const getPostsFeed = async (
 
     const posts = Array.from(postMap.values());
 
-    posts.forEach((p) =>
-      console.log(
-        p.caption,
-        p.userName,
-        p.userAvatar,
-        p.commentCount || "NO comments",
-        p.likeCount || "NO likes"
-      )
-    );
+    posts.forEach((p) => console.log(p.caption));
+    console.log("postlength", posts.length);
 
     res.status(200).json({ posts });
   } catch (error) {

@@ -7,13 +7,6 @@ import { usePathname, useRouter } from "expo-router";
 const Links = () => {
   const { currentPage, setCurrentPage } = useFeedPage();
   const Router = useRouter();
-  const pathname = usePathname();
-
-  if (pathname.includes("posts")) {
-    setCurrentPage("Posts");
-  } else if (pathname.includes("home")) {
-    setCurrentPage("Rate");
-  }
 
   const pages = ["Rate", "Posts"];
   const routes = {

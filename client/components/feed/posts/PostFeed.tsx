@@ -53,13 +53,13 @@ const PostFeedScreen = () => {
 
   useEffect(() => {
     fetchPosts();
-  }, [fetchPosts]);
+  }, []);
 
   if (creatingPost)
     return <CreatePostScreen setCreatingPost={setCreatingPost} />;
 
   return (
-    <View className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
+    <View className="flex-1 bg-white z-30" style={{ paddingTop: insets.top }}>
       <Links />
       <PostList
         posts={posts}

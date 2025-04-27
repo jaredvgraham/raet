@@ -29,6 +29,12 @@ export const registerUser = async (
       return res.status(400).json({ message: "All fields are required" }); // 400 Bad Request
     }
 
+    // Check if user already exists
+    const existingUser = await User.findOne({ clerkId });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" }); // 400 Bad Request
+    }
+
     const user = await createUser(name, email, clerkId);
     console.log("user", user);
 

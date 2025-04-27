@@ -17,7 +17,7 @@ interface PostListProps {
   onLoadMore: () => void;
   onPostSelect: (postId: string) => void;
 }
-
+//
 export const PostList = ({
   posts,
   loading,
@@ -29,12 +29,16 @@ export const PostList = ({
   <FlatList
     data={posts}
     keyExtractor={(item) => item._id}
+    extraData={posts.length}
     renderItem={({ item }) => (
-      <PostCard
-        post={item}
-        toggleComments={() => onPostSelect(item._id)}
-        commentCount={item.commentCount}
-      />
+      <View className="">
+        <PostCard
+          key={item._id}
+          post={item}
+          toggleComments={() => onPostSelect(item._id)}
+          commentCount={item.commentCount}
+        />
+      </View>
     )}
     refreshControl={
       <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

@@ -30,6 +30,8 @@ const PostCard = ({
   toggleComments,
   commentCount,
 }: PostProps) => {
+  console.log("display post", post);
+
   const [liked, setLiked] = React.useState(post.likedByCurrentUser);
   const [likeCount, setLikeCount] = React.useState(post.likeCount);
   const authFetch = useAuthFetch();
@@ -47,7 +49,7 @@ const PostCard = ({
   };
 
   return (
-    <View className="flex-1 bg-white rounded-xl mb-6 overflow-hidden  ">
+    <View className=" bg-white rounded-xl mb-6 overflow-hidden  ">
       {/* Header */}
       <TouchableOpacity
         className="flex-row items-center px-4 py-3"
