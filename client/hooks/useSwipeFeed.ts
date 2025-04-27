@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import { Profile } from "@/types";
 
@@ -43,7 +43,8 @@ export function useSwipeFeed() {
   const handleSwipe = async (
     user: Profile,
     direction: "left" | "right",
-    rate?: number
+
+    isOneUser?: boolean
   ) => {
     console.log("swipe", user, direction, rate);
     const profilesLength = profiles.length;
@@ -58,7 +59,7 @@ export function useSwipeFeed() {
       });
       const data = await res?.json();
       setRate(null);
-      if (profilesLength <= 2 && !noneLeft) {
+      if (profilesLength <= 2 && !noneLeft && !isOneUser) {
         fetchProfiles();
       }
       return data;
@@ -77,5 +78,6 @@ export function useSwipeFeed() {
     rate,
     setNoProfilesLeft,
     noneLeft,
+    setProfiles,
   };
 }

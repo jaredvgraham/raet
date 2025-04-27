@@ -52,7 +52,7 @@ const PostCard = ({
       <TouchableOpacity
         className="flex-row items-center px-4 py-3"
         onPress={() => {
-          Router.push(`/profile/${post.userId}`);
+          Router.push(`/home/${post.userId}`);
         }}
       >
         <Image

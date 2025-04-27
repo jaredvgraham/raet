@@ -20,7 +20,6 @@ export default function FuturisticDeck() {
     noneLeft,
   } = useSwipeFeed();
 
-  const [rate, setRate] = useState<number | null>(null);
   const [current, setCurrent] = useState<Profile | null>(null);
   const [next, setNext] = useState<Profile | null>(null);
   const [cardKey, setCardKey] = useState(0);
@@ -60,8 +59,7 @@ export default function FuturisticDeck() {
   }
 
   const onSwipe = (dir: "left" | "right") => {
-    handleSwipe(current as Profile, dir, rate ?? undefined);
-    setRate(null);
+    handleSwipe(current as Profile, dir, false);
   };
 
   return (
