@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Button, Text, TouchableOpacity, View } from "react-native";
+import { Text } from "react-native";
 import { useAuthFetch } from "@/hooks/Privatefetch";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Profile } from "@/types";
 import ProfileData from "@/components/profile/ProfileData";
 
 import { Animated } from "react-native";
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from "@/utils/contants";
-import Header from "@/components/header";
-import RenderImageIndicators from "@/components/feed/RenderImageIndicators"; // Import the component
-import ModernCard from "@/components/feed/ScrollableCard";
-import Toast from "@/components/Toast";
+import { SCREEN_WIDTH } from "@/utils/contants";
+
 import { useUser } from "@clerk/clerk-expo";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+
 import Settings from "@/components/profile/Settings";
 
 const ProfilePage = () => {

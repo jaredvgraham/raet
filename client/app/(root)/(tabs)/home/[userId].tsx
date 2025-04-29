@@ -9,8 +9,9 @@ import { useSwipeFeed } from "@/hooks/useSwipeFeed";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Header from "@/components/header";
 import Icon from "react-native-vector-icons/FontAwesome";
+import Loading from "@/components/Loading";
 
-const viewUser = () => {
+const ViewUser = () => {
   const { userId } = useLocalSearchParams();
   const navigation = useNavigation();
   const router = useRouter();
@@ -19,6 +20,7 @@ const viewUser = () => {
   const { user } = useUser();
   const [profile, setProfile] = React.useState<Profile | null>(null);
   const { handleSwipe, setProfiles } = useSwipeFeed();
+  const [loading, setLoading] = React.useState(false);
 
   const cardRef = useRef<ModernCardRef>(null);
 
@@ -41,6 +43,8 @@ const viewUser = () => {
         setProfile(userProfile);
       } catch (error) {
         console.error("Error fetching user profile:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -62,47 +66,53 @@ const viewUser = () => {
   };
   return (
     <SafeAreaView className="flex-1 justify-center bg-white relative   ">
-      <Header backArrow />
-      {profile && (
+      {loading ? (
+        <Loading />
+      ) : (
         <>
-          <View className="flex-1 w-full items-center relative  rounded-xl pb-1">
-            <ModernCard user={profile} onSwipe={onSwipe} ref={cardRef} />
-          </View>
-          <View className="absolute bottom-48 right-3 gap-3">
-            <TouchableOpacity
-              onPress={() => triggerSwipe("right")}
-              style={{
-                backgroundColor: "rgba(0, 0, 0, 1.5)",
-                borderColor: "rgb(82, 204, 43)", // ✅ green border with opacity
-                borderWidth: 2,
-                borderRadius: 999,
-                padding: 12,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Icon name="heart" size={40} color="rgb(82, 204, 43)" />
-            </TouchableOpacity>
+          <Header backArrow />
+          {profile && (
+            <>
+              <View className="flex-1 w-full items-center relative  rounded-xl pb-1">
+                <ModernCard user={profile} onSwipe={onSwipe} ref={cardRef} />
+              </View>
+              <View className="absolute bottom-48 right-3 gap-3">
+                <TouchableOpacity
+                  onPress={() => triggerSwipe("right")}
+                  style={{
+                    backgroundColor: "rgba(0, 0, 0, 1.5)",
+                    borderColor: "rgb(82, 204, 43)", // ✅ green border with opacity
+                    borderWidth: 2,
+                    borderRadius: 999,
+                    padding: 12,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Icon name="heart" size={40} color="rgb(82, 204, 43)" />
+                </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => triggerSwipe("left")}
-              style={{
-                backgroundColor: "rgba(0, 0, 0, 1.5)",
-                borderColor: "rgb(239, 68, 68)", // Tailwind red-500
-                borderWidth: 2,
-                borderRadius: 999,
-                padding: 12,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Icon name="times" size={40} color="rgb(239, 68, 68)" />
-            </TouchableOpacity>
-          </View>
+                <TouchableOpacity
+                  onPress={() => triggerSwipe("left")}
+                  style={{
+                    backgroundColor: "rgba(0, 0, 0, 1.5)",
+                    borderColor: "rgb(239, 68, 68)", // Tailwind red-500
+                    borderWidth: 2,
+                    borderRadius: 999,
+                    padding: 12,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Icon name="times" size={40} color="rgb(239, 68, 68)" />
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
         </>
       )}
     </SafeAreaView>
   );
 };
 
-export default viewUser;
+export default ViewUser;

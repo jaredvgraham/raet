@@ -15,6 +15,7 @@ import { formatError } from "@/utils";
 import UploadImageComponent from "@/components/UploadImage";
 import { getUserLocation } from "@/utils/contants";
 import { registerForPushNotificationsAsync } from "@/utils/notifications";
+import Loading from "@/components/Loading";
 
 const Onboarding = () => {
   const authFetch = useAuthFetch();
@@ -33,6 +34,8 @@ const Onboarding = () => {
     latitude: number;
     longitude: number;
   } | null>(null);
+  const [images, setImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // Predefined interests
   const predefinedInterests = [
@@ -107,24 +110,55 @@ const Onboarding = () => {
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     console.log("User Data Submitted:", {
       dateOfBirth,
       gender,
       interests,
       preferredGender,
+      images,
     });
     try {
+      if (
+        !dateOfBirth ||
+        !gender ||
+        !preferredGender ||
+        !interests.length ||
+        !images.length
+      ) {
+        const missingFeild = [
+          !dateOfBirth && "Date of Birth",
+          !gender && "gender",
+          !preferredGender && "Preferred gender",
+          !interests.length && "Interests",
+          !images.length && "Images",
+        ];
+        setError(`Please fill in all fields: ${missingFeild.join(", ")}`);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("dateOfBirth", dateOfBirth.toISOString());
+      formData.append("gender", gender as string);
+      formData.append("preferredGender", preferredGender);
+      formData.append("interests", interests.join(","));
+
+      images.forEach((image) => {
+        formData.append("images", {
+          uri: image,
+          type: "image/jpeg",
+          name: "image",
+        } as any);
+      });
+      console.log("formData", formData);
+
       const res = await authFetch("/api/user/profile", {
         method: "PATCH",
+
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
-        body: JSON.stringify({
-          dateOfBirth,
-          gender,
-          interests,
-          preferredGender,
-        }),
+        body: formData,
       });
       console.log(res);
       router.push("/(root)/(tabs)/home");
@@ -132,6 +166,8 @@ const Onboarding = () => {
       setError(formatError(error));
       alert(error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -257,10 +293,22 @@ const Onboarding = () => {
     {
       title: "Pick your best pictures",
       component: (
-        <UploadImageComponent
-          onSubmit={handleSubmit as any}
-          buttonTitle="Finish"
-        />
+        <>
+          {loading ? (
+            <SafeAreaView className="flex-1 items-center justify-center">
+              <Loading />
+            </SafeAreaView>
+          ) : (
+            <UploadImageComponent
+              onSubmit={() => {
+                handleSubmit();
+              }}
+              parentImgs={images}
+              setParentImgs={setImages}
+              buttonTitle="Finish"
+            />
+          )}
+        </>
       ),
     },
   ];

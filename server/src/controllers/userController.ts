@@ -66,10 +66,18 @@ export const createProfile = async (
 ) => {
   try {
     const { userId } = req.auth;
-    const { dateOfBirth, gender, interests, preferredGender, images } =
-      req.body;
+    const { dateOfBirth, gender, interests, preferredGender } = req.body;
 
     console.log("req.body", req.body);
+
+    if (!req.files) {
+      return res.status(400).json({ message: "Please upload images" });
+    }
+    const images = req.files as Express.Multer.File[];
+    console.log("images", images);
+    if (!images || images.length === 0) {
+      return res.status(400).json({ message: "Please upload images" });
+    }
 
     if (!dateOfBirth || !gender || !interests || !preferredGender) {
       return res.status(400).json({ message: "All fields are required" });
@@ -88,7 +96,7 @@ export const createProfile = async (
       userId,
       dateOfBirth,
       gender,
-      interests,
+      interests.split(","),
       preferredGender,
       imageUrls
     );
@@ -110,6 +118,10 @@ export const getProfile = async (
     const { userId } = req.auth;
     console.log("userId", userId);
     const profile = await getUserProfile(userId);
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+    console.log("profile", profile);
     const hasProfile = profile.gender ? true : false;
 
     const age = calculateAge(profile.dob);
@@ -280,11 +292,18 @@ export const updateProfile = async (
       instagram,
     } = req.body;
 
+    console.log("req.body", req.body);
+    console.log("req.files", req.files);
+    if (!req.files) {
+      return res.status(400).json({ message: "Please upload images" });
+    }
+
     const images = req.files as Express.Multer.File[];
     const imageUrls = await uploadImagesBucket(images);
 
     // Basic fields
     user.name = name || user.name;
+
     user.bio = bio || user.bio;
     user.jobTitle = jobTitle || user.jobTitle;
     user.relationshipType = relationshipType || user.relationshipType;

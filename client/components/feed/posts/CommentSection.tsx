@@ -7,10 +7,14 @@ import {
   View,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
 } from "react-native";
 import { Comment } from "@/types";
 import { formatDistanceToNow } from "date-fns";
 import { Image } from "expo-image";
+import { Icon } from "react-native-vector-icons/Icon";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useRouter } from "expo-router";
 
 interface CommentSectionProps {
   comments: Comment[];
@@ -30,53 +34,78 @@ export const CommentSection = ({
   keyboardVisible,
   insets,
   panHandlers,
-}: CommentSectionProps) => (
-  <KeyboardAvoidingView
-    behavior={Platform.OS === "ios" ? "padding" : "height"}
-    className="absolute bottom-0 left-0 right-0 top-52 bg-gray-200 z-50"
-    style={{ borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
-  >
-    <View {...panHandlers} className="h-8 justify-center items-center ">
-      <View className="w-10 h-1 rounded bg-gray-400" />
-    </View>
+}: CommentSectionProps) => {
+  const router = useRouter();
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      className="absolute bottom-0 left-0 right-0 top-52 bg-gray-100 z-50"
+      style={{ borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
+    >
+      <View {...panHandlers} className="h-8 justify-center items-center ">
+        <View className="w-10 h-1 rounded bg-gray-400" />
+      </View>
 
-    <FlatList
-      data={comments}
-      className="bg-gray-200"
-      keyExtractor={(item) => item._id}
-      renderItem={({ item }) => (
-        <View className="flex-row items-start gap-3 mb-4 px-2 ">
-          <Image
-            source={{ uri: item.userAvatar }}
-            className="w-9 h-9 rounded-full"
-          />
-          <View className="flex-1 border-b border-black/20 pb-2">
-            <View className="flex-row justify-between">
-              <Text className="font-semibold text-sm">{item.userName}</Text>
-              <Text className="text-xs text-gray-400">
-                {formatDistanceToNow(new Date(item.createdAt))} ago
-              </Text>
+      <FlatList
+        data={comments}
+        className="bg-gray-100"
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => (
+          <View className="flex-row items-start gap-3 mb-4 px-2 ">
+            <TouchableOpacity
+              onPress={() => {
+                router.push(`/home/${item.userId}`);
+              }}
+            >
+              <Image
+                source={{ uri: item.userAvatar }}
+                className="w-9 h-9 rounded-full"
+              />
+            </TouchableOpacity>
+            <View className="flex-1 border-b border-black/20 pb-2">
+              <View className="flex-row justify-between">
+                <TouchableOpacity
+                  onPress={() => {
+                    router.push(`/home/${item.userId}`);
+                  }}
+                >
+                  <Text className="font-semibold text-sm">{item.userName}</Text>
+                </TouchableOpacity>
+                <Text className="text-xs text-gray-400">
+                  {formatDistanceToNow(new Date(item.createdAt))} ago
+                </Text>
+              </View>
+              <Text className="text-gray-800">{item.text}</Text>
             </View>
-            <Text className="text-gray-800">{item.text}</Text>
           </View>
-        </View>
-      )}
-      contentContainerStyle={{ paddingBottom: 80 }}
-    />
-
-    <View className="flex-row items-center p-4 border-t border-gray-300 bg-gray-200">
-      <TextInput
-        value={commentText}
-        onChangeText={setCommentText}
-        placeholder="Add a comment..."
-        className="flex-1 border border-gray-400 rounded-full px-3 py-2"
+        )}
+        contentContainerStyle={{ paddingBottom: 80 }}
       />
-      <TouchableOpacity
-        onPress={submitComment}
-        className="ml-2 bg-blue-500 px-4 py-2 rounded-full"
-      >
-        <Text className="text-white">Post</Text>
-      </TouchableOpacity>
-    </View>
-  </KeyboardAvoidingView>
-);
+
+      <View className="flex-row items-center p-4 border-t border-gray-300 bg-gray-100">
+        <View className="flex-1 relative">
+          <TextInput
+            value={commentText}
+            onChangeText={setCommentText}
+            placeholder="Add a comment..."
+            className="border border-gray-400 rounded-full px-4 py-2 pr-16" // NOTE: add 'pr-16' paddingRight
+          />
+          <TouchableOpacity
+            onPress={() => {
+              submitComment();
+              Keyboard.dismiss();
+            }}
+            className="absolute right-1 top-1 bg-black/80  px-3 py-1 rounded-full"
+          >
+            <MaterialIcons
+              name="send"
+              size={18}
+              color={`${commentText ? "#10b5b1" : "white"}`}
+              // Rotate the icon
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </KeyboardAvoidingView>
+  );
+};

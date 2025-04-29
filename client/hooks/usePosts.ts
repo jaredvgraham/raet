@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { Post } from "@/types";
 import { useAuthFetch } from "@/hooks/Privatefetch";
+import { Comment } from "@/types";
 
 export function usePosts() {
   const authFetch = useAuthFetch();
@@ -8,6 +9,8 @@ export function usePosts() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentText, setCommentText] = useState("");
 
   const fetchPosts = async (beforeDate?: string) => {
     console.log("Fetching posts beforeDate:", beforeDate);
@@ -38,6 +41,7 @@ export function usePosts() {
 
       // Update hasMore based on how many posts you got
       setHasMore(data.posts.length > 1);
+      setRefreshing(false);
     } catch (error) {
       console.error("Error fetching posts:", error);
     } finally {
@@ -65,6 +69,41 @@ export function usePosts() {
     fetchPosts(lastPostDate);
   };
 
+  const fetchComments = async (postId: string) => {
+    try {
+      const res = await authFetch(`/api/post/${postId}/comments`);
+      const data = await res.json();
+      console.log("Fetched comments", data.comments);
+
+      setComments(data.comments || []);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
+
+  const submitComment = async (postId: string) => {
+    if (!commentText.trim()) return;
+    try {
+      const res = await authFetch(`/api/post/${postId}/comment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: commentText }),
+      });
+      const data = await res.json();
+      setComments((prev) => [data.comment, ...prev]);
+      setCommentText("");
+      setPosts((prev) =>
+        prev.map((post) =>
+          post._id === postId
+            ? { ...post, commentCount: post.commentCount + 1 }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error("Error posting comment:", error);
+    }
+  };
+
   return {
     posts,
     loading,
@@ -72,5 +111,10 @@ export function usePosts() {
     fetchPosts,
     refreshPosts,
     loadMorePosts,
+    fetchComments,
+    submitComment,
+    comments,
+    commentText,
+    setCommentText,
   };
 }

@@ -74,7 +74,7 @@ const SignIn = () => {
                 <Icon name="envelope" size={20} color="gray" />
               </View>
               <TextInput
-                placeholder="Email"
+                placeholder="Email or Username"
                 placeholderTextColor="gray"
                 value={formData.email}
                 onChangeText={(text) =>

@@ -108,13 +108,13 @@ export default function ProfileScreen({
           )}
           {renderCard("coffee", `Drinking: ${profile.drinkingHabits || "N/A"}`)}
           {renderCard("smile", `Smoking: ${profile.smokingHabits || "N/A"}`)}
-          {profile.pets?.length
-            ? renderCard("paw", `Pets: ${profile.pets.join(", ")}`)
-            : null}
+
           {renderCard(
             "instagram",
             profile.socialMedia?.instagram
-              ? `@${profile.socialMedia.instagram}`
+              ? profile.socialMedia.instagram.startsWith("@")
+                ? profile.socialMedia.instagram
+                : `@${profile.socialMedia.instagram}`
               : "Instagram not linked"
           )}
           {renderCard("map-pin", `Distance Radius: ${profile.maxDistance} mi`)}

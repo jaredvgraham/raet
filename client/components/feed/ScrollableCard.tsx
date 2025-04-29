@@ -231,11 +231,11 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
               </View>
 
               {/* Second Hero Image */}
-              {user.images.length > 1 && (
+              {user.images && (
                 <View className="px-6 mt-6">
                   <Image
-                    source={{ uri: user.images[1] }}
-                    className="w-full h-52 rounded-xl"
+                    source={{ uri: user.images[0] }}
+                    className="w-full h-72 rounded-xl"
                     contentFit="cover"
                   />
                 </View>
@@ -243,13 +243,8 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
 
               {/* Bio Section */}
               <View className="px-6 mt-6">
-                <View className="flex-row items-center mb-1">
-                  <Icon name="info-circle" size={16} color="#0f172a" />
-                  <Text className="ml-2 text-gray-800 font-semibold text-base">
-                    About Me
-                  </Text>
-                </View>
-                <Text className="text-gray-700 text-sm">
+                <View className="flex-row items-center mb-1"></View>
+                <Text className="text-gray-700 text-lg italic">
                   {user.bio || "No bio yet."}
                 </Text>
               </View>
@@ -267,7 +262,7 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                 )}
                 {user.relationshipType && (
                   <View className="flex-row items-center">
-                    <Icon name="users" size={16} color="#0f172a" />
+                    <Icon name="users" size={16} color="purple" />
                     <Text className="ml-3 text-sm text-gray-700">
                       <Text className="font-semibold">Relationship Type:</Text>{" "}
                       {user.relationshipType}
@@ -276,7 +271,7 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                 )}
                 {user.lookingFor && (
                   <View className="flex-row items-center">
-                    <Icon name="heart" size={16} color="#0f172a" />
+                    <Icon name="heart" size={16} color="#bd3228" />
                     <Text className="ml-3 text-sm text-gray-700">
                       <Text className="font-semibold">Looking For:</Text>{" "}
                       {user.lookingFor}
@@ -285,7 +280,7 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                 )}
                 {user.drinkingHabits && (
                   <View className="flex-row items-center">
-                    <Icon name="glass" size={16} color="#0f172a" />
+                    <Icon name="glass" size={16} color="#ed9726" />
                     <Text className="ml-3 text-sm text-gray-700">
                       <Text className="font-semibold">Drinks:</Text>{" "}
                       {user.drinkingHabits}
@@ -294,14 +289,14 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                 )}
                 {user.smokingHabits && (
                   <View className="flex-row items-center">
-                    <Icon name="fire" size={16} color="#0f172a" />
+                    <Icon name="fire" size={16} color="#3bccf5" />
                     <Text className="ml-3 text-sm text-gray-700">
                       <Text className="font-semibold">Smokes:</Text>{" "}
                       {user.smokingHabits}
                     </Text>
                   </View>
                 )}
-                {user.pets?.length > 0 && (
+                {user.pets && user.pets.length > 0 && (
                   <View className="flex-row items-center">
                     <Icon name="paw" size={16} color="#0f172a" />
                     <Text className="ml-3 text-sm text-gray-700">
@@ -314,31 +309,14 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                   <View className="flex-row items-center">
                     <Icon name="instagram" size={16} color="#0f172a" />
                     <Text className="ml-3 text-sm text-gray-700">
-                      <Text className="font-semibold">Instagram:</Text> @
-                      {user.socialMedia.instagram.split("@")[1]}
+                      <Text className="font-semibold">Instagram:</Text>
+                      {user.socialMedia.instagram.includes("@")
+                        ? `@${user.socialMedia.instagram.split("@")[1]}`
+                        : `@${user.socialMedia.instagram}`}
                     </Text>
                   </View>
                 )}
               </View>
-
-              {/* Additional Images Grid */}
-              {user.images.length > 2 && (
-                <View className="px-6 mt-8">
-                  <Text className="text-base font-semibold text-gray-800 mb-3">
-                    More Photos
-                  </Text>
-                  <View className="flex-row flex-wrap justify-between">
-                    {user.images.slice(2).map((img, idx) => (
-                      <Image
-                        key={idx}
-                        source={{ uri: img }}
-                        className="w-[48%] h-44 rounded-xl mb-3"
-                        contentFit="cover"
-                      />
-                    ))}
-                  </View>
-                </View>
-              )}
 
               {/* Recent Posts */}
               {user.recentPosts?.length > 0 && (

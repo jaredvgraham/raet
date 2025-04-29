@@ -243,6 +243,7 @@ const EditProfileScreen = ({
                   preferredGender,
                   maxDistance: isMaxDistance ? MAX_DISTANCE_MILES : sliderValue,
                   pets: pets.split(",").map((p) => p.trim()),
+                  distance: 0,
                 } as Profile
               }
               onSwipe={() => setPreview(false)}
@@ -353,14 +354,17 @@ const EditProfileScreen = ({
             <Slider
               minimumValue={1}
               maximumValue={SLIDER_MAX_VALUE}
-              value={sliderValue}
-              onValueChange={setSliderValue}
+              value={isMaxDistance ? SLIDER_MAX_VALUE : sliderValue}
+              onValueChange={(value) => {
+                setIsMaxDistance(false); // As soon as user moves slider, disable max
+                setSliderValue(value);
+              }}
               step={1}
               minimumTrackTintColor="#14b8a6"
             />
             <TouchableOpacity
               className="mt-2"
-              onPress={() => setIsMaxDistance((prev) => !prev)}
+              onPress={() => setIsMaxDistance(!isMaxDistance)}
             >
               <Text className="text-teal-600 text-sm">
                 {isMaxDistance ? "Set Specific Distance" : "Set Max Distance"}

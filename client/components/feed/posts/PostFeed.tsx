@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState, useMemo } from "react";
 import { View, PanResponder } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { usePosts } from "@/hooks/usePosts";
-import { useComments } from "@/hooks/useComments";
 import { useKeyboardVisible } from "@/hooks/useKeyboardVisible";
 import { PostList } from "@/components/feed/posts/postList";
 import CreatePostScreen from "./CreatePost";
@@ -36,15 +35,12 @@ const PostFeedScreen = () => {
     fetchPosts,
     refreshPosts,
     loadMorePosts,
-  } = usePosts();
-
-  const {
     comments,
     commentText,
     setCommentText,
     fetchComments,
     submitComment,
-  } = useComments();
+  } = usePosts();
 
   const openComments = (postId: string) => {
     setSelectedPostId(postId);
@@ -59,7 +55,10 @@ const PostFeedScreen = () => {
     return <CreatePostScreen setCreatingPost={setCreatingPost} />;
 
   return (
-    <View className="flex-1 bg-white z-30" style={{ paddingTop: insets.top }}>
+    <View
+      className="flex-1 bg-gray-200 z-30 p-2"
+      style={{ paddingTop: insets.top }}
+    >
       <Links />
       <PostList
         posts={posts}

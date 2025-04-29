@@ -99,35 +99,6 @@ const UploadImageComponent = ({
     }
   };
 
-  const handleSubmit = async () => {
-    console.log("handleSubmit from imgs");
-    if (!images) {
-      alert("At least 1 image is required");
-
-      setError("No images to upload");
-      return;
-    }
-
-    try {
-      if (onSubmit) {
-        try {
-          await onSubmit();
-          console.log("in try");
-        } catch (error) {
-          console.log("in catch");
-
-          setError(formatError(error));
-          return;
-        }
-      }
-      console.log("at uploadImages");
-
-      await uploadImages();
-    } catch (error) {
-      console.error("Upload failed:", error);
-    }
-  };
-
   return (
     <>
       <SafeAreaView className="w-full flex flex-col justify-between   ">
@@ -193,7 +164,7 @@ const UploadImageComponent = ({
         {showButton && (
           <TouchableOpacity
             className="bg-violet-400 w-full p-4 rounded-lg "
-            onPress={handleSubmit}
+            onPress={onSubmit}
           >
             <Text className="text-white text-lg text-center">
               {buttonTitle || "Submit"}
