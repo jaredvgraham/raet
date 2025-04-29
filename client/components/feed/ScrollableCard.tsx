@@ -328,7 +328,7 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                   </View>
                   {user.recentPosts.map((post) => (
                     <View className="mt-2" key={post._id}>
-                      <PostCard post={post} commentsDisabled={true} />
+                      <PostCard post={post} commentsDisabled />
                     </View>
                   ))}
                 </>

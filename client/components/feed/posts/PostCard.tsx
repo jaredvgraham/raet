@@ -30,6 +30,11 @@ const PostCard = ({
   const [likeCount, setLikeCount] = React.useState(post.likeCount);
   const [showHeart, setShowHeart] = React.useState(false);
 
+  const [localToggleComments, setLocalToggleComments] = React.useState(false);
+  const [localCommentCount, setLocalCommentCount] = React.useState(
+    commentCount || 0
+  );
+
   const authFetch = useAuthFetch();
   const Router = useRouter();
   const lastTap = React.useRef<number | null>(null);

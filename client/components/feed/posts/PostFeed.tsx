@@ -8,8 +8,14 @@ import CreatePostScreen from "./CreatePost";
 import Links from "../Links";
 import { CommentSection } from "./CommentSection";
 import { FloatingCreateButton } from "./FloatingCreateButton";
+import { Post } from "@/types";
 
-const PostFeedScreen = () => {
+type PostFeedScreenProps = {
+  parentPosts?: Post[];
+  hideLinks?: boolean;
+};
+
+const PostFeedScreen = ({ parentPosts, hideLinks }: PostFeedScreenProps) => {
   const insets = useSafeAreaInsets();
   const keyboardVisible = useKeyboardVisible();
   const panResponder = useMemo(
@@ -40,6 +46,9 @@ const PostFeedScreen = () => {
     setCommentText,
     fetchComments,
     submitComment,
+    setPosts,
+    setIsParentPosts,
+    isParentPosts,
   } = usePosts();
 
   const openComments = (postId: string) => {
@@ -48,8 +57,15 @@ const PostFeedScreen = () => {
   };
 
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    if (parentPosts) {
+      setIsParentPosts(true);
+      setPosts(parentPosts);
+      console.log("Parent posts set", parentPosts);
+    } else {
+      setIsParentPosts(false);
+      fetchPosts();
+    }
+  }, [parentPosts]);
 
   if (creatingPost)
     return <CreatePostScreen setCreatingPost={setCreatingPost} />;
@@ -59,7 +75,8 @@ const PostFeedScreen = () => {
       className="flex-1 bg-gray-200 z-30 p-2"
       style={{ paddingTop: insets.top }}
     >
-      <Links />
+      {!hideLinks && <Links />}
+
       <PostList
         posts={posts}
         loading={loading}
@@ -77,6 +94,7 @@ const PostFeedScreen = () => {
           keyboardVisible={keyboardVisible}
           insets={insets}
           panHandlers={panResponder.panHandlers}
+          isParentPosts={isParentPosts}
         />
       )}
       {!selectedPostId && (

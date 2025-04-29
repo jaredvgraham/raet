@@ -11,9 +11,11 @@ export function usePosts() {
   const [hasMore, setHasMore] = useState(true);
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentText, setCommentText] = useState("");
+  const [isParentPosts, setIsParentPosts] = useState(false);
 
   const fetchPosts = async (beforeDate?: string) => {
     console.log("Fetching posts beforeDate:", beforeDate);
+    if (isParentPosts) return;
 
     try {
       setLoading(true);
@@ -52,13 +54,14 @@ export function usePosts() {
 
   const refreshPosts = () => {
     console.log("Refreshing posts");
-
+    if (isParentPosts) return;
     setRefreshing(true);
     setHasMore(true);
     fetchPosts(undefined);
   };
 
   const loadMorePosts = () => {
+    if (isParentPosts) return;
     console.log("Loading more posts");
     console.log("loading", loading);
     console.log("hasMore", hasMore);
@@ -116,5 +119,8 @@ export function usePosts() {
     comments,
     commentText,
     setCommentText,
+    setPosts,
+    setIsParentPosts,
+    isParentPosts,
   };
 }

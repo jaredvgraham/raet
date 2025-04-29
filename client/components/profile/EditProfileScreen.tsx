@@ -14,6 +14,7 @@ import { Profile } from "@/types";
 import Header from "../header";
 import ModernCard from "../feed/ScrollableCard";
 import UploadImageComponentTwo from "../UploadImageTwo";
+import PostFeedScreen from "../feed/posts/PostFeed";
 
 const SLIDER_MAX_VALUE = 100;
 const MAX_DISTANCE_MILES = 10000;
@@ -54,6 +55,7 @@ const EditProfileScreen = ({
   onCancel,
 }: EditProfileScreenProps) => {
   const [preview, setPreview] = useState(false);
+  const [viewPosts, setViewPosts] = useState(false);
   const [bio, setBio] = useState(profile.bio || "");
   const [jobTitle, setJobTitle] = useState(profile.jobTitle || "");
   const [relationshipType, setRelationshipType] = useState(
@@ -208,6 +210,111 @@ const EditProfileScreen = ({
     </View>
   );
 
+  // If viewing posts
+  if (viewPosts) {
+    return (
+      <>
+        {/** Header remains visible always */}
+        <View className="flex-row items-center justify-around px-5 py-3 bg-white border-b border-gray-200">
+          <TouchableOpacity
+            onPress={() => {
+              setPreview(false);
+              setViewPosts(false);
+            }}
+          >
+            <Text className="text-[#10b5b1]">Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setPreview(true);
+              setViewPosts(false);
+            }}
+          >
+            <Text className="text-[#10b5b1]">Preview</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setViewPosts(true);
+              setPreview(false);
+            }}
+          >
+            <Text className="text-[#10b5b1]">Posts</Text>
+          </TouchableOpacity>
+        </View>
+
+        <PostFeedScreen
+          parentPosts={(profile as any).posts || []}
+          hideLinks={true}
+        />
+      </>
+    );
+  }
+
+  // If previewing profile
+  if (preview) {
+    return (
+      <>
+        <View className="flex-row items-center justify-around px-5 py-3 bg-white border-b border-gray-200">
+          <TouchableOpacity
+            onPress={() => {
+              setPreview(false);
+              setViewPosts(false);
+            }}
+          >
+            <Text className="text-[#10b5b1]">Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setPreview(true);
+              setViewPosts(false);
+            }}
+          >
+            <Text className="text-[#10b5b1]">Preview</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setViewPosts(true);
+              setPreview(false);
+            }}
+          >
+            <Text className="text-[#10b5b1]">Posts</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View className="flex-1 bg-black">
+          <View className="flex-1 w-full items-center relative rounded-xl pb-1">
+            <ModernCard
+              user={{
+                ...profile,
+                recentPosts: (profile as any).posts || [],
+                images: images.length ? images : profile.images,
+                bio,
+                jobTitle,
+                relationshipType,
+                lookingFor,
+                preferredAgeRange: preferredAgeRange
+                  .split(",")
+                  .map((s) => parseInt(s.trim(), 10))
+                  .filter((n) => !isNaN(n)) as [number, number],
+                interests,
+                drinkingHabits,
+                smokingHabits,
+                preferredGender,
+                maxDistance: isMaxDistance ? MAX_DISTANCE_MILES : sliderValue,
+                pets: pets.split(",").map((p) => p.trim()),
+                distance: 0,
+              }}
+              onSwipe={() => setPreview(false)}
+              isBackCard={false}
+            />
+          </View>
+        </View>
+      </>
+    );
+  }
+
+  // Default to edit mode
+
   return (
     <>
       {/* Header */}
@@ -217,6 +324,14 @@ const EditProfileScreen = ({
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setPreview(true)}>
           <Text className="text-[#10b5b1]">Preview</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            setViewPosts(!viewPosts);
+            setPreview(false);
+          }}
+        >
+          <Text className="text-[#10b5b1]">Posts</Text>
         </TouchableOpacity>
       </View>
 

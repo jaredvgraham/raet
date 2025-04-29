@@ -126,6 +126,7 @@ export const getProfile = async (
 
     const age = calculateAge(profile.dob);
     const posts = await getUserPosts(userId, userId);
+    console.log("usersPosts", posts);
 
     const updatedProfile = {
       ...profile.toJSON(),

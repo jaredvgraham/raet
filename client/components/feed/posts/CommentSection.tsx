@@ -24,6 +24,7 @@ interface CommentSectionProps {
   keyboardVisible: boolean;
   insets: any;
   panHandlers: any;
+  isParentPosts?: boolean;
 }
 
 export const CommentSection = ({
@@ -34,13 +35,25 @@ export const CommentSection = ({
   keyboardVisible,
   insets,
   panHandlers,
+  isParentPosts = false,
 }: CommentSectionProps) => {
   const router = useRouter();
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="absolute bottom-0 left-0 right-0 top-52 bg-gray-100 z-50"
-      style={{ borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={isParentPosts ? 140 : 0} // increase this from 100 → 140
+      style={{
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        top: isParentPosts ? 60 : 208, // decrease from 80 → 60
+        backgroundColor: "#f3f4f6",
+        zIndex: 50,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        paddingBottom: keyboardVisible ? insets.bottom + 80 : 60, // bump to +80
+      }}
     >
       <View {...panHandlers} className="h-8 justify-center items-center ">
         <View className="w-10 h-1 rounded bg-gray-400" />

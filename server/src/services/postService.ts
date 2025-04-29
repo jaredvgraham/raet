@@ -144,7 +144,7 @@ export const getUserPosts = async (
     // Join comments
     {
       $lookup: {
-        from: "postcomments",
+        from: "comments",
         localField: "_id",
         foreignField: "postId",
         as: "comments",
