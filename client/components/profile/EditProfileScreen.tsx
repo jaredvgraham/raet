@@ -335,175 +335,142 @@ const EditProfileScreen = ({
         </TouchableOpacity>
       </View>
 
-      {preview ? (
-        <View className="flex-1 bg-black   ">
-          <View className="flex-1 w-full items-center relative  rounded-xl pb-1">
-            <ModernCard
-              user={
-                {
-                  ...profile,
-                  recentPosts: (profile as any).posts || [],
-                  images: images.length ? images : profile.images,
-                  bio,
-                  jobTitle,
-                  relationshipType,
-                  lookingFor,
-                  preferredAgeRange: preferredAgeRange
-                    .split(",")
-                    .map((s) => parseInt(s.trim(), 10))
-                    .filter((n) => !isNaN(n)) as [number, number],
-                  interests,
-                  drinkingHabits,
-                  smokingHabits,
-                  preferredGender,
-                  maxDistance: isMaxDistance ? MAX_DISTANCE_MILES : sliderValue,
-                  pets: pets.split(",").map((p) => p.trim()),
-                  distance: 0,
-                } as Profile
-              }
-              onSwipe={() => setPreview(false)}
-              isBackCard={false}
-            />
+      <ScrollView
+        className="p-5 flex-1 bg-white"
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
+        <UploadImageComponentTwo
+          onSubmit={() => {}}
+          buttonTitle="Save Images"
+          parentImgs={images}
+          setParentImgs={setImages}
+          showButton={false}
+        />
+
+        {renderField(
+          "Job Title",
+          jobTitle,
+          setJobTitle,
+          "briefcase",
+          "What do you do?"
+        )}
+        {renderField(
+          "Bio",
+          bio,
+          setBio,
+          "info-circle",
+          "Tell us something about you..."
+        )}
+        {renderField(
+          "Pets",
+          pets,
+          setPets,
+          "paw",
+          "List your pets separated by commas"
+        )}
+        {renderField(
+          "Instagram",
+          instagram,
+          setInstagram,
+          "instagram",
+          "@yourhandle"
+        )}
+        {renderField(
+          "Preferred Age Range",
+          preferredAgeRange,
+          setPreferredAgeRange,
+          "calendar",
+          "e.g. 18, 25"
+        )}
+
+        {renderMultiSelect(
+          "Interests",
+          "star",
+          interests,
+          setInterests,
+          interestsOptions
+        )}
+        {renderOptions(
+          "Preferred Gender",
+          "genderless",
+          preferredGender,
+          setPreferredGender,
+          preferredGenderOptions
+        )}
+        {renderOptions(
+          "Looking For",
+          "heart",
+          lookingFor,
+          setLookingFor,
+          lookingForOptions
+        )}
+        {renderOptions(
+          "Relationship Type",
+          "users",
+          relationshipType,
+          setRelationshipType,
+          relationshipOptions
+        )}
+        {renderOptions(
+          "Drinking Habits",
+          "glass",
+          drinkingHabits,
+          setDrinkingHabits,
+          drinkingOptions
+        )}
+        {renderOptions(
+          "Smoking Habits",
+          "fire",
+          smokingHabits,
+          setSmokingHabits,
+          smokingOptions
+        )}
+
+        {/* Distance */}
+        <View className="mb-6">
+          <View className="flex-row items-center mb-1">
+            <Icon name="map" size={16} color="#0f172a" />
+            <Text className="ml-2 text-gray-800 font-semibold">
+              Max Distance: {isMaxDistance ? "Max" : sliderValue} miles
+            </Text>
           </View>
-        </View>
-      ) : (
-        <ScrollView
-          className="p-5 flex-1 bg-white"
-          contentContainerStyle={{ paddingBottom: 20 }}
-        >
-          <UploadImageComponentTwo
-            onSubmit={() => {}}
-            buttonTitle="Save Images"
-            parentImgs={images}
-            setParentImgs={setImages}
-            showButton={false}
+          <Slider
+            minimumValue={1}
+            maximumValue={SLIDER_MAX_VALUE}
+            value={isMaxDistance ? SLIDER_MAX_VALUE : sliderValue}
+            onValueChange={(value) => {
+              setIsMaxDistance(false); // As soon as user moves slider, disable max
+              setSliderValue(value);
+            }}
+            step={1}
+            minimumTrackTintColor="#14b8a6"
           />
+          <TouchableOpacity
+            className="mt-2"
+            onPress={() => setIsMaxDistance(!isMaxDistance)}
+          >
+            <Text className="text-teal-600 text-sm">
+              {isMaxDistance ? "Set Specific Distance" : "Set Max Distance"}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-          {renderField(
-            "Job Title",
-            jobTitle,
-            setJobTitle,
-            "briefcase",
-            "What do you do?"
-          )}
-          {renderField(
-            "Bio",
-            bio,
-            setBio,
-            "info-circle",
-            "Tell us something about you..."
-          )}
-          {renderField(
-            "Pets",
-            pets,
-            setPets,
-            "paw",
-            "List your pets separated by commas"
-          )}
-          {renderField(
-            "Instagram",
-            instagram,
-            setInstagram,
-            "instagram",
-            "@yourhandle"
-          )}
-          {renderField(
-            "Preferred Age Range",
-            preferredAgeRange,
-            setPreferredAgeRange,
-            "calendar",
-            "e.g. 18, 25"
-          )}
-
-          {renderMultiSelect(
-            "Interests",
-            "star",
-            interests,
-            setInterests,
-            interestsOptions
-          )}
-          {renderOptions(
-            "Preferred Gender",
-            "genderless",
-            preferredGender,
-            setPreferredGender,
-            preferredGenderOptions
-          )}
-          {renderOptions(
-            "Looking For",
-            "heart",
-            lookingFor,
-            setLookingFor,
-            lookingForOptions
-          )}
-          {renderOptions(
-            "Relationship Type",
-            "users",
-            relationshipType,
-            setRelationshipType,
-            relationshipOptions
-          )}
-          {renderOptions(
-            "Drinking Habits",
-            "glass",
-            drinkingHabits,
-            setDrinkingHabits,
-            drinkingOptions
-          )}
-          {renderOptions(
-            "Smoking Habits",
-            "fire",
-            smokingHabits,
-            setSmokingHabits,
-            smokingOptions
-          )}
-
-          {/* Distance */}
-          <View className="mb-6">
-            <View className="flex-row items-center mb-1">
-              <Icon name="map" size={16} color="#0f172a" />
-              <Text className="ml-2 text-gray-800 font-semibold">
-                Max Distance: {isMaxDistance ? "Max" : sliderValue} miles
-              </Text>
-            </View>
-            <Slider
-              minimumValue={1}
-              maximumValue={SLIDER_MAX_VALUE}
-              value={isMaxDistance ? SLIDER_MAX_VALUE : sliderValue}
-              onValueChange={(value) => {
-                setIsMaxDistance(false); // As soon as user moves slider, disable max
-                setSliderValue(value);
-              }}
-              step={1}
-              minimumTrackTintColor="#14b8a6"
-            />
-            <TouchableOpacity
-              className="mt-2"
-              onPress={() => setIsMaxDistance(!isMaxDistance)}
-            >
-              <Text className="text-teal-600 text-sm">
-                {isMaxDistance ? "Set Specific Distance" : "Set Max Distance"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Buttons */}
-          <View className="flex-row justify-between mt-10">
-            <TouchableOpacity
-              className="bg-red-800 py-3 px-8 rounded-full"
-              onPress={onCancel}
-            >
-              <Text className="text-white text-lg">Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="bg-black py-3 px-8 rounded-full"
-              onPress={handleSave}
-            >
-              <Text className="text-white text-lg">Save</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      )}
+        {/* Buttons */}
+        <View className="flex-row justify-between mt-10">
+          <TouchableOpacity
+            className="bg-red-800 py-3 px-8 rounded-full"
+            onPress={onCancel}
+          >
+            <Text className="text-white text-lg">Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-black py-3 px-8 rounded-full"
+            onPress={handleSave}
+          >
+            <Text className="text-white text-lg">Save</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </>
   );
 };
