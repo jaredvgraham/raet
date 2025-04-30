@@ -20,6 +20,7 @@ export const createMatch = async (
 
     const newMatch = new Match({ user1ClerkId, user2ClerkId });
     await newMatch.save();
+    return newMatch;
     console.log("Match created successfully:", newMatch);
   } catch (error) {
     console.error("Error creating match:", error);

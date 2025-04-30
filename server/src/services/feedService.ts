@@ -169,7 +169,12 @@ export const likeUser = async (userId: string, likedUserId: string) => {
 
     const match = await createMatch(user.clerkId, likedUser.clerkId);
 
-    return { message: `Match found for ${likedUser.name}` };
+    return {
+      isMatch: true,
+      userA: user,
+      userB: likedUser,
+      match,
+    };
   }
 };
 

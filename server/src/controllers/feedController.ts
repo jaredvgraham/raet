@@ -10,6 +10,8 @@ import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 import Post from "../models/postModel";
 import PostLike from "../models/postLikeModel";
 import Comment from "../models/commentModel";
+import { sendPushNotification } from "../utils/push";
+import { IMatch } from "../models/matchModel";
 
 export const getFeed = async (
   req: RequireAuthProp<Request>,
@@ -86,8 +88,37 @@ export const handleSwipe = async (
     }
 
     if (direction === "right") {
-      const msg = await likeUser(userId, swipedId);
-      res.status(200).json({ message: msg?.message || "Liked" });
+      const result = await likeUser(userId, swipedId);
+
+      if (result?.isMatch && result.userA && result.userB && result.match) {
+        const { userA, userB, match } = result;
+
+        if (userA?.pushToken) {
+          await sendPushNotification({
+            to: userA.pushToken!,
+            title: "It's a Match!",
+            body: "You and someone else liked each other 🎉",
+            data: {
+              type: "new-match", // TS will infer the correct union here
+              matchId: match._id,
+            },
+          });
+        }
+
+        if (userB?.pushToken) {
+          await sendPushNotification({
+            to: userB.pushToken!,
+            title: "It's a Match!",
+            body: "You and someone else liked each other 🎉",
+            data: {
+              type: "new-match", // TS will infer the correct union here
+              matchId: match._id,
+            },
+          });
+        }
+      }
+
+      return res.status(200).json({ success: true, message: "Liked" });
     } else if (direction === "left") {
       await viewUser(userId, swipedId);
       res.status(200).json({ message: "Disliked" });

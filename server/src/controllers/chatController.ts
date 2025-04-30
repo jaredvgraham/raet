@@ -227,6 +227,11 @@ export const sendMessage = async (
       return res.status(404).json({ message: "Match not found" });
     }
 
+    const user = await User.findOne({ clerkId: userId });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     const matchedUserId =
       match.user1ClerkId === userId ? match.user2ClerkId : match.user1ClerkId;
 
@@ -302,7 +307,7 @@ export const sendMessage = async (
       await sendPushNotification({
         to: matchedUser.pushToken,
         title: "New message",
-        body: messageText.slice(0, 80), // Optional preview
+        body: `${user.name} sent you a message`,
         data: {
           type: "new-message",
           matchId,
