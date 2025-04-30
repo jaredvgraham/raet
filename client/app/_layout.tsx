@@ -15,6 +15,16 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { NotificationProvider } from "@/hooks/useNotifications";
 import Toast from "@/components/Toast";
 
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: false,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 //nice
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
