@@ -49,6 +49,7 @@ const PostFeedScreen = ({ parentPosts, hideLinks }: PostFeedScreenProps) => {
     setPosts,
     setIsParentPosts,
     isParentPosts,
+    loadingComments,
   } = usePosts();
 
   const openComments = (postId: string) => {
@@ -95,9 +96,10 @@ const PostFeedScreen = ({ parentPosts, hideLinks }: PostFeedScreenProps) => {
           insets={insets}
           panHandlers={panResponder.panHandlers}
           isParentPosts={isParentPosts}
+          loadingComments={loadingComments}
         />
       )}
-      {!selectedPostId && (
+      {!selectedPostId && !isParentPosts && (
         <FloatingCreateButton onPress={() => setCreatingPost(true)} />
       )}
     </View>

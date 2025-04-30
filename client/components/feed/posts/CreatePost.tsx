@@ -46,7 +46,7 @@ const CreatePostScreen = ({ setCreatingPost }: CreatePostScreenProps) => {
           const result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
-            aspect: [4, 5],
+            aspect: [9, 16],
             quality: 0.8,
           });
           if (!result.canceled) {

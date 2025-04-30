@@ -29,8 +29,10 @@ const Header = ({
   const handleBackPress = () => {
     if (backDestination) {
       router.push(backDestination as any);
-    } else {
+    } else if (router.canGoBack()) {
       router.back();
+    } else {
+      router.push("/profile");
     }
   };
 

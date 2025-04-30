@@ -5,7 +5,7 @@ import { View, ActivityIndicator, Text } from "react-native";
 
 const Loading = ({ message }: { message?: string }) => {
   return (
-    <View className="flex-1 justify-center items-center bg-white">
+    <View className="flex-1 justify-center items-center bg-white w-full">
       {/* Spinner */}
       <ActivityIndicator size="large" color="#14b8a6" />
 

@@ -54,8 +54,12 @@ const ViewUser = () => {
   const onSwipe = (dir: "left" | "right") => {
     console.log("swipe", dir);
 
-    if (isUser) {
+    if (isUser && router.canGoBack()) {
       router.back();
+
+      return;
+    } else if (isUser) {
+      router.push("/profile");
       return;
     }
     handleSwipe(profile as Profile, dir, true);

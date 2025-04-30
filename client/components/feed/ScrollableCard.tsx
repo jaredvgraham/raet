@@ -262,7 +262,7 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                 )}
                 {user.relationshipType && (
                   <View className="flex-row items-center">
-                    <Icon name="users" size={16} color="purple" />
+                    <Icon name="users" size={16} color="#c93bf5" />
                     <Text className="ml-3 text-sm text-gray-700">
                       <Text className="font-semibold">Relationship Type:</Text>{" "}
                       {user.relationshipType}
@@ -271,7 +271,7 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                 )}
                 {user.lookingFor && (
                   <View className="flex-row items-center">
-                    <Icon name="heart" size={16} color="#bd3228" />
+                    <Icon name="heart" size={16} color="#f53b3b" />
                     <Text className="ml-3 text-sm text-gray-700">
                       <Text className="font-semibold">Looking For:</Text>{" "}
                       {user.lookingFor}

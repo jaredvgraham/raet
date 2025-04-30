@@ -14,6 +14,7 @@ import { db } from "@/services/firebaseConfig";
 import { Image } from "expo-image";
 import Header from "@/components/header";
 import Icon from "react-native-vector-icons/FontAwesome";
+import Loading from "@/components/Loading";
 
 const Chat = () => {
   const authFetch = useAuthFetch();
@@ -26,10 +27,13 @@ const Chat = () => {
     }[]
   >([]);
   const [conversations, setConversations] = useState<any[]>([]);
-  const [noMatches, setNoMatches] = useState<boolean>(true);
-  const [noConversations, setNoConversations] = useState<boolean>(true);
+  const [noMatches, setNoMatches] = useState<boolean>(false);
+  const [noConversations, setNoConversations] = useState<boolean>(false);
+  const [loadingMatches, setLoadingMatches] = useState(true);
+  const [loadingConversations, setLoadingConversations] = useState(true);
 
   const fetchMatches = async () => {
+    setLoadingMatches(true);
     try {
       const response = await authFetch("/api/chat/matches", {
         method: "GET",
@@ -49,10 +53,13 @@ const Chat = () => {
     } catch (error) {
       console.error("Error fetching matches:", error);
       setNoMatches(true);
+    } finally {
+      setLoadingMatches(false);
     }
   };
 
   const fetchConversations = async () => {
+    setLoadingConversations(true);
     try {
       const response = await authFetch("/api/chat/conversations");
       const data = await response?.json();
@@ -111,6 +118,8 @@ const Chat = () => {
       console.error("Error fetching conversations:", error);
       setConversations([]);
       setNoConversations(true);
+    } finally {
+      setLoadingConversations(false);
     }
   };
 
@@ -159,6 +168,15 @@ const Chat = () => {
                 </Text>
                 <Text className="text-center text-gray-300">Matches</Text>
               </View>
+              {loadingMatches ? (
+                <Loading />
+              ) : (
+                noMatches && (
+                  <Text className="text-center text-gray-500">
+                    No matches found. Please try again later.
+                  </Text>
+                )
+              )}
               {matches.map((match) => (
                 <View key={match.matchId}>
                   <TouchableOpacity
@@ -183,6 +201,11 @@ const Chat = () => {
         </View>
 
         <View className="flex-1">
+          {loadingConversations && (
+            <View className="flex-1 items-center justify-center">
+              <Loading />
+            </View>
+          )}
           {noConversations ? (
             <Text className="text-center text-gray-500">
               No conversations found. Please try again later.
@@ -208,7 +231,7 @@ const Chat = () => {
                   >
                     <View
                       className={`p-4 flex-row items-center ${
-                        notRead ? "bg-black text-gray-100" : ""
+                        notRead ? "bg-black text-gray-300" : ""
                       }`}
                     >
                       <Image
@@ -240,7 +263,7 @@ const Chat = () => {
                               style={{ marginRight: 4 }}
                             />
                           )}
-                          <Text numberOfLines={1} className="text-gray-600">
+                          <Text numberOfLines={1} className="text-gray-400">
                             {conversation?.lastMessage.message}
                           </Text>
                         </View>

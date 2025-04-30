@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   FlatList,
   Text,
@@ -15,6 +15,8 @@ import { Image } from "expo-image";
 import { Icon } from "react-native-vector-icons/Icon";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
+import { useAuth } from "@clerk/clerk-expo";
+import Loading from "@/components/Loading";
 
 interface CommentSectionProps {
   comments: Comment[];
@@ -25,6 +27,7 @@ interface CommentSectionProps {
   insets: any;
   panHandlers: any;
   isParentPosts?: boolean;
+  loadingComments?: boolean;
 }
 
 export const CommentSection = ({
@@ -36,7 +39,11 @@ export const CommentSection = ({
   insets,
   panHandlers,
   isParentPosts = false,
+  loadingComments,
 }: CommentSectionProps) => {
+  const { userId } = useAuth();
+  const [isUser, setIsUser] = React.useState(false);
+
   const router = useRouter();
   return (
     <KeyboardAvoidingView
@@ -59,6 +66,7 @@ export const CommentSection = ({
         <View className="w-10 h-1 rounded bg-gray-400" />
       </View>
 
+      {loadingComments && <Loading />}
       <FlatList
         data={comments}
         className="bg-gray-100"
@@ -67,6 +75,7 @@ export const CommentSection = ({
           <View className="flex-row items-start gap-3 mb-4 px-2 ">
             <TouchableOpacity
               onPress={() => {
+                if (userId === item.userId) return;
                 router.push(`/home/${item.userId}`);
               }}
             >

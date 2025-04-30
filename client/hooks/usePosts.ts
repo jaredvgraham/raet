@@ -12,6 +12,7 @@ export function usePosts() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentText, setCommentText] = useState("");
   const [isParentPosts, setIsParentPosts] = useState(false);
+  const [loadingComments, setLoadingComments] = useState(false);
 
   const fetchPosts = async (beforeDate?: string) => {
     console.log("Fetching posts beforeDate:", beforeDate);
@@ -73,6 +74,7 @@ export function usePosts() {
   };
 
   const fetchComments = async (postId: string) => {
+    setLoadingComments(true);
     try {
       const res = await authFetch(`/api/post/${postId}/comments`);
       const data = await res.json();
@@ -81,6 +83,8 @@ export function usePosts() {
       setComments(data.comments || []);
     } catch (error) {
       console.error("Error fetching comments:", error);
+    } finally {
+      setLoadingComments(false);
     }
   };
 
@@ -122,5 +126,6 @@ export function usePosts() {
     setPosts,
     setIsParentPosts,
     isParentPosts,
+    loadingComments,
   };
 }

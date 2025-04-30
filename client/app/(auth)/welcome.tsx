@@ -11,17 +11,17 @@ const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const data = [
   {
     title: "Welcome to Raet",
-    description: "See only the best matches!",
+    description: "See users rated similar to you",
     image: require("../../assets/images/feed.png"),
   },
   {
-    title: "See Who Likes You",
+    title: "See posts from nearby users",
     description: "Match instantly with others",
-    image: require("../../assets/images/likes.png"),
+    image: require("../../assets/images/posts.png"),
   },
   {
     title: "Real-time Conversations",
-    description: "Chat instantly with others",
+    description: "Chat with your matches ",
     image: require("../../assets/images/chat.png"),
   },
 ];
@@ -31,7 +31,7 @@ const Welcome = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <SafeAreaView className="flex h-full items-center ">
+    <SafeAreaView className="flex h-full items-center bg-white ">
       {/* Skip Button */}
       <TouchableOpacity
         className="self-end mr-4 mt-4"
@@ -74,11 +74,6 @@ const Welcome = () => {
                 source={item.image}
                 className="w-full h-full rounded-3xl"
                 contentFit="contain"
-                style={{
-                  borderColor: "white",
-                  borderBottomLeftRadius: 110,
-                  borderBottomRightRadius: 110,
-                }}
               />
             </View>
           </View>

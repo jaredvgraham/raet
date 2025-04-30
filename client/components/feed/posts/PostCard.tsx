@@ -9,6 +9,7 @@ import { Image } from "expo-image";
 import { Feather } from "@expo/vector-icons";
 import { TouchableWithoutFeedback } from "react-native";
 import { MotiView, MotiImage } from "moti";
+import { useUser } from "@clerk/clerk-expo";
 
 type PostProps = {
   post: Post;
@@ -29,11 +30,19 @@ const PostCard = ({
   const [liked, setLiked] = React.useState(post.likedByCurrentUser);
   const [likeCount, setLikeCount] = React.useState(post.likeCount);
   const [showHeart, setShowHeart] = React.useState(false);
+  const { user } = useUser();
+  const [isUser, setIsUser] = React.useState(false);
 
   const [localToggleComments, setLocalToggleComments] = React.useState(false);
   const [localCommentCount, setLocalCommentCount] = React.useState(
     commentCount || 0
   );
+
+  React.useEffect(() => {
+    if (user) {
+      setIsUser(user.id === post.userId);
+    }
+  }, [user, post.userId]);
 
   const authFetch = useAuthFetch();
   const Router = useRouter();
@@ -60,6 +69,9 @@ const PostCard = ({
       <TouchableOpacity
         className="flex-row items-center px-4 py-3"
         onPress={() => {
+          if (isUser) {
+            return;
+          }
           Router.push(`/home/${post.userId}`);
         }}
       >
