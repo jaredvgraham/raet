@@ -34,6 +34,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import PostCard from "./posts/PostCard";
 import RenderImageIndicators from "./RenderImageIndicators";
 import * as Haptics from "expo-haptics";
+import UserActionsMenu from "../UserActionsMenu";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -173,6 +174,12 @@ const ModernCard = forwardRef<ModernCardRef, Props>(
                     images={user.images}
                     currentImageIndex={imgIndex}
                   />
+                  <View className="absolute top-3 right-5 z-50">
+                    <UserActionsMenu
+                      reportedUserId={user.clerkId}
+                      color="white"
+                    />
+                  </View>
 
                   <View
                     style={{ height: SCREEN_HEIGHT * 0.6 }}

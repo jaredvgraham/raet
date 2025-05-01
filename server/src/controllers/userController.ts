@@ -15,6 +15,7 @@ import Like from "../models/likeModel";
 import { calculateDistance } from "../utils/calculateDistance";
 import Block from "../models/blockModel";
 import { getUserPosts } from "../services/postService";
+import { calculateRating } from "../utils/calculateRating";
 
 export const registerUser = async (
   req: Request,
@@ -127,11 +128,14 @@ export const getProfile = async (
     const age = calculateAge(profile.dob);
     const posts = await getUserPosts(userId, userId);
     console.log("usersPosts", posts);
+    const rating = calculateRating(profile.ratings || []);
+    console.log("rating", rating);
 
     const updatedProfile = {
       ...profile.toJSON(),
       age,
       posts,
+      rating,
     };
     console.log("updatedProfile", updatedProfile);
 

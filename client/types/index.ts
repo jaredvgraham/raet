@@ -31,6 +31,8 @@ export interface Profile {
   maxDistance: number;
   matchedUsers: string[];
   recentPosts: Post[];
+  plan?: string;
+  rating?: number;
 
   bio?: string;
   age: number;

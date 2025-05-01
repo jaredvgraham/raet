@@ -12,6 +12,7 @@ import Swiper from "react-native-swiper";
 import { Profile } from "@/types";
 import Icon from "react-native-vector-icons/FontAwesome";
 import UserActionsMenu from "../UserActionsMenu";
+import PostCard from "./posts/PostCard";
 
 type UserDetailScreenProps = {
   profile: Profile;
@@ -33,10 +34,12 @@ const UserDetailScreen = ({
   const swiperRef = useRef<Swiper>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
+  console.log("Profile data:", profile);
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView className="flex-1">
-        <View className="h-[300px] w-full">
+        <View className="h-[500px] w-full">
           <Swiper
             ref={swiperRef}
             loop={false}
@@ -117,6 +120,77 @@ const UserDetailScreen = ({
             </Text>
           </View>
 
+          {profile.jobTitle && (
+            <View className="flex-row items-center mb-2">
+              <Icon name="briefcase" size={16} color="#0f172a" />
+              <Text className="ml-3 text-sm text-gray-700">
+                <Text className="font-semibold">Job:</Text> {profile.jobTitle}
+              </Text>
+            </View>
+          )}
+
+          {profile.relationshipType && (
+            <View className="flex-row items-center mb-2">
+              <Icon name="users" size={16} color="#c93bf5" />
+              <Text className="ml-3 text-sm text-gray-700">
+                <Text className="font-semibold">Relationship Type:</Text>{" "}
+                {profile.relationshipType}
+              </Text>
+            </View>
+          )}
+
+          {profile.lookingFor && (
+            <View className="flex-row items-center mb-2">
+              <Icon name="heart" size={16} color="#f53b3b" />
+              <Text className="ml-3 text-sm text-gray-700">
+                <Text className="font-semibold">Looking For:</Text>{" "}
+                {profile.lookingFor}
+              </Text>
+            </View>
+          )}
+
+          {profile.drinkingHabits && (
+            <View className="flex-row items-center mb-2">
+              <Icon name="glass" size={16} color="#ed9726" />
+              <Text className="ml-3 text-sm text-gray-700">
+                <Text className="font-semibold">Drinks:</Text>{" "}
+                {profile.drinkingHabits}
+              </Text>
+            </View>
+          )}
+
+          {profile.smokingHabits && (
+            <View className="flex-row items-center mb-2">
+              <Icon name="fire" size={16} color="#3bccf5" />
+              <Text className="ml-3 text-sm text-gray-700">
+                <Text className="font-semibold">Smokes:</Text>{" "}
+                {profile.smokingHabits}
+              </Text>
+            </View>
+          )}
+
+          {profile.pets && profile.pets.length > 0 && (
+            <View className="flex-row items-center mb-2">
+              <Icon name="paw" size={16} color="#0f172a" />
+              <Text className="ml-3 text-sm text-gray-700">
+                <Text className="font-semibold">Pets:</Text>{" "}
+                {profile.pets.join(", ")}
+              </Text>
+            </View>
+          )}
+
+          {profile.socialMedia?.instagram && (
+            <View className="flex-row items-center mb-2">
+              <Icon name="instagram" size={16} color="#0f172a" />
+              <Text className="ml-3 text-sm text-gray-700">
+                <Text className="font-semibold">Instagram:</Text>{" "}
+                {profile.socialMedia.instagram.includes("@")
+                  ? `@${profile.socialMedia.instagram.split("@")[1]}`
+                  : `@${profile.socialMedia.instagram}`}
+              </Text>
+            </View>
+          )}
+
           {/* Average Rating */}
           {/* <View className="mb-4">
             <Text className="text-base text-gray-800">
@@ -124,6 +198,18 @@ const UserDetailScreen = ({
               {profile.averageRating?.toFixed(1) || "No ratings yet"} ⭐
             </Text>
           </View> */}
+        </View>
+
+        {/* User's postsn */}
+        <View className="mb-4">
+          <Text className="text-base font-bold text-gray-800 mb-2 ml-4">
+            User's Posts
+          </Text>
+
+          {profile.recentPosts &&
+            profile.recentPosts.map((post, index) => (
+              <PostCard key={index} post={post} commentsDisabled />
+            ))}
         </View>
 
         {/* Close Button */}

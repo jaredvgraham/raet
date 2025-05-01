@@ -4,6 +4,7 @@ import { RequireAuthProp } from "@clerk/clerk-sdk-node";
 import Match from "../models/matchModel";
 import { calculateDistance } from "../utils/calculateDistance";
 import { calculateAge } from "../utils/calculateAge";
+import { getUserPosts } from "../services/postService";
 
 export const getMatch = async (
   req: RequireAuthProp<Request>,
@@ -47,9 +48,18 @@ export const getMatch = async (
       );
     }
 
+    const recentPosts = await getUserPosts(matchProfile.clerkId, userId);
+
     const age = calculateAge(matchProfile.dob);
 
-    res.status(200).json({ matchProfile, distance, age });
+    const matchProfileWithPosts = {
+      ...matchProfile.toObject(),
+      recentPosts: recentPosts,
+    };
+
+    res
+      .status(200)
+      .json({ matchProfile: matchProfileWithPosts, distance, age });
   } catch (error) {
     next(error);
   }

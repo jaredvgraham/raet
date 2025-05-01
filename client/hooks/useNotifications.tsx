@@ -46,8 +46,8 @@ export const NotificationProvider = ({
         console.log("Notification tapped", data);
 
         // Optional: handle navigation or logic here
-        if (data?.type === "new-message" && data?.senderId) {
-          router.push(`/(root)/(chat)/${data.senderId}`);
+        if (data?.type === "new-message" && data?.matchId) {
+          router.push(`/(root)/(chat)/${data.matchId}`);
         } else if (data?.type === "new-match") {
           router.push(`/(root)/(tabs)/chat`);
         }

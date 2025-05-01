@@ -136,7 +136,7 @@ const LikesPage = () => {
                   >
                     <Image
                       source={{ uri: like.images[0] }}
-                      style={{ width: "100%", height: 150 }}
+                      style={{ width: "100%", height: 200 }}
                       className="rounded-lg"
                     />
                     {user?.publicMetadata.plan === "none" && (

@@ -107,7 +107,7 @@ const UserActionsMenu = ({
           <TouchableOpacity style={{ flex: 1 }} onPress={toggleMenu}>
             <Text> </Text>
             {/* Close when clicking outside */}
-            <View className="absolute top-10 right-5 bg-white shadow-lg rounded-lg p-4">
+            <View className="absolute top-40 right-5 bg-white shadow-lg rounded-lg p-4">
               {/* Block User Option */}
               <TouchableOpacity onPress={handleBlock} className="mb-4">
                 <Text className="text-red-500">Block User</Text>

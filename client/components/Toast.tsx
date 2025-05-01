@@ -23,6 +23,8 @@ const Toast = () => {
   const { latestNotification, visible, setVisible } = useNotification();
 
   useEffect(() => {
+    console.log("notification visable:", latestNotification);
+
     if (visible) {
       Animated.spring(translateY, {
         toValue: 60,
@@ -64,6 +66,7 @@ const Toast = () => {
           transform: [{ translateY }],
           width: width * 0.9,
           marginTop: 5,
+          zIndex: 1000,
         }}
       >
         <Text className="text-white flex-1 text-center font-medium">

@@ -16,6 +16,7 @@ import { Easing } from "react-native-reanimated";
 import { colors } from "@/constants";
 import { Profile } from "@/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import UserRatingBadge from "../UserRatingBadge";
 
 const { width } = Dimensions.get("window");
 
@@ -52,6 +53,12 @@ export default function ProfileScreen({
             className="absolute top-5 right-5 z-10"
           >
             <MaterialIcons name="settings" size={26} color="#0f172a" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={setSettings}
+            className="absolute top-5 left-5 z-10"
+          >
+            <UserRatingBadge rating={profile.rating ?? 8.3} />
           </TouchableOpacity>
 
           <View className="items-center pt-6">
